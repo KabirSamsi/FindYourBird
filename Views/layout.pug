@@ -1,0 +1,108 @@
+doctype html
+html(lang="en")
+  head
+    title Find Your Bird
+    style.
+    
+      body {
+        background-image: url("https://raw.githubusercontent.com/KabirSamsi/Birds/master/background.jpg");
+        background-size: cover;
+        text-align: center;
+      }
+
+      #submt {
+          text-align: center;
+      }
+      .container {
+        border-style: solid;
+        background-color: lightgrey;
+        border-width: 2px;
+        border-color: black;
+        width: 450px;
+        height: 575px;
+        text-align: center;
+        margin-left: 455px;
+        padding-left: 30px;
+        padding-right: 30px;
+        padding-bottom: 30px;
+      }
+
+      #search {
+        width: 300px;
+        height: 30px;
+        text-align: center;
+        border-color: black;
+      }
+
+      #go, #add, #edit{
+        width: 70px;
+        height: 36px;
+        background-color: lightgreen;
+        text-align: center;
+        border-color: black;
+      }
+      
+      #go, #add {
+          margin-right: 5px;
+      }
+
+      #add {
+        background-color: lightblue;
+      }
+
+      #edit {
+        background-color: yellow;
+      }
+      h1 {
+        font-size: 50px;
+      }
+
+      .inpt {
+        margin-bottom: 20px;
+      }
+      
+      textarea {
+        margin-right: 10px;
+      }
+
+      #upd, #submt {
+        background-color: green;
+        width: 80px;
+        color: white;
+        align: center;
+        margin-right: 30px;
+      }
+
+      #upd {
+        background-color: aqua;
+        color: black;
+      }
+
+      input {
+        margin-right: 10px;
+      }
+
+      img {
+        width: 400px;
+        height: 250px;
+      }
+      
+      form {
+        display: inline;
+        text-align: center;
+      }
+
+  body
+    h1 Find Your Bird
+    form(action="/search" method="post")
+      input(type='text' placeholder='Search a bird name' id="search" name="name")
+      button(type="submit" id="go") Search
+    form(action="/add" method="post")
+      button(type="submit" id="add") Add Bird
+    if name
+      form(action="/edit" method="post")
+        button(type="submit" id="edit") Edit Bird
+    br
+    br
+    br
+    block content

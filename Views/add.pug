@@ -1,0 +1,14 @@
+extends layout.pug
+block content
+  form(action="/sub" method="post")
+    div.container
+      br
+      input(class="inpt" type="text" id="name" name="name" placeholder="Enter bird name")
+      input(class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img")
+      input(class="inpt" type='text' id="range" placeholder='Enter bird range' name="range")
+      input(class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="app")
+      input(class="inpt" type='text' id="diet" placeholder='Enter bird diet' name="diet")
+      input(class="inpt" type='text' id="habitat" placeholder='Enter bird habitat' name="habitat")
+      textarea(class="inpt" id="description" rows='7' cols='25' type='text' placeholder='Enter bird description' name="description")
+      br
+      button(type="submit" id='submt' align="center") Submit Bird

@@ -1,0 +1,14 @@
+extends layout.pug
+block content
+  form(action="/upd" method="post")
+    div.container
+      br
+      input(class="inpt" type="text" id="name" placeholder="Enter bird name" name="name" value=`${name}`)
+      input(class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" value=`${image}`)
+      input(class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" value=`${range}`)
+      input(class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" value=`${app}`)
+      input(class="inpt" type='text' id="diet" placeholder='Enter bird diet' name="diet" value=`${diet}`)
+      input(class="inpt" type='text' id="habitat" placeholder='Enter bird habitat' name="habitat" value=`${habitat}`)
+      textarea(class="inpt" id="description" rows='7' cols='25' type='text' placeholder='Enter bird description' name="description") #{desc}
+      br
+      button(id="upd" type="submit") Update Bird
