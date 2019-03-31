@@ -13,12 +13,11 @@
   "keywords": [
     "none"
   ],
-
   "dependencies": {
-    "express":"*",
-    "body-parser":"*",
-    "cookie-parser":"*",
-    "pug": "*"
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "express": "*",
+    "pug-dependency": "^1.0.1"
   },
   "author": "Kabir Samsi",
   "license": "ISC"
