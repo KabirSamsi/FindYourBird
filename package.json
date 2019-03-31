@@ -17,7 +17,8 @@
   "dependencies": {
     "express":"*",
     "body-parser":"*",
-    "cookie-parser":"*"
+    "cookie-parser":"*",
+    "pug": "*"
   },
   "author": "Kabir Samsi",
   "license": "ISC"
