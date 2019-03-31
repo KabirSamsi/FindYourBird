@@ -17,6 +17,7 @@
     "body-parser": "*",
     "cookie-parser": "*",
     "express": "*",
+    "pug": "*",
     "pug-dependency": "^1.0.1"
   },
   "author": "Kabir Samsi",
