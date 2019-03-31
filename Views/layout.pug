@@ -9,10 +9,7 @@ html(lang="en")
         background-size: cover;
         text-align: center;
       }
-
-      #submt {
-          text-align: center;
-      }
+      
       .container {
         border-style: solid;
         background-color: lightgrey;
@@ -65,19 +62,79 @@ html(lang="en")
         margin-right: 10px;
       }
 
-      #upd, #submt {
+      #upd, #submt, #rm, #view, #view_upd, #preview, #prev {
         background-color: green;
         width: 80px;
         color: white;
         align: center;
         margin-right: 30px;
+        border-color: black
       }
-
+      
+      #view, #view_upd, #submt, #upd, #preview, #add_bird, #prev {
+        background-color: orange;
+        color: black;
+        width: 120px;
+        height: 28px;
+      }
+      
+      #submt, #upd, #rm, #leave, #preview, #prev {
+        color: black;
+        background-color: green;
+        width: 100px;
+        margin-right: 10px;
+        margin-left: 35px;
+      }
+      
       #upd {
         background-color: aqua;
         color: black;
+        margin-right: 0px;
+        margin-left: 0px;
+      }
+      
+      #rm {
+        background-color: red;
+        color: white;
+        height: 28px;
+        margin-left: 10px;
+      }
+      
+      #leave {
+        height: 40px;
+        width: 110px;
+        border-color: black;
+        background-color: darkblue;
+        color: white;
+      }
+      
+      #preview, #prev {
+        background-color: purple;
+        color: white;
+        margin-left: 0px;
+        margin-right: 10px;
       }
 
+      #prev {
+        margin-left: 30px;
+      }
+      
+      #submt {
+        margin-left: 0px;
+      }
+      
+      #view_upd {
+        width: 100px;
+        margin-left: 20px;
+      }
+      
+      #add_bird {
+        width: 150px;
+        height: 30px;
+        border-color: black;
+        background-color: lightblue;
+      }
+      
       input {
         margin-right: 10px;
       }
@@ -91,12 +148,17 @@ html(lang="en")
         display: inline;
         text-align: center;
       }
+      
+      li {
+        font-size: 13px;
+        text-align: left;
+      }
 
   body
     h1 Find Your Bird
     form(action="/search" method="post")
       input(type='text' placeholder='Search a bird name' id="search" name="name")
-      button(type="submit" id="go") Search
+      button(type="submit" id="go" name="button" value="Search") Search
     form(action="/add" method="post")
       button(type="submit" id="add") Add Bird
     if name

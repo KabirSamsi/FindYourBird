@@ -1,0 +1,11 @@
+extends layout.pug 
+block content 
+  div.container
+    h2 Birds in our Database
+    strong
+      em View all listed birds 
+    ol
+      each bird in birds
+        li=bird.name
+    form(action="/leave_redo" method="post")
+      button(type="submit" id="leave") Return to 'redo bird' page

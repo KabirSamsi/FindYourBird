@@ -1,0 +1,18 @@
+extends layout.pug
+block content
+  form(action="/leave_upd" method="post")
+    button(type="submit" id="leave") Return to 'edit bird' page
+    br
+    br
+  div.container
+    h2(id="heading") #{name}
+    img(id="image" src=image)
+    p(id="description") #{description}
+    p
+      strong(id="appearance") Appearance: #{appearance}
+    p
+      strong(id="diet") Diet: #{diet}
+    p
+      strong(id="habitat") Habitat: #{habitat}
+    p
+      strong(id="range") Range: #{range}

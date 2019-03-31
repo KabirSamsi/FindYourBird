@@ -14,3 +14,9 @@ block content
         strong(id="habitat") Habitat: #{habitat}
       p
         strong(id="range") Range: #{range}
+    else
+      p
+        strong Sorry, '#{not_there}' is not in our database. Create a profile for it!
+      form(action="/view" method="post")
+        button(type="submit" id="view" name="button" value="View All Birds") View All Birds
+        button(type="submit" id="add_bird" name="button" value="Add Bird With This Name") Add Bird With This Name
