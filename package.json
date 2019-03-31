@@ -13,6 +13,12 @@
   "keywords": [
     "none"
   ],
+
+  "dependencies": {
+    "express":"*",
+    "body-parser":"*",
+    "cookie-parser":"*"
+  },
   "author": "Kabir Samsi",
   "license": "ISC"
 }
