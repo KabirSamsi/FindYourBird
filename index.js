@@ -92,11 +92,13 @@ app.get('/sub', (req, res) => {
 
 app.post('/sub', (req, res) => {
   let repeat = false
+  let repeated_bird
   if (req.body.button == "Submit Bird") {
     for (let bird of birds) {
       if (bird.name.toLowerCase() == req.body.name.toLowerCase()) {
         repeat = true
         res.cookie('repeated_bird', bird)
+         repeated_bird = bird
       }
     }
     if (repeat == false) {
@@ -107,7 +109,7 @@ app.post('/sub', (req, res) => {
       submitted = true
 
     } else if (repeat == true) {
-      res.render('redo')
+      res.render('redo', {bird: repeated_bird.name})
     }
 
   } else if (req.body.button == "Preview Bird"){
