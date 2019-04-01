@@ -4,7 +4,8 @@
   "description": "A server to provide info about birds",
   "main": "app.js",
   "scripts": {
-    "test": "hello"
+    "test": "hello",
+    "start": "index.js"
   },
   "repository": {
     "type": "git",
