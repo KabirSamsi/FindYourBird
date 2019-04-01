@@ -46,11 +46,11 @@ let updated = false
 
 //Server routes
 app.get('/', (req, res) => {
-  res.render('home')
+  res.render('/homepage')
 })
 
 app.get('/search', (req, res) => {
-  res.render('home')
+  res.render('homepage')
 })
 
 app.post('/search', (req, res) => {
@@ -154,7 +154,7 @@ app.post('/upd', (req, res) => {
     for (let bird of birds) {
       if (bird.name == req.body.name) {
         birds.splice(birds.indexOf(bird), 1)
-        res.render('home')
+        res.render('homepage')
         break
       }
     }
@@ -204,7 +204,7 @@ app.get('/leave_view', (req, res) => {
 })
 
 app.post('/leave_view', (req, res) => {
-  res.render('home')
+  res.render('homepage')
 })
 
 app.get('/redo', (req, res) => {
