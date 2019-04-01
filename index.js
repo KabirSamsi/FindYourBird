@@ -5,7 +5,7 @@ const cookie_parser = require('cookie-parser')
 
 const app = express()
 
-app.set('views', __dirname + '/app/views');
+app.set('views', __dirname + '/views');
 app.set('view engine', "pug")
 app.use(body_parser.urlencoded({extended: false}))
 app.use(cookie_parser())
