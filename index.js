@@ -55,6 +55,7 @@ app.get('/search', (req, res) => {
 
 app.post('/search', (req, res) => {
   submitted = false
+  updated = false
   let bird;
   let found = false
   res.cookie('og_search', req.body.name)
@@ -76,11 +77,13 @@ app.post('/search', (req, res) => {
 app.post('/add', (req, res) => {
   res.render('add', {name: "", image: "", description: "", appearance: "", diet: "", habitat: "", range: ""})
   submitted = false
+  updated = false
 })
 
 app.get('/add', (req, res) => {
   res.render('add', {name: "", image: "", description: "", appearance: "", diet: "", habitat: "", range: ""})
   submitted = false
+  updated = false
 })
 
 app.get('/sub', (req, res) => {
@@ -119,12 +122,15 @@ app.post('/sub', (req, res) => {
 
 app.get('/edit', (req, res) => {
   res.redirect("/")
+  updated = false
 })
 
 app.post('/edit', (req, res) => {
   let bird_cookie;
   if (submitted) {
     bird_cookie = req.cookies.new_bird
+  } else if (updated) {
+    bird_cookie = req.cookies.updated_bird
   } else {
     bird_cookie = req.cookies.bird_search
   }
@@ -145,6 +151,7 @@ app.post('/upd', (req, res) => {
           bird[attr] = req.body[attr]
         }
         let new_bird = bird
+        res.cookie('updated_bird', new_bird)
         res.render('index', {name: new_bird.name, image: new_bird.img, range: new_bird.range, appearance: new_bird.appearance, diet: new_bird.diet, habitat: new_bird.habitat, description: new_bird.description})
         break
       }
