@@ -46,7 +46,7 @@ let updated = false
 
 //Server routes
 app.get('/', (req, res) => {
-  res.render('/homepage')
+  res.render('homepage')
 })
 
 app.get('/search', (req, res) => {
