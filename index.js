@@ -47,7 +47,6 @@ let updated = false
 //Server routes
 app.get('/', (req, res) => {
   res.render('homepage')
-  console.dir(__dirname)
 })
 
 app.get('/search', (req, res) => {
