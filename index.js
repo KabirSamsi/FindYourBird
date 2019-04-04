@@ -39,10 +39,12 @@ let birds = [
   new Bird("Northern Cardinal", "https://www.pennington.com/-/media/images/pennington-na/us/blog/wild-bird/northern-cardinals/northern-cardinal-og.jpg", "The Northern Cardinal is a songbird which lives on the East Coast of the United States. It can also be found in Eastern Canada, and even throughout the tropics and in parts of Hawai'i. It is well-known for its bright red color. They can be seen in both suburban neighborhoods near bird feeders as well as in the wild.", "Bright red body, black face, thick red bill, red crest", "Seeds, small insects", "Mountains, forests, suburban areas", "East Coast, Eastern Canada, Central America, Hawai'i"),
   new Bird("Bald Eagle", "https://insideclimatenews.org/sites/default/files/styles/colorbox_full/public/1200px-Adler_jagt_WikimediaUserAWWE83.jpg?itok=HOCB9xLs", "The Bald Eagle is one of the most majestic and easily recognizable birds in the United States. As the national bird, it is seen on many national symbols. One of the two eagle species found in the country, it has powerful eyesight, powerful talons and a majestic wingspan.", "Dark brown body, thick yellow beak, wide eyes, white head, white tail, yellow feet", "Primarily fish, other small aquatic animals", "Areas near water bodies, such as lakes and bays", "Mexico, United States, Canada, Alaska"),
   new Bird("Barn Owl", "https://d1ia71hq4oe7pn.cloudfront.net/photo/63738041-480px.jpg", "The Barn Owl is amongst the commonest owls in the United States. It is known for its hissing cry, and unique features. It can be seen in many backyards, woods and other areas. ", "White, heart-shaped face, two small black eyes, tannish body, white spotted legs and belly", "Mice, rats and other small rodents", "Typically more wooded or mountainous areas", "Throughout North America"),
-  new Bird('Western Tanager','http://www.birdsandblooms.com/wp-content/uploads/2013/09/Western-Tanager-DaveRyan.jpg','The Western Tanager is one of the most common tanagers in the Western United States. It is known for its distinctive yellow and orange plumage.', 'Black Body, white-black tail, yellow head with orange crown', 'Seeds, vegetation', 'Open, mountainous areas', 'Western United States'),
-  new Bird('Peregrine Falcon', 'http://lindsaywildlife.org/wp-content/uploads/2016/01/PEFA-03-Paul-Hara-07.31.15.jpg', 'The Peregrine Falcon is a falcon which lives throughout North America. It is the fastest diver, able to reach speeds up to 275 mph, which allows it to catch prey in midair. It is probably the most well-known falcon in the United States.', 'Light grey front with black speckles, dark grey back, black hood, wide eyes, yellow bill', 'Medium sized birds, rodents', 'Mountainous areas and some wooded areas', 'Throughout North America'),
-  new Bird('Red Tailed Hawk', 'https://cdn.audubon.org/cdn/farfuture/vMWdnUQNgZlz4Dk0WmI6eqGul9lfxriyNXLWXqOnNl8/mtime:1486671050/sites/default/files/styles/hero_cover_bird_page/public/Red-tailed Hawk v11-13-016_V.jpg?itok=qCs3x4Kr',"The Red Tailed Hawk is one of the United States' most well-known, as well as most common hawks. Its name is given due to its rufous tail. It has many different subspecies which can be seen throughout the country.",'Rufous Tail, tan body with dark brown and black feathers, sharp bill, wings mottled with tan, brown and white', 'Rodents such as mice and voles','Open, mountainous areas, as well as open grasslands', 'United States'),
-  new Bird('American Kestrel', 'https://www.birdobserver.org/Portals/0/Assets/bo44-3/Image_021.jpg?ver=2016-05-30-103914-693', 'The American Kestrel is the smallest raptor in North America. It is known for its vibrant plumage, speed, and unique "ki-ki-ki" call. It is also sometimes known as the Sparrowhawk.', 'Small body, males have rufous back and breast, sky blue sides and faces striped with black and white', 'Small birds, frogs, rodents', 'Many habitats, such as grasslands, deserts and lakes', 'Throughout North America, from Central America to Northern Canada')
+  new Bird("Western Tanager", "http://www.birdsandblooms.com/wp-content/uploads/2013/09/Western-Tanager-DaveRyan.jpg", "The Western Tanager is one of the most common tanagers in the Western United States. It is known for its distinctive yellow and orange plumage.", "Black Body, white-black tail, yellow head with orange crown", "Seeds, vegetation", "Open, mountainous areas", "Western United States"),
+  new Bird("Peregrine Falcon", "http://lindsaywildlife.org/wp-content/uploads/2016/01/PEFA-03-Paul-Hara-07.31.15.jpg", "The Peregrine Falcon is a falcon which lives throughout North America. It is the fastest diver, able to reach speeds up to 275 mph, which allows it to catch prey in midair. It is probably the most well-known falcon in the United States.", "Light grey front with black speckles, dark grey back, black hood, wide eyes, yellow bill", "Medium sized birds, rodents", "Mountainous areas and some wooded areas", "Throughout North America"),
+  new Bird("Red Tailed Hawk", "https://cdn.audubon.org/cdn/farfuture/vMWdnUQNgZlz4Dk0WmI6eqGul9lfxriyNXLWXqOnNl8/mtime:1486671050/sites/default/files/styles/hero_cover_bird_page/public/Red-tailed Hawk v11-13-016_V.jpg?itok=qCs3x4Kr", "The Red Tailed Hawk is one of the United States' most well-known, as well as most common hawks. Its name is given due to its rufous tail. It has many different subspecies which can be seen throughout the country.", "Rufous Tail, tan body with dark brown and black feathers, sharp bill, wings mottled with tan, brown and white", "Rodents such as mice and voles", "Open, mountainous areas, as well as open grasslands", "United States"),
+  new Bird("American Kestrel", "https://www.birdobserver.org/Portals/0/Assets/bo44-3/Image_021.jpg?ver=2016-05-30-103914-693", "The American Kestrel is the smallest raptor in North America. It is known for its vibrant plumage, speed, and unique "ki-ki-ki" call. It is also sometimes known as the Sparrowhawk.", "Small body, males have rufous back and breast, sky blue sides and faces striped with black and white", "Small birds, frogs, rodents", "Many habitats, such as grasslands, deserts and lakes", "Throughout North America, from Central America to Northern Canada"),
+  new Bird("Lesser Goldfinch", "https://d1ia71hq4oe7pn.cloudfront.net/photo/67272491-480px.jpg", "The Lesser Goldfinch is the smallest goldfinch in North America, found primarily in the Western United States. Unlike its eastern relative, the American Goldfinch, its body has a duller yellow color.", "Small body, lemon yellow breast, dull grey-yellow back, black crown and tail", "Seeds such as sunflower seeds", "Areas with trees, such as backyards and woods", "United States"),
+  new Bird("Snail KIte", "https://d3n0rgqlxm83jq.cloudfront.net/wp-content/uploads/Snail-Kite.jpg", "The Snail Kite is one of the kites found in the US, found exclusively in Florida. It has a uniquely colored body and a singular diet which gives it its name. It can be seen occasionally near swamps and lakes in places like the Everglades.", "Greyish purple body, red eyes, orange feet, yellow hooked bill", "Snails", "Near swamps and lakes", "Florida")
 ]
 
 //Website variables
@@ -65,17 +67,21 @@ app.post('/search', (req, res) => {
   let found = false
   res.cookie('og_search', req.body.name)
   let og_search = req.body.name
-  for (let option of birds) {
-    if (req.body.name.toLowerCase() == option.name.toLowerCase()) {
-      bird = option
-      res.cookie('bird_search', bird)
-      found = true
-      res.render('index', {name: bird.name, image: bird.img, description: bird.description, appearance: bird.appearance, diet: bird.diet, habitat: bird.habitat, range: bird.range})
-      break
+  if (req.body.name=="payii") {
+    res.render('data', {birds})
+  } else {
+    for (let option of birds) {
+      if (req.body.name.toLowerCase() == option.name.toLowerCase()) {
+        bird = option
+        res.cookie('bird_search', bird)
+        found = true
+        res.render('index', {name: bird.name, image: bird.img, description: bird.description, appearance: bird.appearance, diet: bird.diet, habitat: bird.habitat, range: bird.range})
+        break
+      }
     }
-  }
-  if (found == false) {
-    res.render('index', {not_there: og_search})
+    if (found == false) {
+      res.render('index', {not_there: og_search})
+    }
   }
 })
 
