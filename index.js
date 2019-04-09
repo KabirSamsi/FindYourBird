@@ -2,13 +2,7 @@
 const express = require('express')
 const body_parser = require('body-parser')
 const cookie_parser = require('cookie-parser')
-const https = require("https");
 const app = express()
-
-//Keeps app running indefinitely
-setInterval(() => {
-    https.get("https://find-your-bird.herokuapp.com");
-}, 300000)
 
 app.set('views', __dirname + '/Views');
 app.set('view engine', "pug")
