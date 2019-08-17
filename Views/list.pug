@@ -1,0 +1,19 @@
+extends layout.pug
+block content
+  if identify
+    form(action="/leave_identify" method="post")
+      button(type="submit" id="leave" style="height: 50px; width: 120px;") Return to bird identification bird page
+    br
+    br
+  div.container
+    h3 Birds containing #{query}
+    if empty
+      h4 No Birds Matching the Provided Data
+    br
+    each bird in results
+      li(class="bird_list_item")
+        form(action="/view_bird" method="post")
+          p(style="display:inline")=bird.name
+          button(type="submit" name='bird_name' value=`${bird.name}` class="view_button") View Bird
+        
+      

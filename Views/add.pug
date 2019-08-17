@@ -9,9 +9,33 @@ block content
       input(class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="app" value=`${appearance}`)
       input(class="inpt" type='text' id="diet" placeholder='Enter bird diet' name="diet" value=`${diet}`)
       input(class="inpt" type='text' id="habitat" placeholder='Enter bird habitat' name="habitat" value=`${habitat}`)
-      textarea(class="inpt" id="description" rows='7' cols='25' type='text' placeholder='Enter bird description' name="description") #{description}
+      textarea(class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description") #{description}
+      br
+      strong Size
+      br
+      br
+      select(name="size")
+        optgroup(label="Bird Size")
+        option(name="size" value=`${bird_size}`)=bird_size
+        each size in sizes
+          option(name="size" value=`${size}`)=size
+      br
+      p
+        strong Habitat
+      if on
+        each habitat in [['Urban/Suburban Areas', 0], ['Grasslands', 1], ['Tundra', 2], ['Forests', 3], ['Mountains', 4], ['Coastal Areas', 5], ['Deserts', 6], ['Swamps and Marshes', 7], ['Freshwater Bodies', 8]]
+          if habitat[0] == on[0] || habitat[0] == on[1] || habitat[0] == on[2] || habitat[0] == on[3] || habitat[0] == on[4] || habitat[0] == on[5] || habitat[0] == on[6] || habitat[0] == on[7] || habitat[0] == on[8]
+            input(value="on" id=`checkbox${habitat[1]}` type="checkbox" name=`${habitat[0]}` checked="true")
+          else
+            input(id=`checkbox${habitat[1]}` type="checkbox" name=`${habitat[0]}` value="on")
+          label(for=`checkbox${habitat[1]}`)=habitat[0]
+          br
+      else
+        each habitat in [['Urban/Suburban Areas', 0], ['Grasslands', 1], ['Tundra', 2], ['Forests', 3], ['Mountains', 4], ['Coastal Areas', 5], ['Deserts', 6], ['Swamps and Marshes', 7], ['Freshwater Bodies', 8]]
+          input(id=`checkbox${habitat[1]}` type="checkbox" name=`${habitat[0]}`)
+          label(for=`checkbox${habitat[1]}`)=habitat[0]
+          br
       br
       button(type="submit" id="prev" name="button" value="Preview Bird") Preview Bird
       button(type="submit" id='submt' align="center" name="button" value="Submit Bird") Submit Bird
       button(type="submit" id="view" name="button" value="View All Birds") View All Birds
-      

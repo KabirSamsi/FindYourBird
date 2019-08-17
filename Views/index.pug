@@ -5,6 +5,8 @@ block content
     if name
       h2(id="heading") #{name}
       img(id="image" src=image)
+      form(action = "/gallery" method="post")
+        button(id="gallery_button") Gallery
       p(id="description") #{description}
       p
         strong(id="appearance") Appearance: #{appearance}
@@ -14,7 +16,12 @@ block content
         strong(id="habitat") Habitat: #{habitat}
       p
         strong(id="range") Range: #{range}
-    else
+        
+    else if too_short
+      p
+        strong Sorry, '#{too_short}' is too short a search word. Searches must be 4 characters long or more.
+      
+    else if not_there
       p
         strong Sorry, '#{not_there}' is not in our database. Create a profile for it!
       form(action="/view" method="post")

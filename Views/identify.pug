@@ -1,0 +1,48 @@
+extends layout.pug
+block content
+  div.identify
+    form(action="/clear" method="post")
+      br
+      button(type="submit" style="background-color: red; color: white; height: 20px; width: 100px; border-color: black;") Clear Data
+    form(action="/primary" method="post")
+      br
+      p
+        strong Primary Color
+      each color in ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'black', 'white', 'grey', 'brown']
+        button(type="submit" name='color' value=`${color}` style=`background-color: ${color}; margin-right: 20px; height: 20px; width: 20px; border-color: black;`)
+    br
+    
+    form(action="/secondary" method="post")
+      br
+      p
+        strong Secondary Color
+      each color in ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'black', 'white', 'grey', 'brown']
+        button(type="submit" name="color" value = `${color}` style=`background-color: ${color}; margin-right: 20px; height: 20px; width: 20px; border-color: black;`)
+    br
+        
+    form(action="/size" method="post")
+      br
+      p
+        strong Size
+      select(name="size")
+        optgroup(label="Bird Size")
+        each size in ['Songbird Size', 'Crow Size', 'Raptor Size', 'Waterfowl Size', 'Turkey Size or Larger']
+          option(name="size" value=`${size}`)=size
+      br
+      button(type="submit" style="background-color: aqua; margin-top: 10px;") Select Size
+        
+    form(action="/habitat" method="post")
+      br
+      p
+        strong Habitat
+      each habitat in [['Urban/Suburban Areas', 0], ['Grasslands', 1], ['Tundra', 2], ['Forests', 3], ['Mountains', 4], ['Coastal Areas', 5], ['Deserts', 6], ['Swamps and Marshes', 7], ['Freshwater Bodies', 8]]
+        input(id=`checkbox${habitat[1]}` type="checkbox" name=`${habitat[0]}`)
+        label(for=`checkbox${habitat[1]}`)=habitat[0]
+        br
+      button(type="submit" style="background-color: orange; margin-top: 10px; height: 25px; border-color: black;") Select Habitats
+      br
+      br
+
+    form(action="/submit" method="post")
+      button(type="submit" style="background-color: darkgreen; color: white; height: 25px; width: 90px;") Identify Bird
+    

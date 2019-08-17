@@ -2,5 +2,5 @@ extends layout.pug
 block content
   div.container
     each bird in birds
-      span new Bird("#{bird.name}", "#{bird.img}", "#{bird.description}", "#{bird.appearance}", "#{bird.diet}", "#{bird.habitat}", "#{bird.range}"),
+      span(id="lol") new Bird("#{bird.name}", "#{bird.img}", "#{bird.description}", "#{bird.appearance}", "#{bird.diet}", "#{bird.habitat}", "#{bird.range}"),
       br
