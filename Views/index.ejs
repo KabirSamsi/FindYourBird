@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Find Your Bird</title>
+    <link rel=stylesheet href="/style.css" />
+  </head>
+  <body id="body">
+    <h1>Find Your Bird!</h1>
+
+    <form action="/search" method="post">
+      <input type='text' placeholder='Search a bird name' id="search" name="name" />
+      <br />
+      <button type="submit" id="go" name="button" value="Search"> Search</button>
+
+      <%if (bird_info) {%>
+          <button type="submit" name="button" id="edit" value="Edit">Edit Bird</button>
+      <% }%>
+
+      <button id="identify-button"><a href="/identify" id="identify">Identify</a></button>
+      <button id="add-new-button"><a href="/add" id="add-new">Add New</a></button>
+    </form>
+    <br /><br />
+
+    <%if (bird_info) {%>
+      <div class="container">
+        <h2><%=bird.name%></h2>
+        <img src="<%=bird.img%>"/>
+
+        <form action="/gallery" method="post">
+          <button type="submit" id="gallery">Gallery</button>
+        </form>
+
+        <p><%=bird.description%></p>
+        <p><strong>Appearance: </strong><%=bird.appearance%></p>
+        <p><strong>Diet: </strong><%=bird.diet.join(', ')%></p>
+        <p><strong>Habitat: </strong><%=bird.habitat.join(', ')%></p>
+        <p><strong>Range: </strong><%=bird.range%></p>
+
+
+      </div>
+    <% }%>
+
+  </body>
+</html>

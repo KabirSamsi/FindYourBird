@@ -1,9 +1,0 @@
-extends layout.pug 
-block content
-  div.container
-    br
-    p
-      strong Sorry, #{bird} has already been added.
-      form(action="/redo" method="post")
-        button(type="submit" id="view" name="button" value="View All Birds") View All Birds
-        button(type="submit" id="add_bird" name="button" value="Edit This Bird's Profile") Edit This Bird's Profile

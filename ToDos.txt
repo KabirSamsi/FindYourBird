@@ -1,3 +1,0 @@
-Fix Gallery Problem
-Start Blog
-Figure out how to create database (SQL or other such language)

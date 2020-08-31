@@ -1,0 +1,256 @@
+#body {
+  background-image: url("https://raw.githubusercontent.com/KabirSamsi/Birds/master/background.jpg");
+  background-size: cover;
+  text-align: center;
+}
+
+.container, .gallery_div, .identify {
+  margin-top: 10px;
+  vertical-align: middle;
+  border-style: solid;
+  background-color: lightgrey;
+  border-width: 2px;
+  border-color: black;
+  width: 450px;
+  height: 620px;
+  text-align: center;
+  margin: auto;
+  padding: 20px;
+}
+
+.gallery_div {
+  margin-left: 20px;
+  width: 1330px;
+  height: 550px;
+}
+
+#new_image_input {
+  width: 300px;
+  height: 30px;
+  text-align: center;
+  border-color: black;
+}
+
+#search{
+  width: 200px;
+  horizontal-align: left;
+  margin-left: 20px;
+  height: 30px;
+  margin-bottom: 10px;
+  border-color: black;
+}
+
+#go, #add, #edit, #submit_new_image, #delete_image{
+  /* width: 70px; */
+  /* height: 36px; */
+  background-color: lightgreen;
+  text-align: center;
+  border-color: black;
+}
+
+#go, #add, #edit {
+    /* margin-right: 5px; */
+}
+
+#add {
+  background-color: lightblue;
+}
+
+#edit {
+  background-color: yellow;
+}
+h1 {
+  font-size: 50px;
+}
+
+.inpt {
+  margin-bottom: 20px;
+}
+
+textarea {
+  margin-right: 10px;
+}
+
+#upd, #submt, #rm, #view, #view_upd, #preview, #prev {
+  background-color: green;
+  width: 80px;
+  color: white;
+  align: center;
+  margin-right: 30px;
+  border-color: black
+}
+
+#view, #view_upd, #submt, #upd, #preview, #add_bird, #prev{
+  background-color: orange;
+  color: black;
+  width: 120px;
+  height: 28px;
+}
+
+#submt, #upd, #rm, #leave, #preview, #prev {
+  color: black;
+  background-color: green;
+  width: 100px;
+  margin-right: 10px;
+  margin-left: 35px;
+}
+
+#upd {
+  background-color: aqua;
+  color: black;
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+#rm {
+  background-color: red;
+  color: white;
+  height: 28px;
+  margin-left: 10px;
+}
+
+#leave {
+  height: 40px;
+  width: 110px;
+  border-color: black;
+  background-color: darkblue;
+  color: white;
+}
+
+#preview, #prev {
+  background-color: purple;
+  color: white;
+  margin-left: 0px;
+  margin-right: 10px;
+}
+
+#prev {
+  margin-left: 30px;
+}
+
+#submt {
+  margin-left: 0px;
+}
+
+#view_upd {
+  width: 100px;
+  margin-left: 20px;
+}
+
+#add_bird {
+  width: 150px;
+  height: 30px;
+  border-color: black;
+  background-color: lightblue;
+}
+
+input {
+  margin-right: 10px;
+}
+
+img {
+  width: 400px;
+  height: 250px;
+}
+
+form {
+  display: inline;
+  text-align: center;
+}
+
+li {
+  font-size: 13px;
+  text-align: left;
+}
+
+#lol {
+  font-size: 0.1px;
+}
+
+#image {
+  padding-bottom: 4px;
+}
+
+#gallery {
+  width: 80px;
+  background-color: darkorange;
+  border-color: black;
+  height: 20px;
+}
+
+.gall_img {
+  width: 200px;
+  height: 130px;
+  padding-right: 20px;
+  padding-top: 20px;
+}
+
+#submit_new_image, #delete_image {
+  width: 100px;
+  height: 30px;
+  margin-right: 20px;
+}
+
+#new_image_input {
+  height: 25px;
+}
+
+#submit_new_image {
+  background-color: lightblue;
+}
+
+#delete_image {
+  background-color: red;
+  color: white;
+}
+
+#identify{
+  color: black;
+  text-decoration: none;
+}
+
+#identify-button {
+  background-color: pink;
+  border-color: black;
+}
+
+.view_button {
+  margin-left: 20px;
+  background-color: red;
+  color: white;
+  height: 20px;
+  border-color: black;
+}
+
+.bird_list_item {
+  margin-bottom: 10px;
+}
+
+#add-new {
+  color: white;
+  text-decoration: none;
+}
+
+#add-new-button {
+  background-color: red;
+  border-color: black;
+}
+
+#size-list {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#habitat-list-head {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#description {
+  font-family: Arial;
+}
+
+.container {
+  background-color: yellow;
+  padding-bottom: 20px;
+}
