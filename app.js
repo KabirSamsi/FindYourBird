@@ -7,10 +7,15 @@ const mongoose = require('mongoose');
 const http = require('http').createServer(app);
 
 //Connect to database
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBird?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
-.then(connect => console.log('connected to mongodb..'))
-.catch(e => console.log('could not connect to mongodb', e))
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBird?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+})
 
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose is connected!')
+})
 
 app.use(express.static(__dirname + "/public"));
 app.set('views', __dirname + '/Views');
