@@ -1,0 +1,19 @@
+{
+  "name": "find-your-bird",
+  "version": "1.0.0",
+  "description": "A website where users can learn about bird species, create and edit bird profiles, and identify birds they have seen.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/find-your-bird.git"
+  },
+  "keywords": [
+    "example",
+    "heroku"
+  ],
+  "author": "Kabir Samsi",
+  "license": "ISC"
+}
