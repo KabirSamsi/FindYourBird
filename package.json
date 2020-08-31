@@ -4,7 +4,7 @@
   "description": "A website where users can learn about bird species, create and edit bird profiles, and identify birds they have seen.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "Hello World"
   },
   "repository": {
     "type": "git",
