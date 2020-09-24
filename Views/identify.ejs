@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Find Your Bird</title>
+    <link rel=stylesheet href="stylesheets/style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  </head>
+  <body id="body">
+
+    <%- include('partials/searchbar') %>
+    
+    <div class="container mt-5" id="bird-container">
+      <div class="row">
+        <div class="col-12">
+          <div class="jumbotron text-center" >
+
+            <h2>Bird Info</h2>
+            <form action="/identify" method="post">
+              <br />
+              <h4>Main Colors</h4>
+              <% for (let color of colors) { %>
+                <input style="background: <%=color%>;" type="checkbox" name="color" value="<%=color%>" />
+                <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
+                  <label style="background-color: <%=color%>; color: black; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                <% } else {%>
+                  <label style="background-color: <%=color%>; color: white; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                <% } %>
+              <% } %>
+              <br />
+              <h4>Size</h4>
+              <select required class="form-control" id="size-list" name="size">
+                <option disabled>Select A Bird Size</option>
+                <% for (let size of sizes) {%>
+                  <option name="size"><%=size%></option>
+                <%}%>
+              </select>
+
+              <br />
+              <h4 id="habitat-list-head">Where Did You See It?</h4>
+                <% for (let hab of habitats) {%>
+                  <input required type="radio" name="habitat" value=<%=habitats.indexOf(hab)%> />
+                  <label for=<%=habitats.indexOf(hab)%> class="label"><%=hab%></label>
+                  <br />
+                <%}%>
+
+              <br />
+              <button class="btn btn-primary" type="submit" id='submt' name="button">Identify Bird</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

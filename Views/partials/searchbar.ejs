@@ -1,0 +1,28 @@
+<div class="container mt-5" id="heading-container">
+  <div class="row">
+    <div class="col-12">
+      <div class="jumbotron text-center">
+
+        <h1 id="header">Find Your Bird</h1>
+
+        <form action="/search" method="post">
+          <div style="display: inline-block;">
+            <div class="input-group mb-3" style="width: 100%;">
+              <input name="name" type="text" class="form-control" placeholder='Search a bird name' aria-label="Default" id="search"/>
+            </div>
+          </div>
+
+          <br />
+          <button class="btn btn-primary" type="submit" id="go" name="button"> Search</button>
+
+          <%if (birdInfo) {%>
+              <a class="btn btn-warning" href="/edit/<%=bird._id%>" id="edit" value="Edit">Edit Bird</a>
+          <% }%>
+
+          <a class="btn btn-info" href="/identify" id="identify">Identify</a>
+          <a class="btn btn-success" href="/new" id="add-new">Add New</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

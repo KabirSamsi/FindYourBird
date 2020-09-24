@@ -3,56 +3,72 @@
   <head>
     <meta charset="utf-8">
     <title>Find Your Bird</title>
-    <link rel=stylesheet href="/style.css" />
+    <link rel=stylesheet href="stylesheets/style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
   <body id="body">
-    <h1>Find Your Bird!</h1>
 
-    <form action="/search" method="post">
-      <input type='text' placeholder='Search a bird name' id="search" name="name" />
-      <br />
-      <button type="submit" id="go" name="button" value="Search"> Search</button>
-      <button id="identify-button"><a href="/identify" id="identify">Identify</a></button>
-      <button id="add-new-button"><a href="/add" id="add-new">Add New</a></button>
-    </form>
-    <br /><br />
-    <div class="container">
-      <form action="/edit_bird" method="post">
-        <br />
-        <input minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" value="<%=bird.name%>"/>
-        <input class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" value="<%=bird.img%>"/>
-        <input maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" value="<%=bird.range%>"/>
-        <input maxlength="100" class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" value="<%=bird.appearance%>"/>
-        <input maxlength="60" class="inpt" type='text' id="diet" placeholder='Enter bird diet, separated by commas' name="diet"  value="<%=bird.diet%>"/>
-        <input maxlength="40" class="inpt" type='text' id="habitat" placeholder="Enter bird's main colors, separated by commas" name="colors"  value="<%=bird.colors.join(',')%>"/>
-        <textarea maxlength="330" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description"><%=bird.description%></textarea>
-        <br />
-        <strong>Size</strong>
-        <br />
-        <select id="size-list" name="size">
-          <% for (let size of sizes) {%>
-            <% if (size == bird.size) {%>
-              <option name="size" selected><%=size%></option>
-            <%} else {%>
-              <option name="size"><%=size%></option>
-            <%}%>
-          <%}%>
-        </select>
-        <br />
-        <strong id="habitat-list-head">Habitat</strong>
-        <br />
-          <% for (let hab of habitats) {%>
-            <% if (bird.habitat.includes(hab)) {%>
-              <input checked name="<%=habitats.indexOf(hab)%>" type="checkbox"/>
-            <%} else {%>
-              <input type="checkbox" name="<%=habitats.indexOf(hab)%>"/>
-            <%}%>
-            <label for=<%=habitats.indexOf(hab)%> class="label"><%=hab%></label>
-            <br />
-          <%}%>
-        <br />
-        <button type="submit" id='submt' align="center" name="button">Submit Bird</button>
-      </form>
+    <%- include('partials/searchbar') %>
+
+    <div class="container mt-5" id="bird-container">
+      <div class="row">
+        <div class="col-12">
+          <div class="jumbotron text-center" >
+            <h2>Bird Info</h2>
+            <a class="btn btn-warning" href="/<%=bird._id%>" id="edit" value="Edit">Back to Bird</a>
+            <form action="/update/<%=bird._id%>?_method=put" method="post">
+              <br />
+              <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" value="<%=bird.name%>"/><br />
+              <input class="form-control" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" value="<%=bird.img%>"/><br />
+              <input class="form-control" maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" value="<%=bird.range%>"/><br />
+              <input class="form-control" maxlength="100" class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" value="<%=bird.appearance%>"/><br />
+              <input class="form-control" maxlength="60" class="inpt" type='text' id="diet" placeholder='Enter bird diet, separated by commas' name="diet"  value="<%=bird.diet.join(', ')%>"/><br />
+              <textarea class="form-control" maxlength="330" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description"><%=bird.description%></textarea>
+              <br />
+
+              <h4>Main Colors</h4>
+              <% for (let color of colors) { %>
+                <% if (bird.colors.includes(color)) { %>
+                  <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" checked/>
+                <% } else { %>
+                  <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" />
+                <% } %>
+                <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
+                  <label style="background-color: <%=color%>; color: black; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                <% } else {%>
+                  <label style="background-color: <%=color%>; color: white; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                <% } %>
+              <% } %>
+              <br />
+
+              <h4>Size</h4>
+              <select class="form-control" id="size-list" name="size">
+                <option disabled>Select A Bird Size</option>
+                  <% for (let size of sizes) {%>
+                    <% if (size == bird.size) {%>
+                      <option name="size" selected><%=size%></option>
+                    <%} else {%>
+                      <option name="size"><%=size%></option>
+                    <%}%>
+                  <%}%>
+              </select>
+              <br />
+              <h4 id="habitat-list-head">Habitat</h4>
+                <% for (let hab of habitats) {%>
+                  <% if (bird.habitat.includes(hab)) {%>
+                    <input checked name="<%=hab%>" type="checkbox"/>
+                  <%} else {%>
+                    <input type="checkbox" name="<%=hab%>"/>
+                  <%}%>
+                  <label for=<%=habitats.indexOf(hab)%> class="label"><%=hab%></label>
+                  <br />
+                <%}%>
+              <br />
+              <button class="btn btn-primary" type="submit" id='submt' align="center" name="button">Submit Bird</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

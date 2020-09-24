@@ -1,0 +1,35 @@
+#body {
+  background-image: url("../media/background.jpg");
+  background-size: cover;
+  text-align: center;
+}
+
+#header {
+  padding-bottom: 20px;
+}
+
+#identify, #add-new {
+  color: white;
+}
+
+#gallery {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#bird-container, #heading-container {
+  width: 50%;
+}
+
+#heading-container {
+  margin-bottom: 0%;
+}
+
+#search {
+  width: 50%;
+}
+
+#bird-image {
+  width: 60%;
+  height: 60%;
+}
