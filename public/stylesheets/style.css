@@ -6,6 +6,8 @@
 
 #header {
   padding-bottom: 20px;
+  font-style: italic;
+  font-family: Georgia;
 }
 
 #identify, #add-new {
