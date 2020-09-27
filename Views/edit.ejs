@@ -26,7 +26,7 @@
               <textarea class="form-control" maxlength="330" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description"><%=bird.description%></textarea>
               <br />
 
-              <h4>Main Colors</h4>
+              <h4>Colors</h4>
               <% for (let color of colors) { %>
                 <% if (bird.colors.includes(color)) { %>
                   <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" checked/>
@@ -42,8 +42,8 @@
               <br />
 
               <h4>Size</h4>
-              <select class="form-control" id="size-list" name="size">
-                <option disabled>Select A Bird Size</option>
+              <select required class="form-control" id="size-list" name="size">
+                <option disabled selected value="">Select A Bird Size</option>
                   <% for (let size of sizes) {%>
                     <% if (size == bird.size) {%>
                       <option name="size" selected><%=size%></option>
@@ -64,7 +64,7 @@
                   <br />
                 <%}%>
               <br />
-              <button class="btn btn-primary" type="submit" id='submt' align="center" name="button">Submit Bird</button>
+              <button class="btn btn-primary" type="submit" id='submt' align="center" name="button">Update Bird</button>
             </form>
           </div>
         </div>

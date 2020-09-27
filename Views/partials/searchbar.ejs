@@ -8,7 +8,7 @@
         <form action="/search" method="post">
           <div style="display: inline-block;">
             <div class="input-group mb-3" style="width: 100%;">
-              <input name="name" type="text" class="form-control" placeholder='Search a bird name' aria-label="Default" id="search"/>
+              <input minlength="3" name="name" type="text" class="form-control" placeholder='Search a bird name' aria-label="Default" id="search"/>
             </div>
           </div>
 
@@ -21,6 +21,7 @@
 
           <a class="btn btn-info" href="/identify" id="identify">Identify</a>
           <a class="btn btn-success" href="/new" id="add-new">Add New</a>
+          <a class="btn btn-secondary" href="/contact" id="add-new">Contact</a>
         </form>
       </div>
     </div>

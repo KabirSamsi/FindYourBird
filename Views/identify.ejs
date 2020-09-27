@@ -18,10 +18,9 @@
             <h1>Identify Bird</h1>
             <br />
             <form action="/identify" method="post">
-              <br />
-              <h4>Main Colors</h4>
+              <h4>Colors</h4>
               <% for (let color of colors) { %>
-                <input style="background: <%=color%>;" type="checkbox" name="color" value="<%=color%>" />
+                <input style="background: <%=color%>;" type="checkbox" name="color" value="<%=color%>"/>
                 <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
                   <label style="background-color: <%=color%>; color: black; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
                 <% } else {%>
@@ -31,7 +30,7 @@
               <br />
               <h4>Size</h4>
               <select required class="form-control" id="size-list" name="size">
-                <option disabled>Select A Bird Size</option>
+                <option disabled selected value="">Select A Bird Size</option>
                 <% for (let size of sizes) {%>
                   <option name="size"><%=size%></option>
                 <%}%>

@@ -36,21 +36,46 @@ app.get('/', (req, res) => { //Render index page
 
 app.post('/search', (req, res) => { //Route to search for a bird
 
-  Bird.findOne({lowerName: req.body.name.toLowerCase()}, (err, foundBird) => {
-    if (err) {
-      res.redirect('/');
+  let results = []
+  let searchRegExp = new RegExp(req.body.name, 'g');
 
-    } else if (!foundBird) {
-      res.render('index', {birdInfo: false, search: req.body.name});
+  Bird.find({}, (err, foundBirds) => {
+    if (err || !foundBirds) {
+      req.flash('error', "Unable to access database")
+      res.redirect('back')
 
     } else {
-      res.redirect(`/${foundBird._id}`);
+
+      let dataString; //temporary data string for each bird
+
+      for (let bird of foundBirds) {
+        dataString = ""
+        for (let attr of ['name', 'lowerName', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+          if (typeof bird[attr] == 'string') {
+            dataString += bird[attr].toLowerCase()
+            dataString += " "
+
+          } else {
+            for (let i of bird[attr]) {
+              dataString += i.toLowerCase()
+              dataString += " "
+            }
+          }
+        }
+
+        if( ((dataString.match(searchRegExp) || []).length) > 0) {
+          results.push(bird)
+        }
+      }
+
+      res.render('results', {birdInfo: false, birds: results, from: 'search'})
     }
+
   })
 })
 
 app.get('/new', (req, res) => { //Route to access 'new bird' page
-  res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size', 'Songbird Size', 'Large Songbird Size', 'Crow Size', 'Raptor Size', 'Waterfowl Size', 'Turkey Size'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'] });
+  res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'] });
 })
 
 app.post('/', (req, res) => { //Create new bird
@@ -82,7 +107,7 @@ app.get('/edit/:id', (req, res) => { //Edit bird info
     if (err || !foundBird) {
       console.log(err);
     } else {
-      res.render('edit', {birdInfo: false, bird: foundBird, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size', 'Songbird Size', 'Large Songbird Size', 'Crow Size', 'Raptor Size', 'Waterfowl Size', 'Turkey Size'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']});
+      res.render('edit', {birdInfo: false, bird: foundBird, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']});
     }
   })
 })
@@ -116,7 +141,7 @@ app.put('/update/:id', (req, res) => { //Update bird info
 app.get('/identify', (req, res) => { //Route to render bird identification page
   let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
   let habitats = ['Urban/Suburban Area', 'Grassland', 'Tundra', 'Forest', 'Mountain', 'Coastal Area', 'Desert', 'Swamp/Marsh', 'Freshwater Body'];
-  let sizes = ['Hummingbird Size', 'Songbird Size', 'Large Songbird Size', 'Crow Size', 'Raptor Size', 'Waterfowl Size', 'Turkey Size'];
+  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches) (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'];
   res.render('identify', {birdInfo: false, colors, habitats, sizes});
 })
 
@@ -133,22 +158,34 @@ app.post('/identify', (req, res) => { //Calculate birds which match identificati
       }
     }
 
-    for (let bird of birdList) {
-      let include = true; //Whether to be included or not
-      for (let color of req.body.color) {
-        if (!bird.colors.includes(color)) {
-          include = false;
-          break;
+    if (req.body.color) { //A color is selected
+      for (let bird of birdList) {
+        let include = true; //Whether to be included or not
+
+        if (typeof req.body.color == 'string') {
+          if (!bird.colors.includes(req.body.color)) {
+            include = false;
+          }
+
+        } else {
+          for (let color of req.body.color) {
+            if (!bird.colors.includes(color)) {
+              include = false;
+              break;
+            }
+          }
+        }
+
+        if (include) {
+          final.push(bird);
         }
       }
 
-      if (include) {
-        final.push(bird);
-      }
-    }
+      res.render('results', {birdInfo: false, birds: final, from: 'data'});
 
-    console.log(final);
-    res.render('results', {birdInfo: false, birds: final});
+    } else { //No color is selected
+        res.render('results', {birdInfo: false, birds: birdList, from: 'data'});
+    }
   })
 })
 
@@ -197,6 +234,9 @@ app.delete('/gallery/:id', (req, res) => { //Removes photo from the gallery of a
   })
 })
 
+app.get('/contact', (req, res) => { //Contact info
+  res.render('contact', {birdInfo: false})
+})
 
 app.get('/:id', (req, res) => { //Display bird based on ID
   Bird.findById(req.params.id, (err, foundBird) => {
