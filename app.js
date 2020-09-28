@@ -2,12 +2,14 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const fs = require('fs')
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-const http = require('http').createServer(app);
 var session = require('express-session');
 const flash = require('connect-flash');
+
+const http = require('http').createServer(app);
 
 //Schema
 const Bird = require('./models/bird');
@@ -27,11 +29,15 @@ mongoose.connection.on('connected', () => {
 app.use(express.static(__dirname + "/public")); //Sets all styles/js/media to /public
 app.set('views', __dirname + '/Views'); //Sets all html(EJS) files to Views
 app.set('view engine', "ejs") //Sets view engine to EJS
-app.use(bodyParser.urlencoded({extended: false})) //Allows us to read info from EJS pages
+app.use(bodyParser.urlencoded({extended: true})) //Allows us to read info from EJS pages
+app.use(cookieParser()) //Read cookie data
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
 
-app.use(session({ cookie: { maxAge: 60000 },
-  secret: 'birds',
+app.use(session({ //Set up req flashing
+  cookie: {
+    maxAge: 86400000
+  },
+  secret: "Birding is awesome",
   resave: false,
   saveUninitialized: false
 }));
@@ -423,3 +429,5 @@ let port = process.env.PORT || 3000;
 http.listen(port,process.env.IP, () => {
 	console.log(":: App listening on port " + port + " ::");
 });
+
+module.exports = app;

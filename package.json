@@ -28,6 +28,7 @@
     "http": "0.0.1-security",
     "method-override": "^3.0.0",
     "mongodb": "^3.6.0",
-    "mongoose": "^5.10.2"
+    "mongoose": "^5.10.2",
+    "req-flash": "0.0.3"
   }
 }
