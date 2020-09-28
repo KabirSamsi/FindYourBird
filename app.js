@@ -36,12 +36,13 @@ app.get('/', (req, res) => { //Render index page
 
 app.post('/search', (req, res) => { //Route to search for a bird
 
-  let results = []
-  let searchRegExp = new RegExp(req.body.name, 'g');
+  let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
+  let results = []; //Hold info about each matching bird
+  let searchRegExp = new RegExp(req.body.name, 'g'); //Stores user search as a regular expression
 
   Bird.find({}, (err, foundBirds) => {
     if (err || !foundBirds) {
-      req.flash('error', "Unable to access database")
+      console.log(err)
       res.redirect('back')
 
     } else {
@@ -51,11 +52,11 @@ app.post('/search', (req, res) => { //Route to search for a bird
       for (let bird of foundBirds) {
         dataString = ""
         for (let attr of ['name', 'lowerName', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
-          if (typeof bird[attr] == 'string') {
+          if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
             dataString += bird[attr].toLowerCase()
             dataString += " "
 
-          } else {
+          } else { //If the attribute is an array, add each value inside the array to the data String
             for (let i of bird[attr]) {
               dataString += i.toLowerCase()
               dataString += " "
@@ -63,12 +64,35 @@ app.post('/search', (req, res) => { //Route to search for a bird
           }
         }
 
-        if( ((dataString.match(searchRegExp) || []).length) > 0) {
-          results.push(bird)
+        if( ((dataString.match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
+          resultMatrix.push([bird, ((dataString.match(searchRegExp) || []).length)])
         }
       }
 
-      res.render('results', {birdInfo: false, birds: results, from: 'search'})
+      //Sort matrix through iteration (by having the most occurring search)
+
+      let temp;
+      for (let i = 0; i < resultMatrix.length; i +=1) {
+        for (let j = 0; j < resultMatrix.length - 1; j += 1) {
+          if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
+            temp = resultMatrix[j+1]
+            resultMatrix[j+1] = resultMatrix[j]
+            resultMatrix[j] = temp
+          }
+        }
+      }
+
+      for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
+        results.push(r[0])
+      }
+
+      if (results.length > 5) { //If more than ten results, only output the most frequently occuring values
+        res.render('results', {birdInfo: false, birds: results.reverse().slice(0, 5), from: 'search'})
+
+      } else { //Otherwise, output all of them
+        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
+      }
+
     }
 
   })
