@@ -5,6 +5,13 @@
     <title>FindYourBird</title>
     <link rel=stylesheet href="stylesheets/style.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel='shortcut icon' type='image/x-icon' href='/media/favicon3.ico' />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/dccc745c41.js" crossorigin="anonymous"></script>
   </head>
   <body id="body">
 
@@ -18,12 +25,13 @@
             <h2>Bird Info</h2>
             <form action="/" method="post">
               <br />
-              <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" /><br />
-              <input class="form-control" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" /><br />
-              <input class="form-control" maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" /><br />
-              <input class="form-control" maxlength="100" class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" /><br />
-              <input class="form-control" maxlength="60" class="inpt" type='text' id="diet" placeholder='Enter bird diet, separated by commas' name="diet" /><br />
-              <textarea maxlength="330" class="form-control" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description")></textarea>
+              <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" required/><br />
+              <input class="form-control" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" required/><br />
+              <input class="form-control" maxlength="30" class="inpt" type="text" placeholder="Enter citation for bird image" id="cit" name="citation" required/><br />
+              <input class="form-control" maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" required/><br />
+              <input class="form-control" maxlength="100" class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" required/><br />
+              <input class="form-control" maxlength="60" class="inpt" type='text' id="diet" placeholder='Enter bird diet, separated by commas' name="diet" required/><br />
+              <textarea maxlength="330" class="form-control" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description" required></textarea>
 
               <br />
 
@@ -55,7 +63,7 @@
                 <%}%>
 
               <br />
-              <button class="btn btn-primary" type="submit" id='submt' name="button">Submit Bird</button>
+              <button class="btn btn-primary" type="submit" id='submt' name="button"><i class="fas fa-plus-circle"></i> Submit Bird</button>
             </form>
           </div>
         </div>

@@ -35,3 +35,7 @@
   width: 60%;
   height: 60%;
 }
+
+.edit-bird-form {
+  display: inline;
+}

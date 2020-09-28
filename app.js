@@ -6,6 +6,8 @@ const fs = require('fs')
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const http = require('http').createServer(app);
+var session = require('express-session');
+const flash = require('connect-flash');
 
 //Schema
 const Bird = require('./models/bird');
@@ -28,6 +30,21 @@ app.set('view engine', "ejs") //Sets view engine to EJS
 app.use(bodyParser.urlencoded({extended: false})) //Allows us to read info from EJS pages
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
 
+app.use(session({ cookie: { maxAge: 60000 },
+  secret: 'birds',
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(flash()); //Flash messages to the screen
+
+app.use(function(req, res, next) { //Setting up flash messages
+  // flash message stuff
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  next();
+});
+
 
 //ROUTES
 app.get('/', (req, res) => { //Render index page
@@ -38,7 +55,7 @@ app.post('/search', (req, res) => { //Route to search for a bird
 
   let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
   let results = []; //Hold info about each matching bird
-  let searchRegExp = new RegExp(req.body.name, 'g'); //Stores user search as a regular expression
+  let searchRegExp = new RegExp(req.body.name.toLowerCase(), 'g'); //Stores user search as a regular expression
 
   Bird.find({}, (err, foundBirds) => {
     if (err || !foundBirds) {
@@ -51,7 +68,7 @@ app.post('/search', (req, res) => { //Route to search for a bird
 
       for (let bird of foundBirds) {
         dataString = ""
-        for (let attr of ['name', 'lowerName', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+        for (let attr of ['name', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
           if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
             dataString += bird[attr].toLowerCase()
             dataString += " "
@@ -86,15 +103,9 @@ app.post('/search', (req, res) => { //Route to search for a bird
         results.push(r[0])
       }
 
-      if (results.length > 5) { //If more than ten results, only output the most frequently occuring values
-        res.render('results', {birdInfo: false, birds: results.reverse().slice(0, 5), from: 'search'})
-
-      } else { //Otherwise, output all of them
-        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
-      }
+      res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
 
     }
-
   })
 })
 
@@ -120,7 +131,7 @@ app.post('/', (req, res) => { //Create new bird
     }
   }
 
-  Bird.create({name: req.body.name, lowerName: req.body.name.toLowerCase(), img: req.body.img, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img], size: req.body.size, colors: finalColors}, (err, bird) => {
+  Bird.create({name: req.body.name, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors}, (err, bird) => {
     bird.save();
     res.render('index', {birdInfo: true, bird});
   })
@@ -156,16 +167,52 @@ app.put('/update/:id', (req, res) => { //Update bird info
   }
 
 
-  Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, img: req.body.img, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img], size: req.body.size, colors: finalColors}, (err, bird) => {
-    bird.save();
-    res.redirect(`/${bird._id}`);
+  Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
+
+    if (err) {
+      console.log(err)
+      res.redirect('back')
+
+    } else {
+
+      let overlap = false
+
+      for (let img of bird.gallery) {
+        if (img[0] == req.body.img && img[0] != bird.img) {
+          overlap = true;
+          break;
+        }
+      }
+
+      if (overlap) {
+        console.log("Image already in gallery. Either delete image from gallery or choose a different image")
+        res.redirect('back')
+
+
+      } else {
+        bird.img = [req.body.img, req.body.citation]
+        let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
+        tempGall.push([req.body.img, req.body.citation])
+
+
+        for (let img of bird.gallery.slice(1)) {
+          tempGall.push(img)
+        }
+
+        console.log(tempGall)
+        bird.gallery = tempGall
+        bird.save();
+        res.redirect(`/${bird._id}`);
+
+      }
+    }
   })
 })
 
 app.get('/identify', (req, res) => { //Route to render bird identification page
   let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
   let habitats = ['Urban/Suburban Area', 'Grassland', 'Tundra', 'Forest', 'Mountain', 'Coastal Area', 'Desert', 'Swamp/Marsh', 'Freshwater Body'];
-  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches) (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'];
+  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'];
   res.render('identify', {birdInfo: false, colors, habitats, sizes});
 })
 
@@ -238,8 +285,23 @@ app.put('/gallery/:id', (req, res) => { //Adds photo to a gallery of a particula
       res.redirect('back')
 
     } else {
-      foundBird.gallery.push(req.body.newImg);
-      foundBird.save();
+      let overlap = false
+
+      for (let img of foundBird.gallery) {
+        if (img[0] == req.body.newImg) {
+          overlap = true;
+          break;
+        }
+      }
+
+      if (!overlap) {
+        foundBird.gallery.push([req.body.newImg, req.body.citation]);
+        foundBird.save();
+
+      } else {
+        console.log("Image already in gallery")
+      }
+
       res.redirect(`/gallery/${foundBird._id}`);
     }
   })
@@ -251,7 +313,13 @@ app.delete('/gallery/:id', (req, res) => { //Removes photo from the gallery of a
       console.log(err);
 
     } else {
-      foundBird.gallery.splice(foundBird.gallery.indexOf(req.query.url, 1));
+
+      for (let i = 0; i < foundBird.gallery.length; i += 1) {
+        if (foundBird.gallery[i][0] == req.query.url) {
+          foundBird.gallery.splice(i, 1)
+        }
+      }
+
       foundBird.save();
       res.redirect(`/gallery/${foundBird._id}`);
     }
@@ -269,6 +337,81 @@ app.get('/:id', (req, res) => { //Display bird based on ID
 
     } else {
       res.render('index', {birdInfo: true, bird: foundBird});
+    }
+  })
+})
+
+app.put('/:id', (req, res) => { //Update bird info
+  let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
+
+  let finalHabitats = [];
+  for (let habitat of habitats) {
+    if (req.body[habitat] == 'on') {
+      finalHabitats.push(habitat);
+    }
+  }
+
+  let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
+
+  let finalColors = [];
+  for (let color of colors) {
+    if (req.body[color] == 'on') {
+      finalColors.push(color);
+    }
+  }
+
+
+  Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
+
+    if (err) {
+      console.log(err)
+      res.redirect('back')
+
+    } else {
+
+      let overlap = false
+
+      for (let img of bird.gallery) {
+        if (img[0] == req.body.img && img[0] != bird.img[0]) {
+          overlap = true;
+          break;
+        }
+      }
+
+      if (overlap) {
+        console.log("Image already in gallery. Either delete image from gallery or choose a different image")
+        res.redirect('back')
+
+
+      } else {
+        bird.img = [req.body.img, req.body.citation]
+        let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
+        tempGall.push([req.body.img, req.body.citation])
+
+
+        for (let img of bird.gallery.slice(1)) {
+          tempGall.push(img)
+        }
+
+        bird.gallery = tempGall
+        bird.save();
+        console.log("bird updated!")
+        req.flash('success', "Bird updated!")
+        res.redirect(`/${bird._id}`);
+
+      }
+    }
+  })
+})
+
+app.delete('/:id', (req, res) => {
+  Bird.findByIdAndDelete(req.params.id, (err, bird) => {
+    if (err || !bird) {
+      console.log(err)
+      res.redirect('back')
+
+    } else {
+      res.redirect('/')
     }
   })
 })

@@ -1,0 +1,2 @@
+Enable 'citation' as index 1 of all images (gallery and img)
+Remove 'lowerName' property
