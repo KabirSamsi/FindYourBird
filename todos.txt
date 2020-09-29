@@ -1,2 +1,2 @@
-Enable 'citation' as index 1 of all images (gallery and img)
-Remove 'lowerName' property
+- Update search algorithm by splitting search into separate words, and running each one
+
