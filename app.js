@@ -59,60 +59,66 @@ app.get('/', (req, res) => { //Render index page
 
 app.post('/search', (req, res) => { //Route to search for a bird
 
-  let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
-  let results = []; //Hold info about each matching bird
-  let searchRegExp = new RegExp(req.body.name.toLowerCase(), 'g'); //Stores user search as a regular expression
+  if (req.body.name != '') {
 
-  Bird.find({}, (err, foundBirds) => {
-    if (err || !foundBirds) {
-      console.log(err)
-      res.redirect('back')
+    let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
+    let results = []; //Hold info about each matching bird
+    let searchRegExp = new RegExp(req.body.name.toLowerCase(), 'g'); //Stores user search as a regular expression
 
-    } else {
+    Bird.find({}, (err, foundBirds) => {
+      if (err || !foundBirds) {
+        console.log(err)
+        res.redirect('back')
 
-      let dataString; //temporary data string for each bird
+      } else {
 
-      for (let bird of foundBirds) {
-        dataString = ""
-        for (let attr of ['name', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
-          if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
-            dataString += bird[attr].toLowerCase()
-            dataString += " "
+        let dataString; //temporary data string for each bird
 
-          } else { //If the attribute is an array, add each value inside the array to the data String
-            for (let i of bird[attr]) {
-              dataString += i.toLowerCase()
+        for (let bird of foundBirds) {
+          dataString = ""
+          for (let attr of ['name', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+            if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
+              dataString += bird[attr].toLowerCase()
               dataString += " "
+
+            } else { //If the attribute is an array, add each value inside the array to the data String
+              for (let i of bird[attr]) {
+                dataString += i.toLowerCase()
+                dataString += " "
+              }
+            }
+          }
+
+          if( ((dataString.match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
+            resultMatrix.push([bird, ((dataString.match(searchRegExp) || []).length)])
+          }
+        }
+
+        //Sort matrix through iteration (by having the most occurring search)
+
+        let temp;
+        for (let i = 0; i < resultMatrix.length; i +=1) {
+          for (let j = 0; j < resultMatrix.length - 1; j += 1) {
+            if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
+              temp = resultMatrix[j+1]
+              resultMatrix[j+1] = resultMatrix[j]
+              resultMatrix[j] = temp
             }
           }
         }
 
-        if( ((dataString.match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
-          resultMatrix.push([bird, ((dataString.match(searchRegExp) || []).length)])
+        for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
+          results.push(r[0])
         }
+
+        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
+
       }
+    })
 
-      //Sort matrix through iteration (by having the most occurring search)
-
-      let temp;
-      for (let i = 0; i < resultMatrix.length; i +=1) {
-        for (let j = 0; j < resultMatrix.length - 1; j += 1) {
-          if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
-            temp = resultMatrix[j+1]
-            resultMatrix[j+1] = resultMatrix[j]
-            resultMatrix[j] = temp
-          }
-        }
-      }
-
-      for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
-        results.push(r[0])
-      }
-
-      res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
-
-    }
-  })
+  } else {
+    res.render('results', {birdInfo: false, birds: [], from: 'search'})
+  }
 })
 
 app.get('/new', (req, res) => { //Route to access 'new bird' page
