@@ -63,7 +63,7 @@ app.post('/search', (req, res) => { //Route to search for a bird
 
     let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
     let results = []; //Hold info about each matching bird
-    let searchRegExp = new RegExp(req.body.name.toLowerCase(), 'g'); //Stores user search as a regular expression
+    let searchRegExp = new RegExp(req.body.name.toLowerCase().replace(/[^a-zA-z0-9]/g, ""), 'g'); //Stores user search as a regular expression
 
     Bird.find({}, (err, foundBirds) => {
       if (err || !foundBirds) {
@@ -89,8 +89,8 @@ app.post('/search', (req, res) => { //Route to search for a bird
             }
           }
 
-          if( ((dataString.match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
-            resultMatrix.push([bird, ((dataString.match(searchRegExp) || []).length)])
+          if( ((dataString.replace(/[^a-zA-z0-9]/g, "").match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
+            resultMatrix.push([bird, ((dataString.replace(/[^a-zA-z0-9]/g, "").match(searchRegExp) || []).length)])
           }
         }
 
