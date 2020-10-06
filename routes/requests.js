@@ -24,7 +24,7 @@ app.get('/newBirdList', (req, res) => {
       res.redirect('back')
 
     } else {
-      res.render('requests', {requests, birdInfo: false, action: 'new'})
+      res.render('../Views/requests', {requests, birdInfo: false, action: 'new'})
     }
   })
 })
@@ -37,7 +37,7 @@ app.get('/newBirdShow/:id', (req, res) => {
       req.flash('error', "Unable to access request")
       res.redirect('back')
     } else {
-      res.render('showRequest', {birdInfo: true, bird: request, action: 'new'})
+      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'new'})
     }
   })
 })
@@ -92,7 +92,7 @@ app.get('/deleteBirdList', (req, res) => {
       res.redirect('back')
 
     } else {
-      res.render('requests', {requests, birdInfo: false, action: 'delete'})
+      res.render('../Views/requests', {requests, birdInfo: false, action: 'delete'})
     }
   })
 })
@@ -106,7 +106,7 @@ app.get('/deleteBirdShow/:id', (req, res) => {
       res.redirect('back')
 
     } else {
-      res.render('showRequest', {birdInfo: true, bird: request, action: 'delete'})
+      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'delete'})
     }
   })
 })
@@ -159,7 +159,7 @@ app.get('/updateBirdList', (req, res) => {
       res.redirect('back')
 
     } else {
-      res.render('requests', {requests, birdInfo: false, action: 'update'})
+      res.render('../Views/requests', {requests, birdInfo: false, action: 'update'})
     }
   })
 })
@@ -173,7 +173,7 @@ app.get('/updateBirdShow', (req, res) => {
       res.redirect('back')
 
     } else {
-      res.render('showRequest', {birdInfo: true, bird: request, action: 'update'})
+      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'update'})
     }
   })
 })
