@@ -1,6 +1,21 @@
 <div class="container mt-5" id="heading-container">
   <div class="row">
     <div class="col-12">
+
+      <div class="mb-3" id="flash">
+        <% if(error && error.length > 0) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if(success && success.length > 0) { %>
+            <div class="alert alert-success">
+                <%= success %>
+            </div>
+        <% } %>
+    </div>
+
       <div class="jumbotron text-center">
 
         <h1 id="header">FindYourBird</h1>
@@ -20,7 +35,8 @@
           <br />
 
           <%if (birdInfo) {%>
-              <a class="btn btn-warning" href="/edit/<%=bird._id%>" id="edit" value="Edit"><i class="fas fa-edit"></i> Edit Bird</a>
+            <button class="btn btn-warning"><i class="fas fa-edit"></i> Edit Bird</button>
+              <!-- <a class="btn btn-warning" href="/edit/<%=bird._id%>" id="edit" value="Edit"><i class="fas fa-edit"></i> Edit Bird</a> -->
           <% }%>
 
           <a class="btn btn-info" href="/identify" id="identify"><i class="fas fa-binoculars"></i> Identify</a>

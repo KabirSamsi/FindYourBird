@@ -1,21 +1,31 @@
 //Libraries
 const express = require('express')
 const app = express()
+const mongoose = require('mongoose');
+const flash = require('connect-flash');
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const passport = require('passport')
+const LocalStrategy = require('passport-local');
 const fs = require('fs')
-const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-var session = require('express-session');
-const flash = require('connect-flash');
+const session = require('express-session');
 
 const http = require('http').createServer(app);
 
 //Schema
 const Bird = require('./models/bird');
+const AddRequest = require('./models/addRequest');
+const DeleteRequest = require('./models/deleteRequest');
+const UpdateRequest = require('./models/updateRequest');
+
+//Access gallery and Request Routes
+const galleryRoutes = require('./routes/gallery');
+const requestRoutes = require('./routes/requests');
 
 //Connect to database
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBird?retryWrites=true&w=majority', {
+// mongoose.connect('mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false
@@ -32,6 +42,7 @@ app.set('view engine', "ejs") //Sets view engine to EJS
 app.use(bodyParser.urlencoded({extended: true})) //Allows us to read info from EJS pages
 app.use(cookieParser()) //Read cookie data
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
+app.use(flash()); //Flash messages to the screen
 
 app.use(session({ //Set up req flashing
   cookie: {
@@ -42,8 +53,6 @@ app.use(session({ //Set up req flashing
   saveUninitialized: false
 }));
 
-app.use(flash()); //Flash messages to the screen
-
 app.use(function(req, res, next) { //Setting up flash messages
   // flash message stuff
   res.locals.error = req.flash('error');
@@ -51,6 +60,10 @@ app.use(function(req, res, next) { //Setting up flash messages
   next();
 });
 
+//Initalize Gallery and Request Routes
+
+app.use('/gallery', galleryRoutes);
+app.use('/request', requestRoutes);
 
 //ROUTES
 app.get('/', (req, res) => { //Render index page
@@ -68,6 +81,7 @@ app.post('/search', (req, res) => { //Route to search for a bird
     Bird.find({}, (err, foundBirds) => {
       if (err || !foundBirds) {
         console.log(err)
+        req.flash('error', "Unable to access database");
         res.redirect('back')
 
       } else {
@@ -122,30 +136,71 @@ app.post('/search', (req, res) => { //Route to search for a bird
 })
 
 app.get('/new', (req, res) => { //Route to access 'new bird' page
+  // res.redirect('/')
   res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'] });
 })
 
 app.post('/', (req, res) => { //Create new bird
 
-  let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']; //Find out list of habitats based on what was checked
-  let finalHabitats = [];
-  for (let habitat of habitats) {
-    if (req.body[habitat] == 'on') {
-      finalHabitats.push(habitat);
-    }
-  }
+  (async() => {
 
-  let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
-  let finalColors = [];
-  for (let color of colors) {
-    if (req.body[color] == 'on') {
-      finalColors.push(color);
+    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']; //Find out list of habitats based on what was checked
+    let finalHabitats = [];
+    for (let habitat of habitats) {
+      if (req.body[habitat] == 'on') {
+        finalHabitats.push(habitat);
+      }
     }
-  }
 
-  Bird.create({name: req.body.name, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors}, (err, bird) => {
-    bird.save();
-    res.render('index', {birdInfo: true, bird});
+    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
+    let finalColors = [];
+    for (let color of colors) {
+      if (req.body[color] == 'on') {
+        finalColors.push(color);
+      }
+    }
+
+    const requestOverlap = await AddRequest.find({name: req.body.name});
+    if (!requestOverlap) {
+      console.log('error');
+      req.flash('error', "Unable to access database");
+      return res.redirect('back');
+    }
+
+    if (requestOverlap.length > 0) {
+      req.flash('error', "Bird is already a pending add request")
+      return res.redirect('back')
+
+    }
+
+    const birdOverlap = await Bird.find({name: req.body.name});
+
+    if (!birdOverlap) {
+      console.log('error')
+      req.flash('error', "Error accessing list of birds");
+      return res.redirect('back')
+    }
+
+    if (birdOverlap.length > 0) {
+      req.flash('error', "Bird is already in database")
+      return res.redirect('back')
+    }
+
+    const request = await AddRequest.create({name: req.body.name, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
+
+    if (!request) {
+      console.log('error')
+      req.flash('error', "Error accessing your request");
+      return res.redirect('back')
+    }
+
+    req.flash('success', "Thank you for adding a bird! Please wait a few days for the admin to verify and accept bird")
+    res.redirect('/');
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access database");
+    res.redirect('back')
   })
 })
 
@@ -153,70 +208,9 @@ app.get('/edit/:id', (req, res) => { //Edit bird info
   Bird.findById(req.params.id, (err, foundBird) => {
     if (err || !foundBird) {
       console.log(err);
+      req.flash('error', "Unable to find bird");
     } else {
       res.render('edit', {birdInfo: false, bird: foundBird, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Waterfowl Size (2-4 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']});
-    }
-  })
-})
-
-app.put('/update/:id', (req, res) => { //Update bird info
-  let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
-
-  let finalHabitats = [];
-  for (let habitat of habitats) {
-    if (req.body[habitat] == 'on') {
-      finalHabitats.push(habitat);
-    }
-  }
-
-  let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
-
-  let finalColors = [];
-  for (let color of colors) {
-    if (req.body[color] == 'on') {
-      finalColors.push(color);
-    }
-  }
-
-
-  Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
-
-    if (err) {
-      console.log(err)
-      res.redirect('back')
-
-    } else {
-
-      let overlap = false
-
-      for (let img of bird.gallery) {
-        if (img[0] == req.body.img && img[0] != bird.img) {
-          overlap = true;
-          break;
-        }
-      }
-
-      if (overlap) {
-        console.log("Image already in gallery. Either delete image from gallery or choose a different image")
-        res.redirect('back')
-
-
-      } else {
-        bird.img = [req.body.img, req.body.citation]
-        let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
-        tempGall.push([req.body.img, req.body.citation])
-
-
-        for (let img of bird.gallery.slice(1)) {
-          tempGall.push(img)
-        }
-
-        console.log(tempGall)
-        bird.gallery = tempGall
-        bird.save();
-        res.redirect(`/${bird._id}`);
-
-      }
     }
   })
 })
@@ -272,72 +266,6 @@ app.post('/identify', (req, res) => { //Calculate birds which match identificati
   })
 })
 
-app.get('/gallery', (req, res) => {
-  res.redirect('back')
-})
-
-app.get('/gallery/:id', (req, res) => { //Display gallery of a particular bird
-  Bird.findById(req.params.id, (err, foundBird) => {
-    if (err || !foundBird) {
-      console.log(err);
-
-    } else {
-      res.render('gallery', {birdInfo: true, bird: foundBird});
-    }
-  })
-})
-
-app.put('/gallery/:id', (req, res) => { //Adds photo to a gallery of a particular bird
-  Bird.findById(req.params.id, (err, foundBird) => {
-    if (err || !foundBird) {
-      console.log(err);
-
-    } else if (foundBird.gallery.includes(req.body.newImg)) {
-      console.log('Image already in gallery');
-      res.redirect('back')
-
-    } else {
-      let overlap = false
-
-      for (let img of foundBird.gallery) {
-        if (img[0] == req.body.newImg) {
-          overlap = true;
-          break;
-        }
-      }
-
-      if (!overlap) {
-        foundBird.gallery.push([req.body.newImg, req.body.citation]);
-        foundBird.save();
-
-      } else {
-        console.log("Image already in gallery")
-      }
-
-      res.redirect(`/gallery/${foundBird._id}`);
-    }
-  })
-})
-
-app.delete('/gallery/:id', (req, res) => { //Removes photo from the gallery of a particular bird
-  Bird.findById(req.params.id, (err, foundBird) => {
-    if (err || !foundBird) {
-      console.log(err);
-
-    } else {
-
-      for (let i = 0; i < foundBird.gallery.length; i += 1) {
-        if (foundBird.gallery[i][0] == req.query.url) {
-          foundBird.gallery.splice(i, 1)
-        }
-      }
-
-      foundBird.save();
-      res.redirect(`/gallery/${foundBird._id}`);
-    }
-  })
-})
-
 app.get('/contact', (req, res) => { //Contact info
   res.render('contact', {birdInfo: false})
 })
@@ -345,6 +273,7 @@ app.get('/contact', (req, res) => { //Contact info
 app.get('/:id', (req, res) => { //Display bird based on ID
   Bird.findById(req.params.id, (err, foundBird) => {
     if (err || !foundBird) {
+      req.flash('error', "Unable to find bird");
       console.log(err);
 
     } else {
@@ -375,8 +304,9 @@ app.put('/:id', (req, res) => { //Update bird info
 
   Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
 
-    if (err) {
+    if (err || !bird) {
       console.log(err)
+      req.flash('error', "Unable to find bird");
       res.redirect('back')
 
     } else {
@@ -391,7 +321,7 @@ app.put('/:id', (req, res) => { //Update bird info
       }
 
       if (overlap) {
-        console.log("Image already in gallery. Either delete image from gallery or choose a different image")
+        req.flash('error', "Image already in gallery. Either delete image from gallery or choose a different image")
         res.redirect('back')
 
 
@@ -408,7 +338,7 @@ app.put('/:id', (req, res) => { //Update bird info
         bird.gallery = tempGall
         bird.save();
         console.log("bird updated!")
-        req.flash('success', "Bird updated!")
+        req.flash('success', "Bird Updated! Please wait a few days for the admin to verify and accept changes")
         res.redirect(`/${bird._id}`);
 
       }
@@ -417,17 +347,30 @@ app.put('/:id', (req, res) => { //Update bird info
 })
 
 app.delete('/:id', (req, res) => {
-  Bird.findByIdAndDelete(req.params.id, (err, bird) => {
-    if (err || !bird) {
-      console.log(err)
-      res.redirect('back')
-
-    } else {
-      res.redirect('/')
+  (async() => {
+    const bird = await Bird.findById(req.params.id);
+    if (!bird)  {
+      console.log('error')
+      req.flash('error', "Unable to access bird")
+      return res.redirect('back')
     }
-  })
-})
 
+    const request = await DeleteRequest.create({bird: bird});
+
+    if (!request) {
+      console.log('error')
+      req.flash('error', "Unable to access bird")
+      return res.redirect('back')
+    }
+
+    res.redirect('/')
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access bird")
+    res.redirect('back')
+  });
+})
 
 //Runs server
 let port = process.env.PORT || 3000;

@@ -34,7 +34,7 @@
                 <br />
                 <input required maxlength="50" type="text" class="form-control" name="citation" placeholder="Enter image citation" aria-label="Recipient's username" aria-describedby="basic-addon2">
                 <br />
-                <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Image to Gallery</button>
+                <button disabled type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Image to Gallery</button>
 
               </form>
 
@@ -52,7 +52,7 @@
 
                   <% if (img[0] != bird.img[0]) { %>
                     <form action="/gallery/<%=bird._id%>?url=<%=img[0]%>&_method=delete" method="post">
-                      <button type="submit" class="btn btn-danger" style="margin: 5px; width: 30vw;"><i class="fas fa-trash"></i> Remove from Gallery</a>
+                      <button disabled type="submit" class="btn btn-danger" style="margin: 5px; width: 30vw;"><i class="fas fa-trash"></i> Remove from Gallery</a>
                     </form>
                   <% } else { %>
                       <span class="btn btn-warning disabled" style="margin: 5px; width: 30vw;"><i class="fas fa-exclamation-triangle"></i> Original Image Cannot Be Removed</a>
