@@ -20,8 +20,8 @@ const DeleteRequest = require('./models/deleteRequest');
 const UpdateRequest = require('./models/updateRequest');
 
 //Access gallery and Request Routes
-const galleryRoutes = require('./routes/gallery');
-const requestRoutes = require('./routes/requests');
+const galleryRoutes = require('./gallery');
+const requestRoutes = require('./requests');
 
 //Connect to database
 // mongoose.connect('mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {

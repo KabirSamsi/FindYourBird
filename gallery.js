@@ -9,8 +9,8 @@ var session = require('express-session');
 const flash = require('connect-flash');
 
 //SCHEMA
-const Bird = require('../models/bird');
-const UpdateRequest = require('../models/updateRequest')
+const Bird = require('./models/bird');
+const UpdateRequest = require('./models/updateRequest')
 
 app.get('/', (req, res) => {
   res.redirect('back')

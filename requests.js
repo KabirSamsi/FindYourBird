@@ -9,10 +9,10 @@ var session = require('express-session');
 const flash = require('connect-flash');
 
 //SCHEMA
-const Bird = require('../models/bird');
-const AddRequest = require('../models/addRequest');
-const DeleteRequest = require('../models/deleteRequest');
-const UpdateRequest = require('../models/updateRequest');
+const Bird = require('./models/bird');
+const AddRequest = require('./models/addRequest');
+const DeleteRequest = require('./models/deleteRequest');
+const UpdateRequest = require('./models/updateRequest');
 
 //ROUTES
 app.get('/newBirdList', (req, res) => {
