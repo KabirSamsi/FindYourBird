@@ -133,8 +133,6 @@ app.get('/acceptUpdate/:id', (req, res) => {
       return res.redirect('back');
     }
 
-    console.log(bird)
-
     const requests = await UpdateRequest.find({}).populate('bird');
 
     for (let request of requests) {

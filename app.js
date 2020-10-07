@@ -309,20 +309,12 @@ app.put('/:id', (req, res) => { //Update bird info
       return res.redirect('back')
     }
 
-    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors, version: 'bird'});
+    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
 
     if (!request) {
       req.flash('error', "Unable to create update request");
       return res.redirect('back');
     }
-    // Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
-
-      // if (err || !bird) {
-      //   console.log(err)
-      //   req.flash('error', "Unable to find bird");
-      //   res.redirect('back')
-      //
-      // } else {
 
     let overlap = false
 
