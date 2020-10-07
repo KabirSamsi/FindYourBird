@@ -5,8 +5,6 @@ var updateRequestSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Bird"
   },
-
-  name: String,
   img: [{type: String}],
   description: String,
   appearance: String,

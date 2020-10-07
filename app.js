@@ -283,66 +283,83 @@ app.get('/:id', (req, res) => { //Display bird based on ID
 })
 
 app.put('/:id', (req, res) => { //Update bird info
-  let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
 
-  let finalHabitats = [];
-  for (let habitat of habitats) {
-    if (req.body[habitat] == 'on') {
-      finalHabitats.push(habitat);
+  (async() => {
+    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
+
+    let finalHabitats = [];
+    for (let habitat of habitats) {
+      if (req.body[habitat] == 'on') {
+        finalHabitats.push(habitat);
+      }
     }
-  }
 
-  let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
+    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
 
-  let finalColors = [];
-  for (let color of colors) {
-    if (req.body[color] == 'on') {
-      finalColors.push(color);
+    let finalColors = [];
+    for (let color of colors) {
+      if (req.body[color] == 'on') {
+        finalColors.push(color);
+      }
     }
-  }
 
+    const bird = await Bird.findById(req.params.id);
 
-  Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
-
-    if (err || !bird) {
-      console.log(err)
+    if (!bird) {
       req.flash('error', "Unable to find bird");
+      return res.redirect('back')
+    }
+
+    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors, version: 'bird'});
+
+    if (!request) {
+      req.flash('error', "Unable to create update request");
+      return res.redirect('back');
+    }
+    // Bird.findByIdAndUpdate(req.params.id, {name: req.body.name, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors}, (err, bird) => {
+
+      // if (err || !bird) {
+      //   console.log(err)
+      //   req.flash('error', "Unable to find bird");
+      //   res.redirect('back')
+      //
+      // } else {
+
+    let overlap = false
+
+    for (let img of bird.gallery) {
+      if (img[0] == req.body.img && img[0] != bird.img[0]) {
+        overlap = true;
+        break;
+      }
+    }
+
+    if (overlap) {
+      req.flash('error', "Image already in bird gallery. Either delete image from gallery or choose a different image")
       res.redirect('back')
 
+
     } else {
+      request.img = [req.body.img, req.body.citation]
+      let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
+      tempGall.push([req.body.img, req.body.citation])
 
-      let overlap = false
 
-      for (let img of bird.gallery) {
-        if (img[0] == req.body.img && img[0] != bird.img[0]) {
-          overlap = true;
-          break;
-        }
+      for (let img of bird.gallery.slice(1)) {
+        tempGall.push(img)
       }
 
-      if (overlap) {
-        req.flash('error', "Image already in gallery. Either delete image from gallery or choose a different image")
-        res.redirect('back')
+      request.gallery = tempGall
+      request.save();
+      req.flash('success', "Bird Updates Sent to Admin! Please wait a few days for the admin to verify and accept changes")
+      res.redirect(`/${bird._id}`);
 
-
-      } else {
-        bird.img = [req.body.img, req.body.citation]
-        let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
-        tempGall.push([req.body.img, req.body.citation])
-
-
-        for (let img of bird.gallery.slice(1)) {
-          tempGall.push(img)
-        }
-
-        bird.gallery = tempGall
-        bird.save();
-        console.log("bird updated!")
-        req.flash('success', "Bird Updated! Please wait a few days for the admin to verify and accept changes")
-        res.redirect(`/${bird._id}`);
-
-      }
     }
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access database")
+    res.redirect('back')
   })
 })
 

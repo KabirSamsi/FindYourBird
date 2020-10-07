@@ -53,7 +53,22 @@
                 <p>No New Requests</p>
               <% } %>
 
-            <% } %>
+            <% } else if (action == "update") { %>
+              <h2>New Update Requests</h2>
+
+              <% if (requests.length > 0) { %>
+
+                <%requests.forEach(request => { %>
+                  <li>
+                    <a href="/request/updateBirdShow/<%=request._id%>" style="color: black;"><%=request.bird.name%> (<%=request.version%>)</a>
+                  </li>
+                <%})%>
+
+              <% } else { %>
+                <p>No New Requests</p>
+              <% } %>
+
+            <% }%>
 
           </div>
         </div>

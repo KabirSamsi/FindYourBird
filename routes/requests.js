@@ -164,7 +164,7 @@ app.get('/updateBirdList', (req, res) => {
   })
 })
 
-app.get('/updateBirdShow', (req, res) => {
+app.get('/updateBirdShow/:id', (req, res) => {
   UpdateRequest.findById(req.params.id).populate('bird').exec((err, request) => {
 
     if (err || !request) {
@@ -178,11 +178,60 @@ app.get('/updateBirdShow', (req, res) => {
   })
 })
 
-app.get('/acceptUpdate', (req, res) => {
-  res.redirect('/')
+app.get('/acceptUpdate/:id', (req, res) => {
+  (async() => {
+    let overlap = []
+    const currentReq = await UpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
+
+    let tempBirdData = { //Object stores the bird's info, before it was updated
+      description: currentReq.bird.description,
+      appearance: currentReq.bird.appearance,
+      diet: currentReq.bird.diet,
+      habitat: currentReq.bird.habitat,
+      range: currentReq.bird.range,
+      size: currentReq.bird.size,
+      colors: currentReq.bird.colors,
+    }
+
+    const bird = await Bird.findByIdAndUpdate(currentReq.bird._id, {description: currentReq.description, appearance: currentReq.appearance, diet: currentReq.diet, habitat: currentReq.habitat, range: currentReq.range, size: currentReq.size, colors: currentReq.colors});
+
+    if (!bird) {
+      req.flash('error', "Unable to apply updates to bird");
+      return res.redirect('back');
+    }
+
+    console.log(bird)
+
+    const requests = await UpdateRequest.find({}).populate('bird');
+
+    for (let request of requests) {
+      if (request.bird.name == currentReq.bird.name) {
+        overlap.push(request)
+      }
+    }
+
+    for (let request of overlap) {
+      for (let attr of ['description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+
+        if (tempBirdData[attr].toString() == request[attr].toString()) {
+          request[attr] = currentReq[attr];
+        }
+      }
+
+      request.save()
+    }
+
+    req.flash('success', "Bird updated! These changes can now be seen by all users")
+    res.redirect('/')
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access database");
+    res.redirect('back')
+  })
 })
 
-app.get('/rejectUpdate', (req, res) => {
+app.get('/rejectUpdate/:id', (req, res) => {
   UpdateRequest.findByIdAndDelete(req.params.id, (err, request) => {
     if (err || !request) {
       req.flash('error', "Unable to update bird")
@@ -194,4 +243,4 @@ app.get('/rejectUpdate', (req, res) => {
     }
   })
 })
-module.exports = app
+module.exports = app;

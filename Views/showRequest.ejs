@@ -63,7 +63,27 @@
                 <a href="/request/acceptDelete/<%=bird._id%>" style="color: white;" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Accept</a>
                 <a href="/request/rejectDelete/<%=bird._id%>" style="color: white;" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Reject</a>
 
-              <% } %>
+              <% } else if (action == "update") { %>
+
+                <h2><%=bird.bird.name%> (Update Request)</h2>
+
+                <br /><figure class="figure">
+                  <img id="bird-image" src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+                </figure>
+
+                <p><%=bird.description%></p>
+                <p><strong>Appearance: </strong><%=bird.appearance%></p>
+                <p><strong>Size: </strong><%=bird.size%></p>
+                <p><strong>Diet: </strong><%=bird.diet.join(', ')%></p>
+                <p><strong>Habitat: </strong><%=bird.habitat.join(', ')%></p>
+                <p><strong>Range: </strong><%=bird.range%></p>
+                <p><strong>Colors: </strong><%=bird.colors%></p>
+
+                <a href="/request/acceptUpdate/<%=bird._id%>" style="color: white;" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Accept</a>
+                <a href="/request/rejectUpdate/<%=bird._id%>" style="color: white;" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Reject</a>
+
+              <% }%>
             </div>
           </div>
         </div>
