@@ -220,6 +220,21 @@ app.get('/acceptGalleryUpdate/:id', (req, res) => {
     } else if (request.action == "delete") {
       request.bird.gallery.splice(request.imgIndex, 1)
       request.bird.save()
+
+      const laterRequests = await GalleryUpdateRequest.find({action: "delete"});//Delete requests with a higher index than ours
+
+      if (!laterRequests) {
+        req.flash('error', "Error accessing requests")
+        return res.redirect('back');
+      }
+
+      for (let r of laterRequests) {
+        if (r.imgIndex > request.imgIndex) {
+          r.imgIndex -= 1;
+          r.save()
+        }
+      }
+
       req.flash('success', "Image deleted from bird gallery!")
     }
 
