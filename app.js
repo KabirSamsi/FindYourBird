@@ -315,36 +315,9 @@ app.put('/:id', (req, res) => { //Update bird info
       return res.redirect('back');
     }
 
-    let overlap = false
-
-    for (let img of bird.gallery) {
-      if (img[0] == req.body.img && img[0] != bird.img[0]) {
-        overlap = true;
-        break;
-      }
-    }
-
-    if (overlap) {
-      req.flash('error', "Image already in bird gallery. Either delete image from gallery or choose a different image")
-      res.redirect('back')
-
-
-    } else {
-      request.img = [req.body.img, req.body.citation]
-      let tempGall = [] //Cannot modify specific aspects of the array by itself, need to modify the entire array, so using temporary Gallery
-      tempGall.push([req.body.img, req.body.citation])
-
-
-      for (let img of bird.gallery.slice(1)) {
-        tempGall.push(img)
-      }
-
-      request.gallery = tempGall
-      request.save();
-      req.flash('success', "Bird Updates Sent to Admin! Please wait a few days for the admin to verify and accept changes")
-      res.redirect(`/${bird._id}`);
-
-    }
+    request.save();
+    req.flash('success', "Bird Updates Sent to Admin! Please wait a few days for the admin to verify and accept changes")
+    res.redirect(`/${bird._id}`);
 
   })().catch(err => {
     console.log(err)

@@ -43,33 +43,13 @@
                 <a href="/request/acceptNew/<%=bird._id%>" style="color: white;" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Accept</a>
                 <a href="/request/rejectNew/<%=bird._id%>" style="color: white;" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Reject</a>
 
-              <% } else if (action == "delete") { %>
-
-                <h2><%=bird.bird.name%> (Delete Request)</h2>
-
-                <figure class="figure">
-                  <img id="bird-image" src="<%=bird.bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
-                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.bird.img[1]%></em></figcaption>
-                </figure>
-
-                <p><%=bird.bird.description%></p>
-                <p><strong>Appearance: </strong><%=bird.bird.appearance%></p>
-                <p><strong>Size: </strong><%=bird.bird.size%></p>
-                <p><strong>Diet: </strong><%=bird.bird.diet.join(', ')%></p>
-                <p><strong>Habitat: </strong><%=bird.bird.habitat.join(', ')%></p>
-                <p><strong>Range: </strong><%=bird.bird.range%></p>
-                <p><strong>Colors: </strong><%=bird.bird.colors%></p>
-
-                <a href="/request/acceptDelete/<%=bird._id%>" style="color: white;" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Accept</a>
-                <a href="/request/rejectDelete/<%=bird._id%>" style="color: white;" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Reject</a>
-
               <% } else if (action == "update") { %>
 
                 <h2><%=bird.bird.name%> (Update Request)</h2>
 
                 <br /><figure class="figure">
-                  <img id="bird-image" src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
-                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+                  <img id="bird-image" src="<%=bird.bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.bird.img[1]%></em></figcaption>
                 </figure>
 
                 <p><%=bird.description%></p>
