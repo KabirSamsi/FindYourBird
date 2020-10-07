@@ -16,17 +16,23 @@ const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
 //ROUTES
 app.get('/newBirdList', (req, res) => {
-  AddRequest.find({}, (err, requests) => {
+  if (req.query.pwd == "k1b9rfyb") {
+    AddRequest.find({}, (err, requests) => {
 
-    if (err || !requests) {
-      console.log(err)
-      req.flash('error', "Unable to access requests")
-      res.redirect('back')
+      if (err || !requests) {
+        console.log(err)
+        req.flash('error', "Unable to access requests")
+        res.redirect('back')
 
-    } else {
-      res.render('../Views/requests', {requests, birdInfo: false, action: 'new'})
-    }
-  })
+      } else {
+        res.render('../Views/requests', {requests, birdInfo: false, action: 'new'})
+      }
+    })
+
+  } else {
+    req.flash('error', 'Invalid password')
+    res.redirect('back');
+  }
 })
 
 app.get('/newBirdShow/:id', (req, res) => {
@@ -84,17 +90,23 @@ app.get('/rejectNew/:id', (req, res) => {
 })
 
 app.get('/updateBirdList', (req, res) => {
-  UpdateRequest.find({}).populate('bird').exec((err, requests) => {
+  if (req.query.pwd == "k1b9rfyb") {
+    UpdateRequest.find({}).populate('bird').exec((err, requests) => {
 
-    if (err || !requests) {
-      console.log(err)
-      req.flash('error', "Unable to access requests")
-      res.redirect('back')
+      if (err || !requests) {
+        console.log(err)
+        req.flash('error', "Unable to access requests")
+        res.redirect('back')
 
-    } else {
-      res.render('../Views/requests', {requests, birdInfo: false, action: 'update'})
-    }
-  })
+      } else {
+        res.render('../Views/requests', {requests, birdInfo: false, action: 'update'})
+      }
+    })
+
+  } else {
+    req.flash('error', "Invalid password")
+    res.redirect('back')
+  }
 })
 
 app.get('/updateBirdShow/:id', (req, res) => {
@@ -176,17 +188,23 @@ app.get('/rejectUpdate/:id', (req, res) => {
 })
 
 app.get('/galleryUpdateList', (req, res) => {
-  GalleryUpdateRequest.find({}).populate('bird').exec((err, requests) => {
+  if (req.query.pwd == "k1b9rfyb") {
+    GalleryUpdateRequest.find({}).populate('bird').exec((err, requests) => {
 
-    if (err || !requests) {
-      console.log(err)
-      req.flash('error', "Unable to access requests")
-      res.redirect('back')
+      if (err || !requests) {
+        console.log(err)
+        req.flash('error', "Unable to access requests")
+        res.redirect('back')
 
-    } else {
-      res.render('../Views/requests', {requests, birdInfo: false, action: 'galleryUpdate'})
-    }
-  })
+      } else {
+        res.render('../Views/requests', {requests, birdInfo: false, action: 'galleryUpdate'})
+      }
+    })
+
+  } else {
+    req.flash('error', "Invalid password")
+    res.redirect('back')
+  }
 })
 
 app.get('/galleryUpdateShow/:id', (req, res) => {

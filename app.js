@@ -23,7 +23,6 @@ const galleryRoutes = require('./routes/gallery');
 const requestRoutes = require('./routes/requests');
 
 //Connect to database
-// mongoose.connect('mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
