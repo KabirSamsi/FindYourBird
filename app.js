@@ -346,31 +346,31 @@ app.put('/:id', (req, res) => { //Update bird info
   })
 })
 
-app.delete('/:id', (req, res) => {
-  (async() => {
-    const bird = await Bird.findById(req.params.id);
-    if (!bird)  {
-      console.log('error')
-      req.flash('error', "Unable to access bird")
-      return res.redirect('back')
-    }
-
-    const request = await DeleteRequest.create({bird: bird});
-
-    if (!request) {
-      console.log('error')
-      req.flash('error', "Unable to access bird")
-      return res.redirect('back')
-    }
-
-    res.redirect('/')
-
-  })().catch(err => {
-    console.log(err)
-    req.flash('error', "Unable to access bird")
-    res.redirect('back')
-  });
-})
+// app.delete('/:id', (req, res) => {
+//   (async() => {
+//     const bird = await Bird.findById(req.params.id);
+//     if (!bird)  {
+//       console.log('error')
+//       req.flash('error', "Unable to access bird")
+//       return res.redirect('back')
+//     }
+//
+//     const request = await DeleteRequest.create({bird: bird});
+//
+//     if (!request) {
+//       console.log('error')
+//       req.flash('error', "Unable to access bird")
+//       return res.redirect('back')
+//     }
+//
+//     res.redirect('/')
+//
+//   })().catch(err => {
+//     console.log(err)
+//     req.flash('error', "Unable to access bird")
+//     res.redirect('back')
+//   });
+// })
 
 //Runs server
 let port = process.env.PORT || 3000;
