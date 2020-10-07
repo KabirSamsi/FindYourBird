@@ -66,6 +66,17 @@ app.delete('/:id', (req, res) => { //Removes photo from the gallery of a particu
       return res.redirect('back')
     }
 
+    const overlap = await GalleryUpdateRequest.find({action: "delete", imgIndex: req.query.index});
+
+    if (!overlap) {
+      req.flash('error', "Error accessing delete requests");
+      return res.redirect('back')
+
+    } else if (overlap.length > 0) {
+      req.flash('error', "A request to delete this image has already been sent");
+      return res.redirect('back')
+    }
+
     const request = await GalleryUpdateRequest.create({bird: bird, img: null, imgIndex: req.query.index, action: "delete"});
 
     if (!request) {
