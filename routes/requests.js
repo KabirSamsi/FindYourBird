@@ -11,8 +11,8 @@ const flash = require('connect-flash');
 //SCHEMA
 const Bird = require('../models/bird');
 const AddRequest = require('../models/addRequest');
-const DeleteRequest = require('../models/deleteRequest');
 const UpdateRequest = require('../models/updateRequest');
+const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
 //ROUTES
 app.get('/newBirdList', (req, res) => {
@@ -78,73 +78,6 @@ app.get('/rejectNew/:id', (req, res) => {
 
     } else {
       req.flash('success', "New bird rejected!")
-      res.redirect('/')
-    }
-  })
-})
-
-app.get('/deleteBirdList', (req, res) => {
-  DeleteRequest.find({}).populate('bird').exec((err, requests) => {
-
-    if (err || !requests) {
-      console.log(err)
-      req.flash('error', "Unable to access requests")
-      res.redirect('back')
-
-    } else {
-      res.render('../Views/requests', {requests, birdInfo: false, action: 'delete'})
-    }
-  })
-})
-
-app.get('/deleteBirdShow/:id', (req, res) => {
-  DeleteRequest.findById(req.params.id).populate('bird').exec((err, request) => {
-
-    if (err || !request) {
-      console.log(err)
-      req.flash('error', "Unable to access request")
-      res.redirect('back')
-
-    } else {
-      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'delete'})
-    }
-  })
-})
-
-
-app.get('/acceptDelete/:id', (req, res) => {
-  (async() => {
-    const request = await DeleteRequest.findByIdAndDelete(req.params.id);
-    if (!request) {
-      console.log('error')
-      req.flash('error', "Unable to delete bird")
-      return res.redirect('back');
-    }
-
-    const bird = await Bird.findByIdAndDelete(request.bird._id);
-    if (!bird) {
-      req.flash('error', "Unable to delete bird")
-      return res.redirect('back');
-    }
-
-    req.flash('success', "Delete accepted! Bird is now deleted")
-    res.redirect('/')
-
-  })().catch(err => {
-    console.log(err)
-    req.flash('error', "Unable to access database")
-    res.redirect('back')
-  })
-})
-
-app.get('/rejectDelete/:id', (req, res) => {
-  DeleteRequest.findByIdAndDelete(req.params.id, (err, request) => {
-    if (err || !request) {
-      req.flash('error', "Unable to delete request")
-      res.redirect('back')
-
-    } else {
-      req.flash('success', "Request rejected!")
       res.redirect('/')
     }
   })
@@ -234,11 +167,81 @@ app.get('/acceptUpdate/:id', (req, res) => {
 app.get('/rejectUpdate/:id', (req, res) => {
   UpdateRequest.findByIdAndDelete(req.params.id, (err, request) => {
     if (err || !request) {
-      req.flash('error', "Unable to update bird")
+      req.flash('error', "Unable to delete update")
       res.redirect('back')
 
     } else {
       req.flash('success', "Update rejected!")
+      res.redirect('/')
+    }
+  })
+})
+
+app.get('/galleryUpdateList', (req, res) => {
+  GalleryUpdateRequest.find({}).populate('bird').exec((err, requests) => {
+
+    if (err || !requests) {
+      console.log(err)
+      req.flash('error', "Unable to access requests")
+      res.redirect('back')
+
+    } else {
+      res.render('../Views/requests', {requests, birdInfo: false, action: 'galleryUpdate'})
+    }
+  })
+})
+
+app.get('/galleryUpdateShow/:id', (req, res) => {
+  GalleryUpdateRequest.findById(req.params.id).populate('bird').exec((err, request) => {
+
+    if (err || !request) {
+      console.log(err)
+      req.flash('error', "Unable to access request")
+      res.redirect('back')
+
+    } else {
+      res.render('../Views/showGalleryRequest', {birdInfo: false, bird: request})
+    }
+  })
+})
+
+app.get('/acceptGalleryUpdate/:id', (req, res) => {
+  (async() => {
+    const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
+
+    if (!request) {
+      req.flash('error', "Error accessing request")
+      return res.redirect('back');
+    }
+
+    if (request.action == "add") {
+      request.bird.gallery.push([request.img[0], request.img[1]])
+      request.bird.save()
+      req.flash('success', "Image added to bird gallery!")
+
+    } else if (request.action == "delete") {
+      request.bird.gallery.splice(request.imgIndex, 1)
+      request.bird.save()
+      req.flash('success', "Image deleted from bird gallery!")
+    }
+
+    res.redirect('/')
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access database")
+    res.redirect('back')
+  })
+})
+
+app.get('/rejectGalleryUpdate/:id', (req, res) => {
+  GalleryUpdateRequest.findByIdAndDelete(req.params.id, (err, request) => {
+    if (err || !request) {
+      req.flash('error', "Unable to delete gallery update")
+      res.redirect('back')
+
+    } else {
+      req.flash('success', "Gallery Update rejected!")
       res.redirect('/')
     }
   })

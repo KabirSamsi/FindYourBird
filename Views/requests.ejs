@@ -68,6 +68,20 @@
                 <p>No New Requests</p>
               <% } %>
 
+            <% } else if (action == "galleryUpdate") { %>
+              <h2>New Gallery Update Requests</h2>
+
+              <% if (requests.length > 0) { %>
+
+                <%requests.forEach(request => { %>
+                  <li>
+                    <a href="/request/galleryUpdateShow/<%=request._id%>" style="color: black;"><%=request.bird.name%> (<%=request.action%>)</a>
+                  </li>
+                <%})%>
+
+              <% } else { %>
+                <p>No New Requests</p>
+              <% } %>
             <% }%>
 
           </div>

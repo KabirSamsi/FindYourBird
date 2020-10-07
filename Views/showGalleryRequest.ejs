@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>FindYourBird</title>
+    <link rel=stylesheet href="../stylesheets/style.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel='shortcut icon' type='image/x-icon' href='/media/favicon3.ico' />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/dccc745c41.js" crossorigin="anonymous"></script>
+
+  </head>
+  <body id="body">
+
+    <%- include('partials/searchbar') %>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-12">
+          <div class="jumbotron text-center" style="background-color: #6ba84a;">
+            <h2><%=bird.bird.name%> Gallery (Update Demo)</h2><br />
+            <a href="/request/acceptGalleryUpdate/<%=bird._id%>" style="color: white;" class="btn btn-primary"><i class="fas fa-thumbs-up"></i> Accept</a>
+            <a href="/request/rejectGalleryUpdate/<%=bird._id%>" style="color: white;" class="btn btn-danger"><i class="fas fa-thumbs-down"></i> Reject</a>
+            <br /><br />
+
+            <h3>Current Images</h3><br />
+
+            <%bird.bird.gallery.forEach(img => { %>
+              <div class="gallery-image-container" style="display: inline-block;">
+
+                <figure class="figure">
+                  <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=img[1]%></em></figcaption>
+                </figure>
+
+                <br />
+
+              </div>
+            <%})%>
+
+            <% if (bird.action == "add") { %>
+
+              <h3>New Image</h3><br />
+
+              <figure class="figure">
+                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+                <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+              </figure>
+
+            <% } else if (bird.action == "delete"){ %>
+              <h3>Image to Delete</h3><br />
+
+              <figure class="figure">
+                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.bird.gallery[bird.imgIndex][0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+              </figure>
+            <% }%>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
