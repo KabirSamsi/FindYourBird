@@ -41,7 +41,13 @@
               <%})%>
 
             <% } else { %>
-              <p>Sorry, no birds in our database matched "<%=search%>"</p>
+
+              <% if (from == "search") { %>
+                <p>Sorry, no birds in our database matched "<%=search%>"</p>
+
+              <% } else { %>
+                <p>Sorry, no birds in our database matched your data</p>
+              <% }%>
             <% } %>
 
           </div>
