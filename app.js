@@ -18,9 +18,10 @@ const Bird = require('./models/bird');
 const AddRequest = require('./models/addRequest');
 const UpdateRequest = require('./models/updateRequest');
 
-//Access gallery and Request Routes
+//Access gallery, request and tutorial routes
 const galleryRoutes = require('./routes/gallery');
 const requestRoutes = require('./routes/requests');
+const tutorialRoutes = require('./routes/tutorial');
 
 //Connect to database
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
@@ -58,10 +59,11 @@ app.use(function(req, res, next) { //Setting up flash messages
   next();
 });
 
-//Initalize Gallery and Request Routes
+//Initalize Gallery, Request and Tutorial Routes
 
 app.use('/gallery', galleryRoutes);
 app.use('/request', requestRoutes);
+app.use('/tutorial', tutorialRoutes);
 
 //ROUTES
 app.get('/', (req, res) => { //Render index page
