@@ -67,14 +67,7 @@ app.use('/tutorial', tutorialRoutes);
 
 //ROUTES
 app.get('/', (req, res) => { //Render index page
-  Bird.find({}, (err, birds) => {
-
-    for (let bird of birds) {
-      bird.scientificName = "Haliaeetus leucocephalus"
-      bird.save()
-    }
-    res.render('index', {birdInfo: false, search: null});
-  })
+  res.render('index', {birdInfo: false, search: null});
 })
 
 app.post('/search', (req, res) => { //Route to search for a bird
