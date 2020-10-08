@@ -67,7 +67,14 @@ app.use('/tutorial', tutorialRoutes);
 
 //ROUTES
 app.get('/', (req, res) => { //Render index page
-  res.render('index', {birdInfo: false, search: null});
+  Bird.find({}, (err, birds) => {
+
+    for (let bird of birds) {
+      bird.scientificName = "Haliaeetus leucocephalus"
+      bird.save()
+    }
+    res.render('index', {birdInfo: false, search: null});
+  })
 })
 
 app.post('/search', (req, res) => { //Route to search for a bird
@@ -90,7 +97,7 @@ app.post('/search', (req, res) => { //Route to search for a bird
 
         for (let bird of foundBirds) {
           dataString = ""
-          for (let attr of ['name', 'description', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+          for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
             if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
               dataString += bird[attr].toLowerCase()
               dataString += " "
@@ -186,7 +193,7 @@ app.post('/', (req, res) => { //Create new bird
       return res.redirect('back')
     }
 
-    const request = await AddRequest.create({name: req.body.name, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
+    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
 
     if (!request) {
       console.log('error')

@@ -26,6 +26,8 @@
 
               <% if (action == "new") { %>
                 <h2><%=bird.name%> (Add Request)</h2>
+                <em><%=bird.scientificName%></em>
+                <br /><br />
 
                 <figure class="figure">
                   <img id="bird-image" src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
