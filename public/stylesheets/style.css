@@ -1,4 +1,4 @@
-#body {
+body {
   background-image: url("../media/background.jpg");
   background-size: cover;
   text-align: center;
@@ -38,4 +38,11 @@
 
 .edit-bird-form {
   display: inline;
+}
+
+/* smaller than md */
+@media only screen and (max-width: 768px) and (min-width: 400px) {
+  body {
+    background-image: url('../media/background-rotated.jpg');
+  }
 }

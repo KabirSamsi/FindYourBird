@@ -26,7 +26,13 @@
 
             <% if (birds.length > 0) { %>
 
-              <p>Birds in our database that matched your <%=from%></p>
+              <% if (from == "search") { %>
+                <p>Birds in our database that matched "<%=search%>"</p>
+
+              <% } else if (from == "data"){ %>
+                <p>Birds in our database that matched your data</p>
+              <% }%>
+
               <%birds.forEach(bird => { %>
                 <li>
                   <a style="color: black;" href="/<%=bird._id%>"><%=bird.name%></a><br /><br />

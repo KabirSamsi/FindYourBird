@@ -123,13 +123,13 @@ app.post('/search', (req, res) => { //Route to search for a bird
           results.push(r[0])
         }
 
-        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search'})
+        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search', search: req.body.name})
 
       }
     })
 
   } else {
-    res.render('results', {birdInfo: false, birds: [], from: 'search'})
+    res.render('results', {birdInfo: false, birds: [], from: 'search', search: req.body.name})
   }
 })
 
