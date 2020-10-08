@@ -9,27 +9,27 @@ var session = require('express-session');
 const flash = require('connect-flash');
 
 app.get('/', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "none"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "none"});
 })
 
 app.get('/search', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "search"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "search"});
 })
 
 app.get('/identify', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "identify"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "identify"});
 })
 
 app.get('/add', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "add"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "add"});
 })
 
 app.get('/edit', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "edit"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "edit"});
 })
 
 app.get('/gallery', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "gallery"});
+  res.render('../Views/tutorial', {birdInfo: false, field: "gallery"});
 })
 
 module.exports = app;
