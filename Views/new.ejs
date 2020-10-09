@@ -99,15 +99,23 @@
       setTimeout(() => {
         nameInputValue = nameInput.value.toLowerCase().replace(/[^A-Za-z]/g, '');
 
-        if(birdRegExpNames.includes(nameInputValue)) {
-          $("#overlap-warning-bird").show();
-          $("#overlap-warning-request").hide();
-          $("#overlap-break").hide();
+        if (nameInput.value != "") {
 
-        } else if (requestRegExpNames.includes(nameInputValue)) {
-          $("#overlap-warning-bird").hide();
-          $("#overlap-warning-request").show();
-          $("#overlap-break").hide();
+          if(birdRegExpNames.includes(nameInputValue)) {
+            $("#overlap-warning-bird").show();
+            $("#overlap-warning-request").hide();
+            $("#overlap-break").hide();
+
+          } else if (requestRegExpNames.includes(nameInputValue)) {
+            $("#overlap-warning-bird").hide();
+            $("#overlap-warning-request").show();
+            $("#overlap-break").hide();
+
+          } else {
+            $("#overlap-warning-bird").hide();
+            $("#overlap-warning-request").hide();
+            $("#overlap-break").show();
+          }
 
         } else {
           $("#overlap-warning-bird").hide();
