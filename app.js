@@ -72,7 +72,13 @@ app.get('/', (req, res) => { //Render index page
 
 app.post('/search', (req, res) => { //Route to search for a bird
 
-  if (req.body.name != '') {
+  let fillers = [ //Filler words which should not affect the search
+    '', 'the', 'how', 'why', 'you', 'and','for','its','can','that', 'not', 'this', 'with','from', 'stop', 'while',  'ever', 'even', 'should', 'bird', 'fowl',
+    'never', 'which', 'should','cannot', 'unless', 'forever', 'whenever', 'whichever', 'complete', 'incomplete', 'absolute', 'total'
+  ]
+
+
+  if (fillers.indexOf(req.body.name) == -1) {
 
     let resultMatrix = [] //Hold info about each bird that matches search, and the number of times the search shows up in its info
     let results = []; //Hold info about each matching bird
