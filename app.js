@@ -22,6 +22,7 @@ const UpdateRequest = require('./models/updateRequest');
 const galleryRoutes = require('./routes/gallery');
 const requestRoutes = require('./routes/requests');
 const tutorialRoutes = require('./routes/tutorial');
+const fillers = require('./fillers.js')
 
 //Connect to database
 mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://dbUser:dbUserPassword@cluster0.h3f4r.mongodb.net/FindYourBirdDemo?retryWrites=true&w=majority', {
@@ -142,8 +143,41 @@ app.post('/search', (req, res) => { //Route to search for a bird
 })
 
 app.get('/new', (req, res) => { //Route to access 'new bird' page
-  // res.redirect('/')
-  res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'] });
+
+  (async() => {
+
+    const birds = await Bird.find({});
+
+    if (!birds) {
+      req.flash('error', "Unable to find birds");
+      return res.redirect('back');
+    }
+
+    let birdNameArr = []
+    for (let bird of birds) {
+      birdNameArr.push(bird.name);
+    }
+
+    const addRequests = await AddRequest.find({});
+
+    if (!addRequests) {
+      req.flash('error', "Unable to find add requests");
+      return res.redirect('back');
+    }
+
+    let requestNameArr = []
+    for (let request of addRequests) {
+      requestNameArr.push(request.name);
+    }
+
+
+    res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'], birds: birdNameArr, requests: requestNameArr});
+
+  })().catch(err => {
+    console.log(err)
+    req.flash('error', "Unable to access database")
+    res.redirect('back')
+  })
 })
 
 app.post('/', (req, res) => { //Create new bird

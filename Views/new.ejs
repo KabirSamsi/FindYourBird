@@ -24,9 +24,11 @@
 
             <h2>Bird Info</h2>
             <form action="/" method="post">
-              <br />
+              <br id="overlap-break"/>
+              <p id="overlap-warning-bird" style="color: red;">That bird is already in our database</p>
+              <p id="overlap-warning-request" style="color: red;">That bird is currently a pending add request</p>
               <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" required/><br />
-              <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="scientificName" placeholder="Enter bird scientific name" required/><br />
+              <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="scientificName" name="scientificName" placeholder="Enter bird scientific name" required/><br />
               <input class="form-control" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" required/><br />
               <input class="form-control" maxlength="50" class="inpt" type="text" placeholder="Enter citation for bird image" id="cit" name="citation" required/><br />
               <input class="form-control" maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" required/><br />
@@ -71,4 +73,50 @@
       </div>
     </div>
   </body>
+
+  <script>
+
+    let birdNames = "<%=birds%>".split(',');
+    let birdRegExpNames = []
+
+    let requestNames = "<%=requests%>".split(',');
+    let requestRegExpNames = []
+
+    const nameInput = document.getElementById("name");
+    let nameInputValue;
+    $("#overlap-warning-bird").hide();
+    $("#overlap-warning-request").hide();
+
+    for (let name of birdNames) {
+      birdRegExpNames.push(name.toLowerCase().replace(/[^A-Za-z]/g, ''));
+    }
+
+    for (let name of requestNames) {
+      requestRegExpNames.push(name.toLowerCase().replace(/[^A-Za-z]/g, ''));
+    }
+
+    document.addEventListener('keydown', () => {
+      setTimeout(() => {
+        nameInputValue = nameInput.value.toLowerCase().replace(/[^A-Za-z]/g, '');
+
+        if(birdRegExpNames.includes(nameInputValue)) {
+          $("#overlap-warning-bird").show();
+          $("#overlap-warning-request").hide();
+          $("#overlap-break").hide();
+
+        } else if (requestRegExpNames.includes(nameInputValue)) {
+          $("#overlap-warning-bird").hide();
+          $("#overlap-warning-request").show();
+          $("#overlap-break").hide();
+
+        } else {
+          $("#overlap-warning-bird").hide();
+          $("#overlap-warning-request").hide();
+          $("#overlap-break").show();
+        }
+      } , 5); //Wait 5 milliseconds, gives enough time for the computer to process your latest keystrokes
+    })
+
+
+  </script>
 </html>
