@@ -265,7 +265,15 @@ app.get('/identify', (req, res) => { //Route to render bird identification page
 app.post('/identify', (req, res) => { //Calculate birds which match identification
   let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
 
-  Bird.find({size: req.body.size}, (err, foundBirds) => {
+  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
+  let allowed_sizes = []
+
+  for (let i = 0; i < sizes.length; i += 1) {
+    if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1])
+    allowed_sizes.push(sizes[i])
+  }
+
+  Bird.find({size: {$in: allowed_sizes}}, (err, foundBirds) => {
     let birdList = [];
     let final = [];
 
