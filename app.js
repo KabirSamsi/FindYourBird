@@ -226,7 +226,7 @@ app.post('/', (req, res) => { //Create new bird
       return res.redirect('back')
     }
 
-    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(','), habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
+    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
 
     if (!request) {
       console.log('error')
@@ -350,7 +350,7 @@ app.put('/:id', (req, res) => { //Update bird info
       return res.redirect('back')
     }
 
-    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet.split(', '), habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
+    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
 
     if (!request) {
       req.flash('error', "Unable to create update request");

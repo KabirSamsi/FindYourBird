@@ -7,7 +7,7 @@ var updateRequestSchema = new mongoose.Schema({
   },
   description: String,
   appearance: String,
-  diet: [{type: String}],
+  diet: {type: String},
   habitat: [{type: String}],
   range: String,
   size: String,

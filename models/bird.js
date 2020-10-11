@@ -6,7 +6,7 @@ var birdSchema = new mongoose.Schema({
   img: [{type: String}],
   description: String,
   appearance: String,
-  diet: [{type: String}],
+  diet: {type: String},
   habitat: [{type: String}],
   range: String,
   gallery: [
