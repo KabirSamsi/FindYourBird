@@ -36,7 +36,7 @@
               <%birds.forEach(bird => { %>
                 <li>
                   <a style="color: black;" href="/<%=bird._id%>"><%=bird.name%></a><br /><br />
-                  <img src="<%=bird.img[0]%>" style="width: 50%; height: 50%;"/><br /><br />
+                  <img class="figure-img img-fluid rounded" src="<%=bird.img[0]%>" style="width: 50%; height: 50%;"/><br /><br />
                 </li>
               <%})%>
 

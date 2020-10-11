@@ -29,8 +29,15 @@
               <p id="overlap-warning-request" style="color: red;">That bird is currently a pending add request</p>
               <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="name" name="name" placeholder="Enter bird name" required/><br />
               <input class="form-control" minlength="4" maxlength="35" class="inpt" type="text" id="scientificName" name="scientificName" placeholder="Enter bird scientific name" required/><br />
-              <input class="form-control" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" required/><br />
-              <input class="form-control" maxlength="50" class="inpt" type="text" placeholder="Enter citation for bird image" id="cit" name="citation" required/><br />
+
+              <input class="form-control" id="image-input" class="inpt" type="text" placeholder="Enter url for bird image" id="img" name="img" required/><br />
+              <figure class="figure">
+                <img style="width: 50%; height: 50%;" id="image-display" class="figure-img img-fluid rounded"/>
+                <figcaption class="figure-caption" style="color:black;"><strong id="citation-header"></strong><em id="citation-value"></em></figcaption>
+              </figure>
+              <br />
+
+              <input class="form-control" maxlength="50" class="inpt" type="text" placeholder="Enter citation for bird image" id="citation-input" name="citation" required/><br />
               <input class="form-control" maxlength="70" class="inpt" type='text' id="range" placeholder='Enter bird range' name="range" required/><br />
               <input class="form-control" maxlength="100" class="inpt" type='text' id="app" placeholder='Enter bird appearance' name="appearance" required/><br />
               <input class="form-control" maxlength="60" class="inpt" type='text' id="diet" placeholder='Enter bird diet, separated by commas' name="diet" required/><br />
@@ -83,6 +90,12 @@
     let requestRegExpNames = []
 
     const nameInput = document.getElementById("name");
+    const imageInput = document.getElementById('image-input')
+    const imageDisplay = document.getElementById('image-display')
+    const citationInput = document.getElementById('citation-input')
+    const citationHeader = document.getElementById('citation-header')
+    const citationValue = document.getElementById('citation-value')
+
     let nameInputValue;
     $("#overlap-warning-bird").hide();
     $("#overlap-warning-request").hide();
@@ -95,7 +108,7 @@
       requestRegExpNames.push(name.toLowerCase().replace(/[^A-Za-z]/g, ''));
     }
 
-    document.addEventListener('keydown', () => {
+    nameInput.addEventListener('keydown', () => {
       setTimeout(() => {
         nameInputValue = nameInput.value.toLowerCase().replace(/[^A-Za-z]/g, '');
 
@@ -122,7 +135,34 @@
           $("#overlap-warning-request").hide();
           $("#overlap-break").show();
         }
-      } , 5); //Wait 5 milliseconds, gives enough time for the computer to process your latest keystrokes
+      } , 3); //Wait 1 millisecond, gives enough time for the computer to process your latest keystrokes
+    })
+
+    imageInput.addEventListener('keydown', () => {
+      setTimeout(() => {
+        if(imageInput.value.slice(0, 8) == "https://" || imageInput.value.slice(0, 7) == "http://") {
+          imageDisplay.src = imageInput.value
+          imageDisplay.alt = "Image Does Not Exist"
+
+        } else {
+          imageDisplay.src = ""
+          imageDisplay.alt = "Image Does Not Exist"
+        }
+      }, 3)
+    })
+
+    citationInput.addEventListener('keydown', () => {
+      setTimeout(() => {
+
+        if (citationInput.value != "") {
+          citationHeader.innerText = "Citation: "
+          citationValue.innerText = citationInput.value
+
+        } else {
+          citationHeader.innerText = ""
+          citationValue.innerText = citationInput.value
+        }
+      }, 3)
     })
 
 
