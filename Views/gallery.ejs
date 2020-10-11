@@ -51,7 +51,7 @@
 
                   <br />
 
-                  <% if (bird.gallery[i][0] != bird.img[0]) { %>
+                  <% if (i != 0) { %>
                     <form action="/gallery/<%=bird._id%>?index=<%=i%>&_method=delete" method="post">
                       <button type="submit" class="btn btn-danger" style="margin: 5px; width: 30vw;"><i class="fas fa-trash"></i> Remove from Gallery</a>
                     </form>

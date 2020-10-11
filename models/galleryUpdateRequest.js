@@ -6,7 +6,7 @@ var galleryUpdateRequestSchema = new mongoose.Schema({
     ref: "Bird"
   },
   imgIndex: {type: Number}, //Only for deleting
-  img: [{type: String}],
+  img: [{type: String}], //Only for adding
   action: {type: String}
 })
 
