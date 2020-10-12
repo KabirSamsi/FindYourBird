@@ -276,6 +276,7 @@ app.post('/identify', (req, res) => { //Calculate birds which match identificati
   Bird.find({size: {$in: allowed_sizes}}, (err, foundBirds) => {
     let birdList = [];
     let final = [];
+    let sorted = [];
 
     for (let bird of foundBirds) {
       if (bird.habitat.includes(habitats[req.body.habitat])) {
@@ -306,7 +307,21 @@ app.post('/identify', (req, res) => { //Calculate birds which match identificati
         }
       }
 
-      res.render('results', {birdInfo: false, birds: final, from: 'data'});
+      for (let bird of final) {
+        if (bird.size == req.body.size) {
+          sorted.push(bird)
+        }
+      }
+
+      if (sorted.length < 10) {
+        for (let bird of final) {
+          if (bird.size != req.body.size) {
+            sorted.push(bird)
+          }
+        }
+      }
+
+      res.render('results', {birdInfo: false, birds: sorted, from: 'data'});
 
     } else { //No color is selected
         res.render('results', {birdInfo: false, birds: birdList, from: 'data'});
