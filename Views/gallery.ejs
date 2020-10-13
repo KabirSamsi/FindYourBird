@@ -99,6 +99,7 @@
   <script>
 
   const newImgButton = document.getElementById('add-new-button')
+  const stopAddButton = document.getElementById('stop-add-button')
   const newDisplayImage = document.getElementById('new-display-image')
   const newImgInput = document.getElementById('new-image-url')
   const newImgCitation = document.getElementById('new-image-citation')
@@ -113,6 +114,16 @@
     $('#stop-add-button').show()
     $('#new-display-image').hide()
     $('#add-new-button').hide()
+  })
+
+  stopAddButton.addEventListener('click', () => {
+    newImgInput.value = ""
+    newImgCitation.value = ""
+    citationHeader.innerText = ""
+    citationValue.innerText = ""
+    $('#add-new-form').hide()
+    $('#stop-add-button').hide()
+    $('#add-new-button').show()
   })
 
   newImgInput.addEventListener('keydown', () => {
