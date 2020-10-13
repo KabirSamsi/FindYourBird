@@ -135,7 +135,7 @@
           $("#overlap-warning-request").hide();
           $("#overlap-break").show();
         }
-      } , 3); //Wait 1 millisecond, gives enough time for the computer to process your latest keystrokes
+      } , 3); //Wait 3 milliseconds, gives enough time for the computer to process your latest keystrokes
     })
 
     imageInput.addEventListener('keydown', () => {
@@ -143,10 +143,16 @@
         if(imageInput.value.slice(0, 8) == "https://" || imageInput.value.slice(0, 7) == "http://") {
           imageDisplay.src = imageInput.value
           imageDisplay.alt = "Image Does Not Exist"
+          $("#image-display").show()
+
+        } else if (imageInput.value == "") {
+          console.log("Hiding image")
+          $("#image-display").hide()
 
         } else {
           imageDisplay.src = ""
           imageDisplay.alt = "Image Does Not Exist"
+          $("#image-display").show()
         }
       }, 3)
     })
@@ -156,10 +162,15 @@
         if(imageInput.value.slice(0, 8) == "https://" || imageInput.value.slice(0, 7) == "http://") {
           imageDisplay.src = imageInput.value
           imageDisplay.alt = "Image Does Not Exist"
+          $("#image-display").show()
+
+        } else if (imageInput.value == "") {
+          $("#image-display").hide()
 
         } else {
           imageDisplay.src = ""
           imageDisplay.alt = "Image Does Not Exist"
+          $("#image-display").show()
         }
       }, 3)
     })

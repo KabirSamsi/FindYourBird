@@ -131,13 +131,17 @@
       if(newImgInput.value.slice(0, 8) == "https://" || newImgInput.value.slice(0, 7) == "http://") {
         newDisplayImage.src = newImgInput.value
         newDisplayImage.alt = "Image Does Not Exist"
+        $("#new-display-image").show()
+
+      } else if (newImgInput.value == "") {
+        $("#new-display-image").hide()
 
       } else {
         newDisplayImage.src = ""
         newDisplayImage.alt = "Image Does Not Exist"
+        $("#new-display-image").show()
       }
 
-      $('#new-display-image').show()
     }, 3)
   })
 
@@ -146,13 +150,17 @@
       if(newImgInput.value.slice(0, 8) == "https://" || newImgInput.value.slice(0, 7) == "http://") {
         newDisplayImage.src = newImgInput.value
         newDisplayImage.alt = "Image Does Not Exist"
+        $('#new-display-image').show()
+
+      } else if (newImgInput.value == "") {
+        $("#new-display-image").hide()
 
       } else {
         newDisplayImage.src = ""
         newDisplayImage.alt = "Image Does Not Exist"
+        $('#new-display-image').show()
       }
 
-      $('#new-display-image').show()
     }, 3)
   })
 
