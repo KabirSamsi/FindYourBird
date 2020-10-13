@@ -141,6 +141,22 @@
     }, 3)
   })
 
+  newImgInput.addEventListener('paste', () => {
+    setTimeout(() => {
+      if(newImgInput.value.slice(0, 8) == "https://" || newImgInput.value.slice(0, 7) == "http://") {
+        newDisplayImage.src = newImgInput.value
+        newDisplayImage.alt = "Image Does Not Exist"
+
+      } else {
+        newDisplayImage.src = ""
+        newDisplayImage.alt = "Image Does Not Exist"
+      }
+
+      $('#new-display-image').show()
+    }, 3)
+  })
+
+
   newImgCitation.addEventListener('keydown', () => {
     setTimeout(() => {
 
@@ -156,11 +172,20 @@
     }, 3)
   })
 
+  newImgCitation.addEventListener('paste', () => {
+    setTimeout(() => {
 
+      if (newImgCitation.value != "") {
+        citationHeader.innerText = "Citation: "
+        citationValue.innerText = newImgCitation.value
 
+      } else {
+        citationHeader.innerText = ""
+        citationValue.innerText = newImgCitation.value
+      }
 
-
-
+    }, 3)
+  })
 
   </script>
 </html>

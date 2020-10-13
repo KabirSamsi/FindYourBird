@@ -151,6 +151,19 @@
       }, 3)
     })
 
+    imageInput.addEventListener('paste', () => {
+      setTimeout(() => {
+        if(imageInput.value.slice(0, 8) == "https://" || imageInput.value.slice(0, 7) == "http://") {
+          imageDisplay.src = imageInput.value
+          imageDisplay.alt = "Image Does Not Exist"
+
+        } else {
+          imageDisplay.src = ""
+          imageDisplay.alt = "Image Does Not Exist"
+        }
+      }, 3)
+    })
+
     citationInput.addEventListener('keydown', () => {
       setTimeout(() => {
 
@@ -165,6 +178,19 @@
       }, 3)
     })
 
+    citationInput.addEventListener('paste', () => {
+      setTimeout(() => {
+
+        if (citationInput.value != "") {
+          citationHeader.innerText = "Citation: "
+          citationValue.innerText = citationInput.value
+
+        } else {
+          citationHeader.innerText = ""
+          citationValue.innerText = citationInput.value
+        }
+      }, 3)
+    })
 
   </script>
 </html>
