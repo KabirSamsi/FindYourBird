@@ -226,7 +226,12 @@ app.post('/', (req, res) => { //Create new bird
       return res.redirect('back')
     }
 
-    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: [req.body.img, req.body.citation], description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, gallery: [req.body.img, req.body.citation], size: req.body.size, colors: finalColors});
+    let birdImage = { //Sets up bird image as an object
+      url: req.body.img,
+      citation: req.body.citation
+    }
+
+    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: birdImage, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, gallery: [birdImage], size: req.body.size, colors: finalColors});
 
     if (!request) {
       console.log('error')

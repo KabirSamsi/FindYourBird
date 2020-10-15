@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 var birdSchema = new mongoose.Schema({
   name: String,
   scientificName: String,
-  img: [{type: String}],
+  img: {type: Object},
   description: String,
   appearance: String,
   diet: {type: String},
   habitat: [{type: String}],
   range: String,
   gallery: [
-    [{type: String}]
+    {type: Object}
   ],
   size: String,
   colors: [{type: String}]

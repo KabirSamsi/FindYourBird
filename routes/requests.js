@@ -231,7 +231,7 @@ app.get('/acceptGalleryUpdate/:id', (req, res) => {
     }
 
     if (request.action == "add") {
-      request.bird.gallery.push([request.img[0], request.img[1]])
+      request.bird.gallery.push(request.img)
       request.bird.save()
       req.flash('success', "Image added to bird gallery!")
 

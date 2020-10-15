@@ -28,8 +28,8 @@
               <br /><br />
 
               <figure class="figure">
-                <img id="bird-image" src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
-                <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+                <img id="bird-image" src="<%=bird.img.url%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img.citation%></em></figcaption>
                 <a href="/gallery/<%=bird._id%>" class="btn btn-primary" id="gallery"><i class="fas fa-images"></i> Gallery</a>
               </figure>
 

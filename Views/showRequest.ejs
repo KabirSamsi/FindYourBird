@@ -30,8 +30,8 @@
                 <br /><br />
 
                 <figure class="figure">
-                  <img id="bird-image" src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
-                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+                  <img id="bird-image" src="<%=bird.img.url%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img.citation%></em></figcaption>
                 </figure>
 
                 <p><%=bird.description%></p>
@@ -50,8 +50,8 @@
                 <h2><%=bird.bird.name%> (Update Request)</h2>
 
                 <br /><figure class="figure">
-                  <img id="bird-image" src="<%=bird.bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
-                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.bird.img[1]%></em></figcaption>
+                  <img id="bird-image" src="<%=bird.bird.img.url%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.bird.img.citation%></em></figcaption>
                 </figure>
 
                 <p><%=bird.description%></p>

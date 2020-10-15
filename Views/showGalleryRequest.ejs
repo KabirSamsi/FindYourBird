@@ -33,8 +33,8 @@
               <div class="gallery-image-container" style="display: inline-block;">
 
                 <figure class="figure">
-                  <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
-                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=img[1]%></em></figcaption>
+                  <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=img.url%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                  <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=img.citation%></em></figcaption>
                 </figure>
 
                 <br />
@@ -47,15 +47,15 @@
               <h3>New Image</h3><br />
 
               <figure class="figure">
-                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.img[0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
-                <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img[1]%></em></figcaption>
+                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.img.url%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+                <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.img.citation%></em></figcaption>
               </figure>
 
             <% } else if (bird.action == "delete"){ %>
               <h3>Image to Delete</h3><br />
 
               <figure class="figure">
-                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.bird.gallery[bird.imgIndex][0]%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
+                <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.bird.gallery[bird.imgIndex].url%>" class="figure-img img-fluid rounded" alt="<%=bird.bird.name%> photo">
               </figure>
             <% }%>
 

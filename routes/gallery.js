@@ -38,7 +38,12 @@ app.put('/:id', (req, res) => { //Adds photo to a gallery of a particular bird
       return res.redirect('back')
     }
 
-    const request = await GalleryUpdateRequest.create({bird: bird, img: [req.body.newImg, req.body.citation], imgIndex: null, action: "add"});
+    let imageObject = {
+      url: req.body.newImg,
+      citation: req.body.citation
+    }
+
+    const request = await GalleryUpdateRequest.create({bird: bird, img: imageObject, imgIndex: null, action: "add"});
 
     if (!request) {
       req.flash('error', "Error creating add request");
