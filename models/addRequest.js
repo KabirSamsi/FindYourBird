@@ -9,9 +9,6 @@ var addRequestSchema = new mongoose.Schema({
   diet: {type: String},
   habitat: [{type: String}],
   range: String,
-  gallery: [
-    {type: Object}
-  ],
   size: String,
   colors: [{type: String}]
 })

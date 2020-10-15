@@ -58,7 +58,7 @@ app.get('/acceptNew/:id', (req, res) => {
       return res.redirect('back');
     }
 
-    const bird = await Bird.create({name: request.name, scientificName: request.scientificName, img: request.img, description: request.description, appearance: request.appearance, diet: request.diet, habitat: request.habitat, range: request.range, gallery: request.gallery, size: request.size, colors: request.colors});
+    const bird = await Bird.create({name: request.name, scientificName: request.scientificName, img: request.img, description: request.description, appearance: request.appearance, diet: request.diet, habitat: request.habitat, range: request.range, gallery: [request.img], size: request.size, colors: request.colors});
 
     if (!bird) {
       console.log('error')

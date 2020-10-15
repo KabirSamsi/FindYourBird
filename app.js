@@ -231,7 +231,7 @@ app.post('/', (req, res) => { //Create new bird
       citation: req.body.citation
     }
 
-    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: birdImage, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, gallery: [birdImage], size: req.body.size, colors: finalColors});
+    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: birdImage, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
 
     if (!request) {
       console.log('error')
