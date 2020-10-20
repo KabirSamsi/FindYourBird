@@ -274,8 +274,10 @@ app.post('/identify', (req, res) => { //Calculate birds which match identificati
   let allowed_sizes = []
 
   for (let i = 0; i < sizes.length; i += 1) {
-    if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1])
-    allowed_sizes.push(sizes[i])
+    // if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
+    if (req.body.size == sizes[i]) {
+      allowed_sizes.push(sizes[i])
+    }
   }
 
   Bird.find({size: {$in: allowed_sizes}}, (err, foundBirds) => {
