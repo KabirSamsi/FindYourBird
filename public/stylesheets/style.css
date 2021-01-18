@@ -1,6 +1,5 @@
 body {
-  background-image: url("../media/background.jpg");
-  background-size: cover;
+  background: linear-gradient(0.25turn, #094719, green, lime);
   text-align: center;
 }
 
@@ -41,8 +40,13 @@ body {
 }
 
 /* smaller than md */
-@media only screen and (max-width: 768px) and (min-width: 400px) {
+@media only screen and (max-width: 1000px) {
   body {
-    background-image: url('../media/background-rotated.jpg');
+    background-size: cover;
   }
+
+  #bird-container, #heading-container {
+    width: 100%;
+  }
+
 }
