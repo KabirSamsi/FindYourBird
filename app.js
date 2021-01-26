@@ -30,6 +30,7 @@ mongoose.connect(process.env.DATABASE_URI, {
 //Set up libraries
 app.use(express.static(__dirname + "/public")); //Sets all styles/js/media to /public
 app.set('view engine', "ejs"); //Sets view engine to EJS
+app.set('views', '/..' + __dirname + '/views');
 app.use(bodyParser.urlencoded({extended: true})); //Allows us to read info from EJS pages
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
 app.use(flash()); //Flash messages to the screen
