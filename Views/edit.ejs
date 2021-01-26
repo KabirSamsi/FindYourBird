@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>FindYourBird</title>
-    <link rel=stylesheet href="../stylesheets/style.css" />
+    <link rel=stylesheet href="/stylesheets/style.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel='shortcut icon' type='image/x-icon' href='/media/favicon3.ico' />
 
@@ -35,16 +35,18 @@
 
               <h4>Colors</h4>
               <% for (let color of colors) { %>
+                <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" id="<%=color%>"
                 <% if (bird.colors.includes(color)) { %>
-                  <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" checked/>
-                <% } else { %>
-                  <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" />
+                   checked
                 <% } %>
+                />
+                <label for="<%=color%>" style="background-color: <%=color%>; padding-left: 10px; padding-right: 10px; border-radius: 20px;
                 <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
-                  <label style="background-color: <%=color%>; color: black; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                  color: black;
                 <% } else {%>
-                  <label style="background-color: <%=color%>; color: white; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                  color: white;
                 <% } %>
+                "><%=color%></label><br />
               <% } %>
               <br />
 
@@ -62,11 +64,11 @@
               <br />
               <h4 id="habitat-list-head">Habitat</h4>
                 <% for (let hab of habitats) {%>
+                  <input type="checkbox" name="<%=hab%>" id="<%=habitats.indexOf(hab)%>"
                   <% if (bird.habitat.includes(hab)) {%>
-                    <input checked name="<%=hab%>" type="checkbox"/>
-                  <%} else {%>
-                    <input type="checkbox" name="<%=hab%>"/>
+                    checked
                   <%}%>
+                  />
                   <label for=<%=habitats.indexOf(hab)%> class="label"><%=hab%></label>
                   <br />
                 <%}%>
@@ -75,13 +77,10 @@
 
             </form>
 
-            <!-- <form action="/<%=bird._id%>?_method=delete" method="post" class="edit-bird-form">
-              <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Delete Bird</button>
-            </form> -->
-
           </div>
         </div>
       </div>
     </div>
   </body>
+  <script src="/javascript/search.js"></script>
 </html>

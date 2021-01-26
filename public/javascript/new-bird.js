@@ -1,8 +1,8 @@
 let birdNames = "<%=birds%>".split(',');
-let birdRegExpNames = []
+let birdRegExpNames = [];
 
 let requestNames = "<%=requests%>".split(',');
-let requestRegExpNames = []
+let requestRegExpNames = [];
 
 const nameInput = document.getElementById("name");
 const imageInput = document.getElementById('image-input')
@@ -115,5 +115,5 @@ citationInput.addEventListener('paste', () => {
       citationHeader.innerText = ""
       citationValue.innerText = citationInput.value
     }
-  }, 3)
-})
+  }, 3);
+});

@@ -1,12 +1,10 @@
+if(process.env.NODE_ENV !== "production") {
+ require('dotenv').config();
+}
+
 //LIBRARIES
 const express = require('express');
-const app = express()
-const cookieParser = require('cookie-parser')
-const fs = require('fs')
-const mongoose = require('mongoose');
-const methodOverride = require('method-override');
-var session = require('express-session');
-const flash = require('connect-flash');
+const router = express.Router();
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -15,117 +13,112 @@ const UpdateRequest = require('../models/updateRequest');
 const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
 //ROUTES
-app.get('/newBirdList', (req, res) => {
-  if (req.query.pwd == "k1b9rfyb") {
+router.get('/newBirdList', (req, res) => {
+  if (req.query.pwd == process.env.QUERY_PASSWORD) {
     AddRequest.find({}, (err, requests) => {
 
       if (err || !requests) {
-        console.log(err)
-        req.flash('error', "Unable to access requests")
-        res.redirect('back')
+        req.flash('error', "Unable to access requests");
+        res.redirect('back');
 
       } else {
-        res.render('../Views/requests', {requests, birdInfo: false, action: 'new'})
+        res.render('requests', {requests, birdInfo: false, action: 'new'});
       }
-    })
+    });
 
   } else {
-    req.flash('error', 'Invalid password')
+    req.flash('error', 'Invalid password');
     res.redirect('back');
   }
-})
+});
 
-app.get('/newBirdShow/:id', (req, res) => {
+router.get('/newBirdShow/:id', (req, res) => {
   AddRequest.findById(req.params.id, (err, request) => {
 
     if (err || !request) {
-      console.log(err)
-      req.flash('error', "Unable to access request")
-      res.redirect('back')
+      req.flash('error', "Unable to access request");
+      res.redirect('back');
     } else {
-      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'new'})
+      res.render('showRequest', {birdInfo: true, bird: request, action: 'new'});
     }
-  })
-})
+  });
+});
 
-app.get('/acceptNew/:id', (req, res) => {
+router.get('/acceptNew/:id', (req, res) => {
   (async() => {
     const request = await AddRequest.findByIdAndDelete(req.params.id);
 
     if (!request) {
-      console.log('error');
-      req.flash('error', "Unable to access request")
+      req.flash('error', "Unable to access request");
       return res.redirect('back');
     }
 
     const bird = await Bird.create({name: request.name, scientificName: request.scientificName, img: request.img, description: request.description, appearance: request.appearance, diet: request.diet, habitat: request.habitat, range: request.range, gallery: [request.img], size: request.size, colors: request.colors});
 
     if (!bird) {
-      console.log('error')
-      req.flash('error', "Unable to access request")
-      return res.redirect('back')
+      req.flash('error', "Unable to access request");
+      return res.redirect('back');
     }
 
-    await bird.save()
-    req.flash('success', "New bird accepted! All users can now see this bird")
-    res.redirect('/')
+    await bird.save();
+
+    req.flash('success', "New bird accepted! All users can now see this bird");
+    return res.redirect('/');
 
   })().catch(err => {
-    req.flash('error', "Unable to access bird")
-    res.redirect('/')
-  })
-})
+    req.flash('error', "Unable to access bird");
+    res.redirect('/');
+  });
+});
 
-app.get('/rejectNew/:id', (req, res) => {
+router.get('/rejectNew/:id', (req, res) => {
   AddRequest.findByIdAndDelete(req.params.id, (err, request) => {
     if (err || !request) {
-      req.flash('error', "Unable to access request")
-      res.redirect('back')
+      req.flash('error', "Unable to access request");
+      res.redirect('back');
 
     } else {
-      req.flash('success', "New bird rejected!")
-      res.redirect('/')
+      req.flash('success', "New bird rejected!");
+      res.redirect('/');
     }
-  })
-})
+  });
+});
 
-app.get('/updateBirdList', (req, res) => {
-  if (req.query.pwd == "k1b9rfyb") {
+router.get('/updateBirdList', (req, res) => {
+  if (req.query.pwd == process.env.QUERY_PASSWORD) {
     UpdateRequest.find({}).populate('bird').exec((err, requests) => {
 
       if (err || !requests) {
-        console.log(err)
-        req.flash('error', "Unable to access requests")
-        res.redirect('back')
+        req.flash('error', "Unable to access requests");
+        res.redirect('back');
 
       } else {
-        res.render('../Views/requests', {requests, birdInfo: false, action: 'update'})
+        res.render('requests', {requests, birdInfo: false, action: 'update'});
       }
-    })
+    });
 
   } else {
-    req.flash('error', "Invalid password")
-    res.redirect('back')
+    req.flash('error', "Invalid password");
+    res.redirect('back');
   }
-})
+});
 
-app.get('/updateBirdShow/:id', (req, res) => {
+router.get('/updateBirdShow/:id', (req, res) => {
   UpdateRequest.findById(req.params.id).populate('bird').exec((err, request) => {
 
     if (err || !request) {
-      console.log(err)
-      req.flash('error', "Unable to access request")
-      res.redirect('back')
+      req.flash('error', "Unable to access request");
+      res.redirect('back');
 
     } else {
-      res.render('../Views/showRequest', {birdInfo: true, bird: request, action: 'update'})
+      res.render('showRequest', {birdInfo: true, bird: request, action: 'update'});
     }
-  })
-})
+  });
+});
 
-app.get('/acceptUpdate/:id', (req, res) => {
+router.get('/acceptUpdate/:id', (req, res) => {
   (async() => {
-    let overlap = []
+    let overlap = [];
     const currentReq = await UpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 
     let tempBirdData = { //Object stores the bird's info, before it was updated
@@ -136,7 +129,7 @@ app.get('/acceptUpdate/:id', (req, res) => {
       range: currentReq.bird.range,
       size: currentReq.bird.size,
       colors: currentReq.bird.colors,
-    }
+    };
 
     const bird = await Bird.findByIdAndUpdate(currentReq.bird._id, {description: currentReq.description, appearance: currentReq.appearance, diet: currentReq.diet, habitat: currentReq.habitat, range: currentReq.range, size: currentReq.size, colors: currentReq.colors});
 
@@ -149,7 +142,7 @@ app.get('/acceptUpdate/:id', (req, res) => {
 
     for (let request of requests) {
       if (request.bird.name == currentReq.bird.name) {
-        overlap.push(request)
+        overlap.push(request);
       }
     }
 
@@ -160,121 +153,116 @@ app.get('/acceptUpdate/:id', (req, res) => {
           request[attr] = currentReq[attr];
         }
       }
-
-      request.save()
+      await request.save();
     }
 
-    req.flash('success', "Bird updated! These changes can now be seen by all users")
-    res.redirect('/')
+    req.flash('success', "Bird updated! These changes can now be seen by all users");
+    res.redirect('/');
 
   })().catch(err => {
-    console.log(err)
     req.flash('error', "Unable to access database");
-    res.redirect('back')
-  })
-})
+    res.redirect('back');
+  });
+});
 
-app.get('/rejectUpdate/:id', (req, res) => {
+router.get('/rejectUpdate/:id', (req, res) => {
   UpdateRequest.findByIdAndDelete(req.params.id, (err, request) => {
     if (err || !request) {
-      req.flash('error', "Unable to delete update")
-      res.redirect('back')
+      req.flash('error', "Unable to delete update");
+      res.redirect('back');
 
     } else {
-      req.flash('success', "Update rejected!")
-      res.redirect('/')
+      req.flash('success', "Update rejected!");
+      res.redirect('/');
     }
-  })
-})
+  });
+});
 
-app.get('/galleryUpdateList', (req, res) => {
-  if (req.query.pwd == "k1b9rfyb") {
+router.get('/galleryUpdateList', (req, res) => {
+  if (req.query.pwd == process.env.QUERY_PASSWORD) {
     GalleryUpdateRequest.find({}).populate('bird').exec((err, requests) => {
 
       if (err || !requests) {
-        console.log(err)
-        req.flash('error', "Unable to access requests")
-        res.redirect('back')
+        req.flash('error', "Unable to access requests");
+        res.redirect('back');
 
       } else {
-        res.render('../Views/requests', {requests, birdInfo: false, action: 'galleryUpdate'})
+        res.render('requests', {requests, birdInfo: false, action: 'galleryUpdate'});
       }
-    })
+    });
 
   } else {
-    req.flash('error', "Invalid password")
-    res.redirect('back')
+    req.flash('error', "Invalid password");
+    res.redirect('back');
   }
-})
+});
 
-app.get('/galleryUpdateShow/:id', (req, res) => {
+router.get('/galleryUpdateShow/:id', (req, res) => {
   GalleryUpdateRequest.findById(req.params.id).populate('bird').exec((err, request) => {
 
     if (err || !request) {
-      console.log(err)
-      req.flash('error', "Unable to access request")
-      res.redirect('back')
+      req.flash('error', "Unable to access request");
+      res.redirect('back');
 
     } else {
-      res.render('../Views/showGalleryRequest', {birdInfo: false, bird: request})
+      res.render('showGalleryRequest', {birdInfo: false, bird: request});
     }
-  })
-})
+  });
+});
 
-app.get('/acceptGalleryUpdate/:id', (req, res) => {
+router.get('/acceptGalleryUpdate/:id', (req, res) => {
   (async() => {
     const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 
     if (!request) {
-      req.flash('error', "Error accessing request")
+      req.flash('error', "Error accessing request");
       return res.redirect('back');
     }
 
     if (request.action == "add") {
-      request.bird.gallery.push(request.img)
-      request.bird.save()
-      req.flash('success', "Image added to bird gallery!")
+      request.bird.gallery.push(request.img);
+      await request.bird.save();
+      req.flash('success', "Image added to bird gallery!");
 
     } else if (request.action == "delete") {
-      request.bird.gallery.splice(request.imgIndex, 1)
-      request.bird.save()
+      request.bird.gallery.splice(request.imgIndex, 1);
+      await request.bird.save();
 
       const laterRequests = await GalleryUpdateRequest.find({action: "delete"});//Delete requests with a higher index than ours
 
       if (!laterRequests) {
-        req.flash('error', "Error accessing requests")
+        req.flash('error', "Error accessing requests");
         return res.redirect('back');
       }
 
       for (let r of laterRequests) {
         if (r.imgIndex > request.imgIndex) {
           r.imgIndex -= 1;
-          r.save()
+          await r.save();
         }
       }
-
-      req.flash('success', "Image deleted from bird gallery!")
+      req.flash('success', "Image deleted from bird gallery!");
     }
 
-    res.redirect('/')
+    return res.redirect('/');
 
   })().catch(err => {
-    console.log(err)
-    req.flash('error', "Unable to access database")
-    res.redirect('back')
-  })
-})
+    req.flash('error', "Unable to access database");
+    res.redirect('back');
+  });
+});
 
-app.get('/rejectGalleryUpdate/:id', (req, res) => {
+router.get('/rejectGalleryUpdate/:id', (req, res) => {
   GalleryUpdateRequest.findByIdAndDelete(req.params.id, (err, request) => {
     if (err || !request) {
-      req.flash('error', "Unable to delete gallery update")
-      res.redirect('back')
+      req.flash('error', "Unable to delete gallery update");
+      res.redirect('back');
 
     } else {
-      req.flash('success', "Gallery Update rejected!")
-      res.redirect('/')
+      req.flash('success', "Gallery Update rejected!");
+      res.redirect('/');
     }
-  })
-})
-module.exports = app;
+  });
+});
+
+module.exports = router;

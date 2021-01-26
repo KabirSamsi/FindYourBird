@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>FindYourBird</title>
-    <link rel=stylesheet href="stylesheets/style.css" />
+    <link rel=stylesheet href="/stylesheets/style.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel='shortcut icon' type='image/x-icon' href='/media/favicon3.ico' />
 
@@ -12,6 +12,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
     <script src="https://kit.fontawesome.com/dccc745c41.js" crossorigin="anonymous"></script>
+
   </head>
   <body id="body">
 
@@ -47,15 +48,17 @@
 
               <h4>Colors</h4>
               <% for (let color of colors) { %>
-                <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" />
+                <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" id="<%=color%>"/>
+                <label for="<%=color%>" style="background-color: <%=color%>; padding-left: 10px; padding-right: 10px; border-radius: 20px;
                 <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
-                  <label style="background-color: <%=color%>; color: black; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
-                <% } else {%>
-                  <label style="background-color: <%=color%>; color: white; padding-left: 10px; padding-right: 10px; border-radius: 20px;"><%=color%></label><br />
+                  color: black;">
+                <% } else { %>
+                  color: white;">
                 <% } %>
+                <%=color%></label><br />
               <% } %>
-
               <br />
+
               <h4>Size</h4>
               <select required class="form-control" id="size-list" name="size">
                 <option disabled selected value="">Select A Bird Size</option>
@@ -67,7 +70,7 @@
               <br />
               <h4 id="habitat-list-head">Habitat</h4>
                 <% for (let hab of habitats) {%>
-                  <input type="checkbox" name="<%=hab%>" />
+                  <input type="checkbox" name="<%=hab%>" id="<%=habitats.indexOf(hab)%>"/>
                   <label for=<%=habitats.indexOf(hab)%> class="label"><%=hab%></label>
                   <br />
                 <%}%>
@@ -146,7 +149,6 @@
           $("#image-display").show()
 
         } else if (imageInput.value == "") {
-          console.log("Hiding image")
           $("#image-display").hide()
 
         } else {
@@ -172,8 +174,8 @@
           imageDisplay.alt = "Image Does Not Exist"
           $("#image-display").show()
         }
-      }, 3)
-    })
+      }, 3);
+    });
 
     citationInput.addEventListener('keydown', () => {
       setTimeout(() => {
@@ -204,4 +206,5 @@
     })
 
   </script>
+  <script src="/javascript/search.js"></script>
 </html>
