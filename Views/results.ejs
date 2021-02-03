@@ -26,18 +26,18 @@
             <% if (birds.length == 0) { %>
                   <h2>No Results</h2>
                   <% if (from == "search") { %>
-                    <p>Sorry, no birds in our database matched "<%=search%>"</p>
+                    <p>Sorry, we couldn't find a match for "<%=search%>"</p>
 
                   <% } else { %>
-                    <p>Sorry, no birds in our database matched your data</p>
+                    <p>Sorry, we couldn't find a match for your data</p>
                   <% }%>
             <% } else { %>
               <h2>Results</h2>
               <% if (from == "search") { %>
-                <p>We found <%=birds.length%> results for "<%=search%>"</p>
+                <p>We found <%=birds.length%> result(s) for "<%=search%>"</p>
 
               <% } else { %>
-                <p>We found  <%=birds.length%> matches for your data</p>
+                <p>We found  <%=birds.length%> match(es) for your data</p>
               <% }%>
             <% } %>
         </div>
@@ -65,7 +65,8 @@
               <em><%=bird.scientificName%></em>
             </div>
             <div class="block-content">
-              <img class="bird-image"  src="<%=bird.img.url%>"/>
+              <img class="bird-image" src="<%=bird.img.url%>"/>
+              <figcaption class="figure-caption"><strong class="caption-header">Image Citation</strong>: <em class="citation-text"><%=bird.img.citation%></em></figcaption>
               <% if (bird.description.split(" ").length > 70) { %>
                 <p class="bird-description"><%= bird.description.split(" ").slice(0, 71).join(" ") %>
                   <a href="/<%=bird._id %>">(Read More)

@@ -21,9 +21,17 @@ body {
     margin-right: 20px;
 }
 
+.caption-header, .citation-text {
+  color: black;
+}
+
+.figure-caption {
+  margin-bottom: 10px;
+}
+
 /* Screen customizations */
 
-@media only and (max-width: 550px) and (min-width: 200px) {
+@media only and (max-width: 550px) {
     .w-65 {
         width: 100%;
     }
@@ -43,7 +51,7 @@ body {
     }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 982px) {
     .btn-scrolldown {
         background-color: #f7f7f7;
     }
