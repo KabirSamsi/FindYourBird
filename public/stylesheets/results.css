@@ -1,0 +1,106 @@
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.results {
+  margin: 0px 550px 0px 550px;
+}
+
+.bird-info, .bird-info:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.bird-image {
+    width: 25%;
+    height: 25%;
+    float: left;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+/* Screen customizations */
+
+@media only and (max-width: 550px) and (min-width: 200px) {
+    .w-65 {
+        width: 100%;
+    }
+
+    .results {
+      margin: 0px 0px 0px 0px;
+    }
+}
+
+@media only and (min-width: 550px) and (max-width: 900px) {
+    .w-65 {
+        width: 90%;
+    }
+
+    .results {
+      margin: 0px 140px 0px 140px;
+    }
+}
+
+@media (max-width: 992px) {
+    .btn-scrolldown {
+        background-color: #f7f7f7;
+    }
+
+    .results {
+      margin: 0px 140px 0px 140px;
+    }
+}
+
+/* text and image rows */
+article.text-block {
+    padding-bottom: 1px;
+    background-color: #ffffff;
+    margin-bottom: 3rem;
+    overflow: hidden;
+}
+
+.text-block, .image-block {
+    box-shadow: 0px 0px 15px rgb(180, 180, 180);
+    border-radius: 15px;
+}
+
+.image-block {
+    width: 100%;
+}
+
+.image-block-half {
+    height: 50%
+}
+
+.text-block .block-header {
+    padding: 15px 30px 5px 30px;
+    background-color: #424651;
+    color: #ffffff;
+}
+
+.text-block .block-content {
+    padding: 15px 30px;
+}
+
+.block-header.grey {
+  padding-bottom: 20px;
+}
+
+.element {
+    margin-bottom: 5rem;
+}
+
+@media only screen and (min-width: 992px) {
+    article.text-block {
+        margin-bottom: 0;
+    }
+
+    img.image-block {
+        position: absolute;
+        width: calc(100% - 30px);
+        height: 100%;
+        object-fit: cover;
+    }
+}

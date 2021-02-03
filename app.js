@@ -63,7 +63,7 @@ app.get('*', (req, res) => {
 });
 
 //Runs server
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8000;
 
 http.listen(port,process.env.IP, () => {
 	console.log(":: App listening on port " + port + " ::");

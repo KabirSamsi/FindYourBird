@@ -32,7 +32,7 @@ router.post('/search', (req, res) => { //Route to search for a bird
 
         for (let bird of foundBirds) {
           dataString = "";
-          for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'range', 'size', 'colors']) {
+          for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
             if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
               dataString += bird[attr].toLowerCase();
               dataString += " ";
@@ -51,7 +51,6 @@ router.post('/search', (req, res) => { //Route to search for a bird
         }
 
         //Sort matrix through iteration (by having the most occurring search)
-
         let temp;
         for (let i = 0; i < resultMatrix.length; i +=1) {
           for (let j = 0; j < resultMatrix.length - 1; j += 1) {
@@ -63,12 +62,13 @@ router.post('/search', (req, res) => { //Route to search for a bird
           }
         }
 
+        let resultMap = new Map();
         for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
           results.push(r[0]);
+          resultMap.set(r[0]._id.toString(), r[1]);
         }
 
-        res.render('results', {birdInfo: false, birds: results.reverse(), from: 'search', search: req.body.name});
-
+        res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
       }
     });
 
@@ -202,66 +202,88 @@ router.post('/identify', (req, res) => { //Calculate birds which match identific
   let allowed_sizes = [];
 
   for (let i = 0; i < sizes.length; i += 1) {
-    // if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
-    if (req.body.size == sizes[i]) {
+    if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
       allowed_sizes.push(sizes[i]);
     }
   }
 
-  Bird.find({size: {$in: allowed_sizes}}, (err, foundBirds) => {
-    let birdList = [];
-    let final = [];
-    let sorted = [];
-
-    for (let bird of foundBirds) {
-      if (bird.habitat.includes(habitats[req.body.habitat])) {
-        birdList.push(bird);
+  if (req.body.color) { //A color is selected
+    (async () => {
+      const birds = await Bird.find({size: {$in: allowed_sizes}});
+      if (!birds) {
+        req.flash("error", "An error occurred");
+        return res.redirect("back");
       }
-    }
 
-    if (req.body.color) { //A color is selected
-      for (let bird of birdList) {
-        let include = true; //Whether to be included or not
+      let finalBirds = new Map();
+      let sorted = [];
+      let final = [];
 
-        if (typeof req.body.color == 'string') {
-          if (!bird.colors.includes(req.body.color)) {
-            include = false;
+      for (let bird of birds) {
+        if (bird.habitat.includes(habitats[req.body.habitat])) {
+          finalBirds.set(bird._id.toString(), 2);
+          if (req.body.size == bird.size) {
+            finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*2);
+          } else {
+            finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*1.5);
           }
 
-        } else {
-          for (let color of req.body.color) {
-            if (!bird.colors.includes(color)) {
-              include = false;
-              break;
+          if (typeof req.body.color == "string") {
+            if (!bird.colors.includes(req.body.color.toString())) {
+              finalBirds.delete(bird._id.toString());
+            }
+
+          } else  {
+            for (let color of req.body.color) {
+              if (!bird.colors.includes(color)) {
+                finalBirds.delete(bird._id.toString());
+                break;
+              }
             }
           }
         }
-
-        if (include) {
-          final.push(bird);
-        }
       }
 
-      for (let bird of final) {
-        if (bird.size == req.body.size) {
-          sorted.push(bird);
+      let populatedBird;
+      for (let bird of finalBirds) {
+        populatedBird = await Bird.findById(bird[0]);
+        if (!populatedBird) {
+          req.flash("error", "An error occurred");
+          return res.redirect("back");
         }
+        sorted.push([populatedBird, bird[1]]);
       }
 
-      if (sorted.length < 10) {
-        for (let bird of final) {
-          if (bird.size != req.body.size) {
-            sorted.push(bird);
+      let temp;
+      for (let i = 0; i < sorted.length-1; i ++) {
+        for (let j = 0; j < sorted.length-1; j++) {
+          if (sorted[j][1] < sorted[j+1][1]) {
+            temp = sorted[j];
+            sorted[j] = sorted[j+1];
+            sorted[j+1] = temp;
           }
         }
       }
 
-      res.render('results', {birdInfo: false, birds: sorted, from: 'data'});
+      for (let bird of sorted) {
+        final.push(bird[0]);
+      }
 
-    } else { //No color is selected
-        res.render('results', {birdInfo: false, birds: birdList, from: 'data'});
-    }
-  });
+      if (final.length > 10) {
+        return res.render('results', {birdInfo: false, birds: final.slice(0, 10), birdMap: finalBirds, from: 'data'});
+      }
+
+      return res.render('results', {birdInfo: false, birds: final, birdMap: finalBirds, from: 'data'});
+
+    })().catch(err => {
+      req.flash("error", "An error occurred");
+      res.redirect("back");
+    });
+
+  } else { //No color is selected
+      req.flash("error", "You must enter at least one color");
+      res.redirect('back');
+  }
 });
 
 router.get('/contact', (req, res) => { //Contact info
@@ -280,7 +302,6 @@ router.get('/:id', (req, res) => { //Display bird based on ID
 });
 
 router.put('/:id', (req, res) => { //Update bird info
-
   (async() => {
     let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
 
@@ -314,12 +335,11 @@ router.put('/:id', (req, res) => { //Update bird info
       return res.redirect('back');
     }
 
-    request.save();
+    await request.save();
     req.flash('success', "Bird Updates Sent to Admin! Please wait a few days for the admin to verify and accept changes");
-    res.redirect(`/${bird._id}`);
+    return res.redirect(`/${bird._id}`);
 
   })().catch(err => {
-    console.log(err)
     req.flash('error', "Unable to access database");
     res.redirect('back');
   });
