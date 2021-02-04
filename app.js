@@ -4,6 +4,7 @@ if(process.env.NODE_ENV !== "production") {
 
 //Libraries
 const express = require('express');
+const router = express.Router();
 const app = express();
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
@@ -12,7 +13,7 @@ const fs = require('fs');
 const methodOverride = require('method-override');
 const session = require('express-session');
 const http = require('http').createServer(app);
-const fillers = require('./fillerWords');
+const filter = require('./filter');
 
 //Access gallery, request and tutorial routes
 const indexRoutes = require('./routes/index');
@@ -39,12 +40,12 @@ app.use(session({ //Set up req flashing
   cookie: {
     maxAge: 86400000
   },
-  secret: "Birding is awesome",
+  secret: "Something",
   resave: false,
   saveUninitialized: false
 }));
 
-app.use(function(req, res, next) { //Setting up flash messages
+app.use((req, res, next) => { //Setting up flash messages
   // flash message stuff
   res.locals.error = req.flash('error');
   res.locals.success = req.flash('success');
@@ -52,12 +53,11 @@ app.use(function(req, res, next) { //Setting up flash messages
 });
 
 //Import other route files
-app.use(indexRoutes);
+app.use('/', indexRoutes);
 app.use('/request', requestRoutes);
 app.use('/gallery', galleryRoutes);
 app.use('/tutorial', tutorialRoutes);
 
-// Catch-all route.
 app.get('*', (req, res) => {
 	res.redirect('/');
 });
@@ -65,6 +65,6 @@ app.get('*', (req, res) => {
 //Runs server
 let port = process.env.PORT || 8000;
 
-http.listen(port,process.env.IP, () => {
+http.listen(port, process.env.IP, () => {
 	console.log(":: App listening on port " + port + " ::");
 });

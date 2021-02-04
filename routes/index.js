@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const filter = require("../fillerWords");
+const filter = require("../filter");
 const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../searchOperations");
 
 //SCHEMA
@@ -184,7 +184,7 @@ router.post('/', (req, res) => { //Create new bird
     }
 
     req.flash('success', "Thank you for adding a bird! Please wait a few days for the admin to verify and accept bird");
-    res.redirect('/');
+    return res.redirect('/');
 
   })().catch(err => {
     req.flash('error', "Unable to access database");
@@ -300,13 +300,13 @@ router.get('/contact', (req, res) => { //Contact info
   res.render('contact', {birdInfo: false});
 });
 
-router.get('/:id', (req, res) => { //Display bird based on ID
-  Bird.findById(req.params.id, (err, foundBird) => {
-    if (err || !foundBird) {
-      req.flash('error', "Unable to find bird");
-
+router.get('/:id', (req, res) => {
+  Bird.findById(req.params.id, (err, bird) => {
+    if (err || !bird) {
+      req.flash('error', "Bird not found");
+      res.redirect("back");
     } else {
-      res.render('index', {birdInfo: true, bird: foundBird});
+      res.render('index', {birdInfo: true, bird});
     }
   });
 });
