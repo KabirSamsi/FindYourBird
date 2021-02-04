@@ -34,11 +34,16 @@
             <% } else { %>
               <h2>Results</h2>
               <% if (from == "search") { %>
-                <p>We found <%=birds.length%> result(s) for "<%=search%>"</p>
+                <span><%=birds.length%> birds match "<%=search%>"</span>
 
               <% } else { %>
-                <p>We found  <%=birds.length%> match(es) for your data</p>
+                <span><%=birds.length%> birds match your data</span>
               <% }%>
+
+              <% if (birds.length > 10) { %>
+                <span id="top-10">(Showing Top 10 Results)</span><br /><br />
+                <button class="btn btn-primary" onclick="show(this)">Show More</button>
+              <% } %>
             <% } %>
         </div>
       </div>
@@ -46,33 +51,34 @@
   </div>
 
   <div class="results">
-    <%for (let bird of birds) { %>
-      <div class="row">
+    <%for (let i = 0; i < birds.length; i ++) { %>
+
+      <div class="row bird" id="<%=i%>" <% if (i > 10) {%> hidden <%} %>>
         <div class="col-lg-12">
-          <article class="text-block mode" id="<%= bird._id %>">
+          <article class="text-block mode">
             <div class="block-header grey">
               <h5>
-                <a class="bird-info" href="/<%=bird._id %>"><%= bird.name %>
+                <a class="bird-info" href="/<%=birds[i]._id %>"><%= birds[i].name %>
                   <% if (from == "data") { %>
-                    (<%=100*(birdMap.get(bird._id.toString())/4)%>% match)
+                    (<%=100*(birdMap.get(birds[i]._id.toString())/4)%>% match)
 
                   <% } else if (from == "search") { %>
-                    (<%=Math.round(10000*(resultMap.get(bird._id.toString())/resultMap.get(birds[0]._id.toString())))/100%>% match)
+                    (<%=Math.round(10000*(resultMap.get(birds[i]._id.toString())/resultMap.get(birds[0]._id.toString())))/100%>% match)
                   <% } %>
                 </a>
               </h5>
-              <em><%=bird.scientificName%></em>
+              <em><%=birds[i].scientificName%></em>
             </div>
             <div class="block-content">
-              <img class="bird-image" src="<%=bird.img.url%>"/>
-              <figcaption class="figure-caption"><strong class="caption-header">Image Citation</strong>: <em class="citation-text"><%=bird.img.citation%></em></figcaption>
-              <% if (bird.description.split(" ").length > 70) { %>
-                <p class="bird-description"><%= bird.description.split(" ").slice(0, 71).join(" ") %>
-                  <a href="/<%=bird._id %>">(Read More)
+              <img class="bird-image" src="<%=birds[i].img.url%>"/>
+              <figcaption class="figure-caption"><strong class="caption-header">Image Citation</strong>: <em class="citation-text"><%=birds[i].img.citation%></em></figcaption>
+              <% if (birds[i].description.split(" ").length > 70) { %>
+                <p class="bird-description"><%= birds[i].description.split(" ").slice(0, 71).join(" ") %>
+                  <a href="/<%=birds[i]._id %>">(Read More)
                   </a>
                 </p>
               <% } else { %>
-                <p class="bird-description"><%= bird.description %></p>
+                <p class="bird-description"><%= birds[i].description %></p>
               <% } %>
             </div>
           </article>
@@ -84,4 +90,31 @@
 
   </body>
   <script src="/javascript/search.js"></script>
+  <script>
+
+  const show = function(button) {
+    for (let bird of document.getElementsByClassName("bird")) {
+      bird.hidden = false;
+    }
+
+    button.className = "btn btn-danger";
+    button.innerText = "Show Less";
+    button.setAttribute("onclick", "hide(this)");
+    document.getElementById("top-10").innerText = "(Showing All Results)";
+  }
+
+  const hide = function(button) {
+    for (let bird of document.getElementsByClassName("bird")) {
+      if (parseInt(bird.id) > 10) {
+        bird.hidden = true;
+      }
+    }
+
+      button.className = "btn btn-primary";
+      button.innerText = "Show More";
+      button.setAttribute("onclick", "show(this)");
+      document.getElementById("top-10").innerText = "(Showing Top 10 Results)";
+  }
+
+  </script>
 </html>

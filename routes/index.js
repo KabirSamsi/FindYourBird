@@ -283,10 +283,6 @@ router.post('/identify', (req, res) => { //Calculate birds which match identific
         final.push(bird[0]);
       }
 
-      if (final.length > 10) {
-        return res.render('results', {birdInfo: false, birds: final.slice(0, 10), birdMap: finalBirds, from: 'data'});
-      }
-
       return res.render('results', {birdInfo: false, birds: final, birdMap: finalBirds, from: 'data'});
 
     })().catch(err => {
