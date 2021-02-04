@@ -57,7 +57,7 @@
                     (<%=100*(birdMap.get(bird._id.toString())/4)%>% match)
 
                   <% } else if (from == "search") { %>
-                      (Matches: <%=resultMap.get(bird._id.toString())%>)
+                    (<%=Math.round(10000*(resultMap.get(bird._id.toString())/resultMap.get(birds[0]._id.toString())))/100%>% match)
                   <% } %>
                 </a>
               </h5>

@@ -6,4 +6,18 @@ for (let word of otherFillers) {
   fillers.push(word);
 }
 
-module.exports = fillers;
+const filter = function(phrase) {
+  const textSplitter = new RegExp(/[\"\s\'\r\n]/, 'g');
+  const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g');
+
+  let cleaned = [];
+  for (let word of phrase.split(textSplitter)) {
+    if (!fillers.includes(word.split(delimeter).join(''))) {
+      cleaned.push(word);
+    }
+  }
+
+  return cleaned.join(' ');
+}
+
+module.exports = filter;

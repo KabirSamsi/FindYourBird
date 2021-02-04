@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const fillers = require("../fillerWords");
+const filter = require("../fillerWords");
+const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../searchOperations");
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -14,75 +15,91 @@ router.get('/', (req, res) => { //Render index page
 });
 
 router.post('/search', (req, res) => { //Route to search for a bird
+  let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
+  let results = []; //Hold info about each matching bird
+  const textSplitter = new RegExp(/[\"\s\'\r\n]/, 'g');
+  const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g');
 
-  if (!fillers.includes(req.body.name)) {
+  let searchExpressions = [];
+  for (let word of filter(req.body.name).split(textSplitter)) {
+    searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+  }
 
-    let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
-    let results = []; //Hold info about each matching bird
-    let searchRegExp = new RegExp(req.body.name.toLowerCase().replace(/[^a-zA-z0-9" ""]/g, ""), 'g'); //Stores user search as a regular expression
+  Bird.find({}, (err, foundBirds) => {
+    if (err || !foundBirds) {
+      req.flash('error', "Unable to access database");
+      res.redirect('back');
 
-    Bird.find({}, (err, foundBirds) => {
-      if (err || !foundBirds) {
-        req.flash('error', "Unable to access database");
-        res.redirect('back');
+    } else {
+      let data = new Map(); //Tracks occurrences of whole words in birds' data
+      let dataString = ""; //Tracks occurrences of partila words in birds' data
 
-      } else {
+      for (let bird of foundBirds) {
+        for (let item of data) {
+          data.delete(item[0]);
+        }
+        dataString = "";
 
-        let dataString; //temporary data string for each bird
+        for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
+          if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
+            for (let word of bird[attr].toLowerCase().split(delimeter)) {
+              dataString += `${word} `;
+              if (data.has(word)) {
+                data.set(word, data.get(word) + 1);
+              } else {
+                data.set(word, 1);
+              }
+            }
 
-        for (let bird of foundBirds) {
-          dataString = "";
-          for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
-            if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
-              dataString += bird[attr].toLowerCase();
-              dataString += " ";
-
-            } else { //If the attribute is an array, add each value inside the array to the data String
-              for (let i of bird[attr]) {
-                dataString += i.toLowerCase();
-                dataString += " ";
+          } else { //If the attribute is an array, add each value inside the array to the data String
+            for (let i of bird[attr]) {
+              for (let word of i.toLowerCase().split(delimeter)) {
+                dataString += `${word} `;
+                if (data.has(word)) {
+                  data.set(word, data.get(word) + 1);
+                } else {
+                  data.set(word, 1);
+                }
               }
             }
           }
-
-          if( ((dataString.replace(/[^a-zA-z0-9" "]/g, "").match(searchRegExp) || []).length) > 0) { //If we can find the search inside any bird's info, add it to the list
-            resultMatrix.push([bird, ((dataString.replace(/[^a-zA-z0-9" "]/g, "").match(searchRegExp) || []).length)]);
-          }
         }
 
-        //Sort matrix through iteration (by having the most occurring search)
-        let temp;
-        for (let i = 0; i < resultMatrix.length; i +=1) {
-          for (let j = 0; j < resultMatrix.length - 1; j += 1) {
-            if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
-              temp = resultMatrix[j+1];
-              resultMatrix[j+1] = resultMatrix[j];
-              resultMatrix[j] = temp;
-            }
-          }
-        }
+        //Evalautes both options and so captures both out-of-order strings (with the map) and partial strings (with the string)
+        if (isInMap(searchExpressions, data)) {
+          resultMatrix.push([bird, occurrencesByMap(searchExpressions, data)]);
 
-        let resultMap = new Map();
-        for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
-          results.push(r[0]);
-          resultMap.set(r[0]._id.toString(), r[1]);
+        } else if (isInString(searchExpressions, dataString)) {
+          resultMatrix.push([bird, occurrencesByString(searchExpressions, dataString)]);
         }
-
-        res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
       }
-    });
 
-  } else {
-    res.render('results', {birdInfo: false, birds: [], from: 'search', search: req.body.name});
-  }
+      //Sort matrix through iteration (by having the most occurring search)
+      let temp;
+      for (let i = 0; i < resultMatrix.length; i +=1) {
+        for (let j = 0; j < resultMatrix.length - 1; j += 1) {
+          if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
+            temp = resultMatrix[j+1];
+            resultMatrix[j+1] = resultMatrix[j];
+            resultMatrix[j] = temp;
+          }
+        }
+      }
+
+      let resultMap = new Map();
+      for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
+        results.push(r[0]);
+        resultMap.set(r[0]._id.toString(), r[1]);
+      }
+
+      res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
+    }
+  });
 });
 
 router.get('/new', (req, res) => { //Route to access 'new bird' page
-
   (async() => {
-
     const birds = await Bird.find({});
-
     if (!birds) {
       req.flash('error', "Unable to find birds");
       return res.redirect('back');
@@ -94,7 +111,6 @@ router.get('/new', (req, res) => { //Route to access 'new bird' page
     }
 
     const addRequests = await AddRequest.find({});
-
     if (!addRequests) {
       req.flash('error', "Unable to find add requests");
       return res.redirect('back');
@@ -115,9 +131,7 @@ router.get('/new', (req, res) => { //Route to access 'new bird' page
 });
 
 router.post('/', (req, res) => { //Create new bird
-
   (async() => {
-
     let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']; //Find out list of habitats based on what was checked
     let finalHabitats = [];
     for (let habitat of habitats) {
