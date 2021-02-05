@@ -36,11 +36,12 @@ app.use(bodyParser.urlencoded({extended: true})); //Allows us to read info from 
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
 app.use(flash()); //Flash messages to the screen
 
-app.use(session({ //Set up req flashing
+//Session middleware
+app.use(session({
   cookie: {
     maxAge: 86400000
   },
-  secret: "Something",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }));
