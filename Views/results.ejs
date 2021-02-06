@@ -53,7 +53,7 @@
   <div class="results">
     <%for (let i = 0; i < birds.length; i ++) { %>
 
-      <div class="row bird" id="<%=i%>" <% if (i > 9) {%> hidden <%} %>>
+      <div class="row bird" id="<%=i%>" <% if (i > 9) {%> style="display: none;" <%} %>>
         <div class="col-lg-12">
           <article class="text-block mode">
             <div class="block-header grey">
@@ -94,7 +94,7 @@
 
   const show = function(button) {
     for (let bird of document.getElementsByClassName("bird")) {
-      bird.hidden = false;
+      bird.style.display = "block";
     }
 
     button.className = "btn btn-danger";
@@ -106,7 +106,7 @@
   const hide = function(button) {
     for (let bird of document.getElementsByClassName("bird")) {
       if (parseInt(bird.id) > 10) {
-        bird.hidden = true;
+        bird.style.display = "none";
       }
     }
 

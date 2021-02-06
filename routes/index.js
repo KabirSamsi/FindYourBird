@@ -10,39 +10,57 @@ const UpdateRequest = require('../models/updateRequest');
 const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
 //ROUTES
-router.get('/', (req, res) => { //Render index page
-  res.render('index', {birdInfo: false, search: null});
+router.get('/', async(req, res) => { //Render index page
+  try {
+    return res.render('index', {birdInfo: false, search: null});
+
+  } catch(err) {
+    req.flash("error", "An error occurred");
+    res.redirect("back");
+  }
 });
 
-router.post('/search', (req, res) => { //Route to search for a bird
-  let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
-  let results = []; //Hold info about each matching bird
-  const textSplitter = new RegExp(/[\"\s\'\r\n]/, 'g');
-  const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g');
+router.post('/search', async(req, res) => { //Route to search for a bird
+  try {
+    let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
+    let results = []; //Hold info about each matching bird
+    const textSplitter = new RegExp(/[\"\s\'\r\n]/, 'g');
+    const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g');
 
-  let searchExpressions = [];
-  for (let word of filter(req.body.name).split(textSplitter)) {
-    searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
-  }
+    let searchExpressions = [];
+    for (let word of filter(req.body.name).split(textSplitter)) {
+      searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+    }
 
-  Bird.find({}, (err, foundBirds) => {
-    if (err || !foundBirds) {
+    const birds = await Bird.find({});
+    if (!birds) {
       req.flash('error', "Unable to access database");
-      res.redirect('back');
+      return res.redirect('back');
+    }
 
-    } else {
-      let data = new Map(); //Tracks occurrences of whole words in birds' data
-      let dataString = ""; //Tracks occurrences of partila words in birds' data
+    let data = new Map(); //Tracks occurrences of whole words in birds' data
+    let dataString = ""; //Tracks occurrences of partila words in birds' data
 
-      for (let bird of foundBirds) {
-        for (let item of data) {
-          data.delete(item[0]);
-        }
-        dataString = "";
+    for (let bird of birds) {
+      for (let item of data) {
+        data.delete(item[0]);
+      }
+      dataString = "";
 
-        for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
-          if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
-            for (let word of bird[attr].toLowerCase().split(delimeter)) {
+      for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
+        if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
+          for (let word of bird[attr].toLowerCase().split(delimeter)) {
+            dataString += `${word} `;
+            if (data.has(word)) {
+              data.set(word, data.get(word) + 1);
+            } else {
+              data.set(word, 1);
+            }
+          }
+
+        } else { //If the attribute is an array, add each value inside the array to the data String
+          for (let i of bird[attr]) {
+            for (let word of i.toLowerCase().split(delimeter)) {
               dataString += `${word} `;
               if (data.has(word)) {
                 data.set(word, data.get(word) + 1);
@@ -50,55 +68,47 @@ router.post('/search', (req, res) => { //Route to search for a bird
                 data.set(word, 1);
               }
             }
-
-          } else { //If the attribute is an array, add each value inside the array to the data String
-            for (let i of bird[attr]) {
-              for (let word of i.toLowerCase().split(delimeter)) {
-                dataString += `${word} `;
-                if (data.has(word)) {
-                  data.set(word, data.get(word) + 1);
-                } else {
-                  data.set(word, 1);
-                }
-              }
-            }
-          }
-        }
-
-        //Evalautes both options and so captures both out-of-order strings (with the map) and partial strings (with the string)
-        if (isInMap(searchExpressions, data)) {
-          resultMatrix.push([bird, occurrencesByMap(searchExpressions, data)]);
-
-        } else if (isInString(searchExpressions, dataString)) {
-          resultMatrix.push([bird, occurrencesByString(searchExpressions, dataString)]);
-        }
-      }
-
-      //Sort matrix through iteration (by having the most occurring search)
-      let temp;
-      for (let i = 0; i < resultMatrix.length; i +=1) {
-        for (let j = 0; j < resultMatrix.length - 1; j += 1) {
-          if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
-            temp = resultMatrix[j+1];
-            resultMatrix[j+1] = resultMatrix[j];
-            resultMatrix[j] = temp;
           }
         }
       }
 
-      let resultMap = new Map();
-      for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
-        results.push(r[0]);
-        resultMap.set(r[0]._id.toString(), r[1]);
-      }
+      //Evalautes both options and so captures both out-of-order strings (with the map) and partial strings (with the string)
+      if (isInMap(searchExpressions, data)) {
+        resultMatrix.push([bird, occurrencesByMap(searchExpressions, data)]);
 
-      res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
+      } else if (isInString(searchExpressions, dataString)) {
+        resultMatrix.push([bird, occurrencesByString(searchExpressions, dataString)]);
+      }
     }
-  });
+
+    //Sort matrix through iteration (by having the most occurring search)
+    let temp;
+    for (let i = 0; i < resultMatrix.length; i +=1) {
+      for (let j = 0; j < resultMatrix.length - 1; j += 1) {
+        if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
+          temp = resultMatrix[j+1];
+          resultMatrix[j+1] = resultMatrix[j];
+          resultMatrix[j] = temp;
+        }
+      }
+    }
+
+    let resultMap = new Map();
+    for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
+      results.push(r[0]);
+      resultMap.set(r[0]._id.toString(), r[1]);
+    }
+
+    return res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
+
+  } catch(err) {
+    req.flash("error", "An Error Occurred");
+    res.redirect("back");
+  }
 });
 
-router.get('/new', (req, res) => { //Route to access 'new bird' page
-  (async() => {
+router.get('/new', async(req, res) => { //Route to access 'new bird' page
+  try {
     const birds = await Bird.find({});
     if (!birds) {
       req.flash('error', "Unable to find birds");
@@ -124,14 +134,14 @@ router.get('/new', (req, res) => { //Route to access 'new bird' page
 
     res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'], birds: birdNameArr, requests: requestNameArr});
 
-  })().catch(err => {
+  } catch(err) {
     req.flash('error', "Unable to access database");
     res.redirect('back');
-  });
+  }
 });
 
-router.post('/', (req, res) => { //Create new bird
-  (async() => {
+router.post('/', async(req, res) => { //Create new bird
+  try {
     let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']; //Find out list of habitats based on what was checked
     let finalHabitats = [];
     for (let habitat of habitats) {
@@ -176,7 +186,18 @@ router.post('/', (req, res) => { //Create new bird
       citation: req.body.citation
     };
 
-    const request = await AddRequest.create({name: req.body.name, scientificName: req.body.scientificName, img: birdImage, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
+    const request = await AddRequest.create({
+      name: req.body.name,
+      scientificName: req.body.scientificName,
+      img: birdImage,
+      description: req.body.description,
+      appearance: req.body.appearance,
+      diet: req.body.diet,
+      habitat: finalHabitats,
+      range: req.body.range,
+      size: req.body.size,
+      colors: finalColors
+    });
 
     if (!request) {
       req.flash('error', "Error accessing your request");
@@ -186,43 +207,60 @@ router.post('/', (req, res) => { //Create new bird
     req.flash('success', "Thank you for adding a bird! Please wait a few days for the admin to verify and accept bird");
     return res.redirect('/');
 
-  })().catch(err => {
+  } catch(err) {
     req.flash('error', "Unable to access database");
     res.redirect('back');
-  });
-});
-
-router.get('/edit/:id', (req, res) => { //Edit bird info
-  Bird.findById(req.params.id, (err, foundBird) => {
-    if (err || !foundBird) {
-      req.flash('error', "Unable to find bird");
-
-    } else {
-      res.render('edit', {birdInfo: false, bird: foundBird, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']});
-    }
-  });
-});
-
-router.get('/identify', (req, res) => { //Route to render bird identification page
-  let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
-  let habitats = ['Urban/Suburban Area', 'Grassland', 'Tundra', 'Forest', 'Mountain', 'Coastal Area', 'Desert', 'Swamp/Marsh', 'Freshwater Body'];
-  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
-  res.render('identify', {birdInfo: false, colors, habitats, sizes});
-});
-
-router.post('/identify', (req, res) => { //Calculate birds which match identification
-  let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
-  let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
-  let allowed_sizes = [];
-
-  for (let i = 0; i < sizes.length; i += 1) {
-    if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
-      allowed_sizes.push(sizes[i]);
-    }
   }
+});
 
-  if (req.body.color) { //A color is selected
-    (async () => {
+router.get('/edit/:id', async(req, res) => { //Edit bird info
+  try {
+    const bird = await Bird.findById(req.params.id);
+    if (!bird) {
+      req.flash('error', "Unable to find bird");
+      return res.redirect("back");
+    }
+
+    res.render('edit', {
+      birdInfo: false,
+      bird,
+      colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'],
+      sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'],
+      habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']
+    });
+
+  } catch(err) {
+    req.flash("error", "An error occurred");
+    res.redirect("back");
+  }
+});
+
+router.get('/identify', async(req, res) => { //Route to render bird identification page
+  try {
+    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
+    let habitats = ['Urban/Suburban Area', 'Grassland', 'Tundra', 'Forest', 'Mountain', 'Coastal Area', 'Desert', 'Swamp/Marsh', 'Freshwater Body'];
+    let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
+    return res.render('identify', {birdInfo: false, colors, habitats, sizes});
+
+  } catch(err) {
+    req.flash("error", "An error occurred");
+    res.redirect("back");
+  }
+});
+
+router.post('/identify', async(req, res) => { //Calculate birds which match identification
+  try {
+    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
+    let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
+    let allowed_sizes = [];
+
+    for (let i = 0; i < sizes.length; i += 1) {
+      if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
+        allowed_sizes.push(sizes[i]);
+      }
+    }
+
+    if (req.body.color) { //A color is selected
       const birds = await Bird.find({size: {$in: allowed_sizes}});
       if (!birds) {
         req.flash("error", "An error occurred");
@@ -284,35 +322,45 @@ router.post('/identify', (req, res) => { //Calculate birds which match identific
       }
 
       return res.render('results', {birdInfo: false, birds: final, birdMap: finalBirds, from: 'data'});
+    }
 
-    })().catch(err => {
-      req.flash("error", "An error occurred");
-      res.redirect("back");
-    });
+    req.flash("error", "You must enter at least one color");
+    return res.redirect('back');
 
-  } else { //No color is selected
-      req.flash("error", "You must enter at least one color");
-      res.redirect('back');
+  } catch(err) {
+    req.flash("error", "An Error Occurred");
+    res.redirect('back');
   }
 });
 
-router.get('/contact', (req, res) => { //Contact info
-  res.render('contact', {birdInfo: false});
+router.get('/contact', async(req, res) => { //Contact info
+  try {
+    return res.render('contact', {birdInfo: false});
+
+  } catch(err) {
+    req.flash("error", "An error occurred");
+    res.redirect("back");
+  }
 });
 
-router.get('/:id', (req, res) => {
-  Bird.findById(req.params.id, (err, bird) => {
-    if (err || !bird) {
+router.get('/:id', async(req, res) => {
+  try {
+    const bird = await Bird.findById(req.params.id);
+    if (!bird) {
       req.flash('error', "Bird not found");
-      res.redirect("back");
-    } else {
-      res.render('index', {birdInfo: true, bird});
+      return res.redirect("back");
     }
-  });
+
+    return res.render('index', {birdInfo: true, bird});
+
+  } catch(err) {
+    req.flash('error', "An error occurred");
+    res.redirect("back");
+  }
 });
 
-router.put('/:id', (req, res) => { //Update bird info
-  (async() => {
+router.put('/:id', async(req, res) => { //Update bird info
+  try {
     let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
 
     let finalHabitats = [];
@@ -332,13 +380,21 @@ router.put('/:id', (req, res) => { //Update bird info
     }
 
     const bird = await Bird.findById(req.params.id);
-
     if (!bird) {
       req.flash('error', "Unable to find bird");
       return res.redirect('back');
     }
 
-    const request = await UpdateRequest.create({bird: bird, description: req.body.description, appearance: req.body.appearance, diet: req.body.diet, habitat: finalHabitats, range: req.body.range, size: req.body.size, colors: finalColors});
+    const request = await UpdateRequest.create({
+      bird,
+      description: req.body.description,
+      appearance: req.body.appearance,
+      diet: req.body.diet,
+      habitat: finalHabitats,
+      range: req.body.range,
+      size: req.body.size,
+      colors: finalColors
+    });
 
     if (!request) {
       req.flash('error', "Unable to create update request");
@@ -349,10 +405,10 @@ router.put('/:id', (req, res) => { //Update bird info
     req.flash('success', "Bird Updates Sent to Admin! Please wait a few days for the admin to verify and accept changes");
     return res.redirect(`/${bird._id}`);
 
-  })().catch(err => {
+  } catch(err) {
     req.flash('error', "Unable to access database");
     res.redirect('back');
-  });
+  }
 });
 
 module.exports = router;
