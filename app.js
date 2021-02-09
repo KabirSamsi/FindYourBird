@@ -13,7 +13,7 @@ const fs = require('fs');
 const methodOverride = require('method-override');
 const session = require('express-session');
 const http = require('http').createServer(app);
-const filter = require('./filter');
+const filter = require('./utils/filter');
 
 //Access gallery, request and tutorial routes
 const indexRoutes = require('./routes/index');
@@ -31,7 +31,6 @@ mongoose.connect(process.env.DATABASE_URI, {
 //Set up libraries
 app.use(express.static(__dirname + "/public")); //Sets all styles/js/media to /public
 app.set('view engine', "ejs"); //Sets view engine to EJS
-app.set('views', __dirname + '/Views');
 app.use(bodyParser.urlencoded({extended: true})); //Allows us to read info from EJS pages
 app.use(methodOverride('_method')); //Allows us to use PUT and DELETE
 app.use(flash()); //Flash messages to the screen

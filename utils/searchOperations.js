@@ -1,4 +1,4 @@
-const filter = require("./filter");
+const filter = require("../utils/filter");
 
 const isInMap = function(subArr, data) {
   for (let item of subArr) {

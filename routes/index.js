@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const filter = require("../filter");
-const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../searchOperations");
+const filter = require("../utils/filter");
+const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../utils/searchOperations");
+const fields = require("../utils/fields");
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -47,7 +48,7 @@ router.post('/search', async(req, res) => { //Route to search for a bird
       }
       dataString = "";
 
-      for (let attr of ['name', 'description', 'scientificName', 'appearance', 'diet', 'habitat', 'size', 'range', 'colors']) {
+      for (let attr of fields.attrs) {
         if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
           for (let word of bird[attr].toLowerCase().split(delimeter)) {
             dataString += `${word} `;
@@ -131,8 +132,7 @@ router.get('/new', async(req, res) => { //Route to access 'new bird' page
       requestNameArr.push(request.name);
     }
 
-
-    res.render('new', {birdInfo: false, colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'], sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'], habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'], birds: birdNameArr, requests: requestNameArr});
+    res.render('new', {birdInfo: false, colors: fields.colors, sizes: fields.sizes, habitats: fields.habitats, birds: birdNameArr, requests: requestNameArr});
 
   } catch(err) {
     req.flash('error', "Unable to access database");
@@ -142,17 +142,15 @@ router.get('/new', async(req, res) => { //Route to access 'new bird' page
 
 router.post('/', async(req, res) => { //Create new bird
   try {
-    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']; //Find out list of habitats based on what was checked
     let finalHabitats = [];
-    for (let habitat of habitats) {
+    for (let habitat of fields.habitats) {
       if (req.body[habitat] == 'on') {
         finalHabitats.push(habitat);
       }
     }
 
-    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
     let finalColors = [];
-    for (let color of colors) {
+    for (let color of fields.colors) {
       if (req.body[color] == 'on') {
         finalColors.push(color);
       }
@@ -224,9 +222,9 @@ router.get('/edit/:id', async(req, res) => { //Edit bird info
     res.render('edit', {
       birdInfo: false,
       bird,
-      colors:['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'],
-      sizes: ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'],
-      habitats: ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies']
+      colors: fields.colors,
+      sizes: fields.sizes,
+      habitats: fields.habitats
     });
 
   } catch(err) {
@@ -237,10 +235,7 @@ router.get('/edit/:id', async(req, res) => { //Edit bird info
 
 router.get('/identify', async(req, res) => { //Route to render bird identification page
   try {
-    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink'];
-    let habitats = ['Urban/Suburban Area', 'Grassland', 'Tundra', 'Forest', 'Mountain', 'Coastal Area', 'Desert', 'Swamp/Marsh', 'Freshwater Body'];
-    let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
-    return res.render('identify', {birdInfo: false, colors, habitats, sizes});
+    return res.render('identify', {birdInfo: false, colors: fields.colors, habitats: fields.habitats, sizes: fields.sizes});
 
   } catch(err) {
     req.flash("error", "An error occurred");
@@ -250,13 +245,11 @@ router.get('/identify', async(req, res) => { //Route to render bird identificati
 
 router.post('/identify', async(req, res) => { //Calculate birds which match identification
   try {
-    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
-    let sizes = ['Hummingbird Size (2-4 inches)', 'Songbird Size (5-9 inches)', 'Large Songbird Size (10-13 inches)', 'Crow Size (1-1.5 feet)', 'Raptor Size (1.5-2.5 feet)', 'Small Waterfowl Size (2.5-4 feet)', 'Large Waterfowl Size (4-5.5 feet)'];
     let allowed_sizes = [];
 
-    for (let i = 0; i < sizes.length; i += 1) {
-      if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
-        allowed_sizes.push(sizes[i]);
+    for (let i = 0; i < fields.sizes.length; i += 1) {
+      if (req.body.size == fields.sizes[i] || req.body.size == fields.sizes[i+1] || req.body.size == fields.sizes[i-1]) {
+        allowed_sizes.push(fields.sizes[i]);
       }
     }
 
@@ -272,7 +265,7 @@ router.post('/identify', async(req, res) => { //Calculate birds which match iden
       let final = [];
 
       for (let bird of birds) {
-        if (bird.habitat.includes(habitats[req.body.habitat])) {
+        if (bird.habitat.includes(fields.habitats[req.body.habitat])) {
           finalBirds.set(bird._id.toString(), 2);
           if (req.body.size == bird.size) {
             finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*2);
@@ -361,19 +354,15 @@ router.get('/:id', async(req, res) => {
 
 router.put('/:id', async(req, res) => { //Update bird info
   try {
-    let habitats = ['Urban/Suburban Areas', 'Grasslands', 'Tundra', 'Forests', 'Mountains', 'Coastal Areas', 'Deserts', 'Swamps and Marshes', 'Freshwater Bodies'];
-
     let finalHabitats = [];
-    for (let habitat of habitats) {
+    for (let habitat of fields.habitats) {
       if (req.body[habitat] == 'on') {
         finalHabitats.push(habitat);
       }
     }
 
-    let colors = ['Black', 'White', 'Brown', 'Grey', 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink']; //Find out list of colors based on what was checked
-
     let finalColors = [];
-    for (let color of colors) {
+    for (let color of fields.colors) {
       if (req.body[color] == 'on') {
         finalColors.push(color);
       }
