@@ -1,25 +1,13 @@
 //LIBRARIES
 const express = require('express');
 const router = express.Router();
+const tutorial = require("../controllers/tutorial");
 
-router.get('/search', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "search"});
-});
-
-router.get('/identify', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "identify"});
-});
-
-router.get('/add', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "add"});
-});
-
-router.get('/edit', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "edit"});
-});
-
-router.get('/gallery', (req, res) => {
-  res.render('tutorial', {birdInfo: false, field: "gallery"});
-});
+//ROUTES
+router.get('/search', tutorial.search);
+router.get('/identify', tutorial.identify);
+router.get('/add', tutorial.add);
+router.get('/edit', tutorial.edit);
+router.get('/gallery', tutorial.gallery);
 
 module.exports = router;
