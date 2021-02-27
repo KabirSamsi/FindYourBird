@@ -1,10 +1,10 @@
 body {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
 }
 
 .results {
-  margin: 0% 25% 0% 25%;
+	margin: 0% 25% 0% 25%;
 }
 
 .bird-info, .bird-info:hover {
@@ -22,11 +22,11 @@ body {
 }
 
 .caption-header, .citation-text {
-  color: black;
+	color: black;
 }
 
 .figure-caption {
-  margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 
 /* Screen customizations */
@@ -93,7 +93,7 @@ article.text-block {
 }
 
 .block-header.grey {
-  padding-bottom: 20px;
+	padding-bottom: 20px;
 }
 
 .element {

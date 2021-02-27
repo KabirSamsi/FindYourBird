@@ -4,16 +4,13 @@ if(process.env.NODE_ENV !== "production") {
 
 //Libraries
 const express = require('express');
-const router = express.Router();
 const app = express();
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const methodOverride = require('method-override');
 const session = require('express-session');
 const http = require('http').createServer(app);
-const filter = require('./utils/filter');
 const favicon = require('serve-favicon');
 
 //Access gallery, request and tutorial routes

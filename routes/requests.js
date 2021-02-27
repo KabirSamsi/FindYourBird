@@ -7,7 +7,8 @@ const requests = require("../controllers/requests");
 //ROUTES
 router.get('/newBirdList', asyncWrapper(requests.newBirdList));
 router.get('/newBirdShow/:id', asyncWrapper(requests.showNew));
-router.get('/acceptNew/:id', asyncWrapper(requests.acceptnew));
+router.get('/acceptNew/:id', asyncWrapper(requests.acceptNew));
+
 router.get('/rejectNew/:id', asyncWrapper(requests.rejectNew));
 router.get('/updateBirdList', asyncWrapper(requests.updateBirdList));
 router.get('/updateBirdShow/:id', asyncWrapper(requests.updateBirdShow));
