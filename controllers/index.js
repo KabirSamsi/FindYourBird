@@ -22,7 +22,14 @@ controller.search = async function(req, res) {
 	
 	let searchExpressions = [];
 	for (let word of filter(req.body.name).split(textSplitter)) {
-		searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+		if (!['', ' '].includes(word)) {
+			searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+		}
+	}
+	
+	if (searchExpressions.length == 0) {
+		req.flash('error', "Please enter a more specific search");
+		return res.redirect('/');
 	}
 	
 	const birds = await Bird.find({});
