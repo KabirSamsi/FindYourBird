@@ -1,7 +1,7 @@
 //LIBRARIES
 const filter = require("../utils/filter");
 const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../utils/searchOperations");
-const {attrs, colors, sizes, habitats} = require("../utils/fields");
+const {attrs, colors, sizes, habitats, values} = require("../utils/fields");
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -26,6 +26,12 @@ controller.search = async function(req, res) {
 			searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
 		}
 	}
+
+	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check (non-ascii keywords can still pass filter)
+		if (searchExpressions[i].split(delimeter).join('') == '') {
+			searchExpressions.splice(i, 1);
+		}
+	}
 	
 	if (searchExpressions.length == 0) {
 		req.flash('error', "Please enter a more specific search");
@@ -39,7 +45,7 @@ controller.search = async function(req, res) {
 	}
 	
 	let data = new Map(); //Tracks occurrences of whole words in birds' data
-	let dataString = ""; //Tracks occurrences of partila words in birds' data
+	let dataString = ""; //Tracks occurrences of partial words in birds' data
 	
 	for (let bird of birds) {
 		for (let item of data) {
@@ -49,7 +55,7 @@ controller.search = async function(req, res) {
 		
 		for (let attr of attrs) {
 			if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
-			for (let word of bird[attr].toLowerCase().split(delimeter)) {
+			for (let word of filter(bird[attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 				dataString += `${word} `;
 				if (data.has(word)) {
 					data.set(word, data.get(word) + 1);
@@ -60,7 +66,7 @@ controller.search = async function(req, res) {
 		
 			} else { //If the attribute is an array, add each value inside the array to the data String
 				for (let i of bird[attr]) {
-					for (let word of i.toLowerCase().split(delimeter)) {
+					for (let word of filter(i.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 						dataString += `${word} `;
 						if (data.has(word)) {
 							data.set(word, data.get(word) + 1);
