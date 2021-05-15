@@ -23,6 +23,18 @@ for (let name of requestNames) {
 	requestRegExpNames.push(name.toLowerCase().replace(/[^A-Za-z]/g, ''));
 }
 
+const changeLabel = function(slider) {
+	if (!document.getElementById(slider.id.split('-')[0]).checked) {slider.value = 0;}
+	document.getElementById(`${slider.id}-label`).innerText = slider.value;
+}
+
+const resetSlider = function(input) {
+	if (!input.checked) {
+		document.getElementById(`${input.id}-slider`).value = 0;
+		document.getElementById(`${input.id}-slider-label`).innerText = "0";
+	}
+}
+
 nameInput.addEventListener('keydown', () => {
 	setTimeout(() => {
 		nameInputValue = nameInput.value.toLowerCase().replace(/[^A-Za-z]/g, '');

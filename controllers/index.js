@@ -143,7 +143,9 @@ controller.create = async function(req, res) {
 	let finalColors = [];
 	for (let color of colors) {
 		if (req.body[color] == 'on') {
-			finalColors.push(color);
+			for (let i = 0 ; i < parseInt(req.body[`${color}Slider`]); i++) {
+				finalColors.push(color);
+			}
 		}
 	}
 	
@@ -306,7 +308,9 @@ controller.updateBird = async function(req, res) {
 	let finalColors = [];
 	for (let color of colors) {
 		if (req.body[color] == 'on') {
-			finalColors.push(color);
+			for (let i = 0 ; i < parseInt(req.body[`${color}Slider`]); i++) {
+				finalColors.push(color);
+			}
 		}
 	}
 	

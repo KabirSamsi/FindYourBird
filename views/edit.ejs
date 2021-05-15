@@ -35,18 +35,22 @@
 
               <h4>Colors</h4>
               <% for (let color of colors) { %>
-                <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" id="<%=color%>"
-                <% if (bird.colors.includes(color)) { %>
-                   checked
-                <% } %>
+                <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" id="<%=color%>" onchange="resetSlider(this)"
+                <% if (bird.colors.includes(color)) { %>checked<% } %>
                 />
                 <label for="<%=color%>" style="background-color: <%=color%>; padding-left: 10px; padding-right: 10px; border-radius: 20px;
                 <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
-                  color: black;
-                <% } else {%>
-                  color: white;
+                  color: black;"
+                <% } else {%>color: white;"<% } %>"><%=color%></label>
+                <% let count = 0;%>
+                <% for (let c of bird.colors) { %>
+                  <% if (c == color) { %>
+                    <% count ++;%>
+                  <% } %>
                 <% } %>
-                "><%=color%></label><br />
+                <input type="range" id="<%=color%>-slider" name="<%=color%>Slider" max="10" min="0" value="<%=count%>" style="margin-left: 20px;" onchange="changeLabel(this)">
+                <label for="<%=color%>-slider" id="<%=color%>-slider-label"><%=count%></label>
+                <br />
               <% } %>
               <br />
 
@@ -82,5 +86,5 @@
       </div>
     </div>
   </body>
-  <script src="/javascript/search.js"></script>
+  <script src="/javascript/new-bird.js"></script>
 </html>
