@@ -1,1 +1,1 @@
-
+Reset: sudo passwd kabirs
