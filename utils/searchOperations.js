@@ -40,4 +40,16 @@ const occurrencesByString = function(subArr, data) {
 	return occurrences;
 }
 
-module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString};
+const occurrencesByArray = function(arr) { //Take an array and return how many times each element occurs in it
+	let results = new Map();
+	for (let element of arr) {
+		if (results.has(element)) {
+			results.set(element, results.get(element) + 1);
+		} else {
+			results.set(element, 1);
+		}
+	}
+	return results
+}
+
+module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray};

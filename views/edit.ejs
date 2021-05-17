@@ -33,7 +33,7 @@
               <textarea class="form-control" maxlength="400" class="inpt" id="description" rows='5' cols='25' type='text' placeholder='Enter bird description' name="description" required><%=bird.description%></textarea>
               <br />
 
-              <h4>Colors</h4>
+              <h4>Color Intensity</h4>
               <% for (let color of colors) { %>
                 <input style="background: <%=color%>;" type="checkbox" name="<%=color%>" id="<%=color%>" onchange="resetSlider(this)"
                 <% if (bird.colors.includes(color)) { %>checked<% } %>

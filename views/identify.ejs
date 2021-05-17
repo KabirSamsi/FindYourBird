@@ -26,24 +26,23 @@
             <h1>Identify Bird</h1>
             <br />
             <form action="/identify" method="post">
-              <h4>Colors</h4>
+              <h4>Color Intensity</h4>
               <% for (let color of colors) { %>
-                <input style="background: <%=color%>;" type="checkbox" name="color" value="<%=color%>" id="<%=color%>"/>
-                <label for="<%=color%>" style="background-color: <%=color%>; padding-left: 10px; padding-right: 10px; border-radius: 20px;
-                <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>
-                  color: black;">
-                <% } else { %>
-                  color: white;">
-                <% } %>
-                <%=color%></label><br />
+                <input type="checkbox" name="color" value="<%=color%>" id="<%=color%>" onchange="resetSlider(this)"/>
+                <label for="<%=color%>" style="background-color: <%=color%>; padding-left: 10px; padding-right: 10px; border-radius: 20px; width: 80px;
+                <% if (['White', 'Yellow', 'Pink', 'Orange'].includes(color)) { %>color: black;">
+                <% } else { %>color: white;"><% } %><%=color%></label>
+                <input type="range" id="<%=color%>-slider" name="<%=color%>Slider" max="10" min="0" value="0" style="margin-left: 20px;" onchange="changeLabel(this)">
+                <label for="<%=color%>-slider" id="<%=color%>-slider-label">0</label>
+                <br/>
               <% } %>
               <br />
               <h4>Size</h4>
               <select required class="form-control" id="size-list" name="size">
                 <option disabled selected value="">Select A Bird Size</option>
-                <% for (let size of sizes) {%>
+                <% for (let size of sizes) { %>
                   <option name="size"><%=size%></option>
-                <%}%>
+                <% } %>
               </select>
 
               <br />
@@ -62,5 +61,5 @@
       </div>
     </div>
   </body>
-  <script src="/javascript/search.js"></script>
+  <script src="/javascript/new-bird.js"></script>
 </html>

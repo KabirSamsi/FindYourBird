@@ -1,6 +1,6 @@
 //LIBRARIES
 const filter = require("../utils/filter");
-const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../utils/searchOperations");
+const {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray} = require("../utils/searchOperations");
 const {attrs, colors, sizes, habitats, values} = require("../utils/fields");
 
 //SCHEMA
@@ -213,7 +213,6 @@ controller.identifyForm = function(req, res) {
 
 controller.identify = async function(req, res) {
 	let allowed_sizes = [];
-	
 	for (let i = 0; i < sizes.length; i += 1) {
 		if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
 			allowed_sizes.push(sizes[i]);
@@ -227,11 +226,29 @@ controller.identify = async function(req, res) {
 			return res.redirect("back");
 		}
 
+		//Sort entered colors so that they can be ranked for bird results
+		let colorOrders = [];
+		if (typeof req.body.color == "string") {
+			colorOrders.push([req.body.color, req.body[`${req.body.color[0]}Slider`]]);
+		} else {
+			colorOrders.push([req.body.color[0], req.body[`${req.body.color[0]}Slider`]]);
+			let temp;
+			for (let color of req.body.color.slice(1)) { //Sort colors
+				if (colorOrders[colorOrders.length-1][1] < req.body[`${color}Slider`]) {
+					temp = colorOrders[colorOrders.length-1];
+					colorOrders[colorOrders.length-1] = [color, req.body[`${color}Slider`]];
+					colorOrders.push(temp);
+				} else {
+					colorOrders.push([color, req.body[`${color}Slider`]]);
+				}
+			}
+		}
+
 		let finalBirds = new Map();
 		let sorted = [];
 		let final = [];
 
-		for (let bird of birds) {
+		for (let bird of birds) { //Iterates through birds and searches for characteristics that match entered data
 	  		if (bird.habitat.includes(habitats[req.body.habitat])) {
 				finalBirds.set(bird._id.toString(), 2);
 				if (req.body.size == bird.size) {
@@ -240,16 +257,12 @@ controller.identify = async function(req, res) {
 		  			finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*1.5);
 				}
 
-				if (typeof req.body.color == "string") {
-		  			if (!bird.colors.includes(req.body.color.toString())) {
+				for (let color of colorOrders) { //Iterates through colors and ranks birds based on their resemblance to color form
+					if (!bird.colors.includes(color[0])) { //If bird does not contain color, remove it
 						finalBirds.delete(bird._id.toString());
-					}
-				} else  {
-					for (let color of req.body.color) {
-						if (!bird.colors.includes(color)) {
-							finalBirds.delete(bird._id.toString());
-							break;
-						}
+						break;
+					} else { //The further away the listed color intensity is from the bird's color intensity, the more the bird's accuracy index reduces
+						finalBirds.set(bird._id.toString(), (finalBirds.get(bird._id.toString())/(1+Math.abs(color[1] - occurrencesByArray(bird.colors).get(color[0])))));
 					}
 				}
 	  		}
@@ -265,16 +278,14 @@ controller.identify = async function(req, res) {
 	  		sorted.push([populatedBird, bird[1]]);
 		}
 
-		let temp;
-		for (let i = 0; i < sorted.length-1; i ++) {
+		for (let i = 0; i < sorted.length; i ++) { //Bubblesort algorithm sorts based on which bird has the most matches
 			for (let j = 0; j < sorted.length-1; j++) {
 				if (sorted[j][1] < sorted[j+1][1]) {
-					temp = sorted[j];
-					sorted[j] = sorted[j+1];
-					sorted[j+1] = temp;
+					[sorted[j], [sorted[j+1]]] = [sorted[j+1], sorted[j]];
 				}
 			}
 		}
+
 		for (let bird of sorted) {
 			final.push(bird[0]);
 		}
@@ -321,8 +332,7 @@ controller.updateBird = async function(req, res) {
 	}
 	
 	const request = await UpdateRequest.create({
-		bird,
-		description: req.body.description,
+		bird, description: req.body.description,
 		appearance: req.body.appearance,
 		diet: req.body.diet,
 		habitat: finalHabitats,

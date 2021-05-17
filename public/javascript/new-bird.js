@@ -23,12 +23,18 @@ for (let name of requestNames) {
 	requestRegExpNames.push(name.toLowerCase().replace(/[^A-Za-z]/g, ''));
 }
 
-const changeLabel = function(slider) {
-	if (!document.getElementById(slider.id.split('-')[0]).checked) {slider.value = 0;}
-	document.getElementById(`${slider.id}-label`).innerText = slider.value;
+const changeLabel = function(slider) { //Update label when slider is changed
+	if (!document.getElementById(slider.id.split('-')[0]).checked) { //If slider is updated and button is not checked, it has to be updated
+		if (slider.value != 0) {
+			document.getElementById(slider.id.split('-')[0]).checked = true;
+		}
+	} else if (slider.value == 0) {
+		document.getElementById(slider.id.split('-')[0]).checked = false;
+	}
+	document.getElementById(`${slider.id}-label`).innerText = slider.value; //Update slider value
 }
 
-const resetSlider = function(input) {
+const resetSlider = function(input) { //Uncheck/check button and reset slider
 	if (!input.checked) {
 		document.getElementById(`${input.id}-slider`).value = 0;
 		document.getElementById(`${input.id}-slider-label`).innerText = "0";
