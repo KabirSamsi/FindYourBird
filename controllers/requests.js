@@ -8,6 +8,8 @@ if (process.env.NODE_ENV !== "production") {
 	require('dotenv').config();
 }
 
+const {colors} = require("../utils/fields");
+
 module.exports.newBirdList = async function(req, res) {
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await AddRequest.find({});
@@ -27,7 +29,7 @@ module.exports.showNew = async function(req, res) {
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
-	return res.render('showRequest', {birdInfo: true, bird: request, action: 'new'});
+	return res.render('showRequest', {birdInfo: true, bird: request, action: 'new', colors});
 }
 
 module.exports.acceptNew = async function(req, res) {
@@ -51,7 +53,7 @@ module.exports.acceptNew = async function(req, res) {
   	await bird.save();
 
   	req.flash('success', "New bird accepted! All users can now see this bird");
-  	return res.redirect('/');
+  	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
 module.exports.rejectNew = async function(req, res) {
@@ -62,7 +64,7 @@ module.exports.rejectNew = async function(req, res) {
 	}
 	
 	req.flash('success', "New bird rejected!");
-	return res.redirect('/');
+	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
 module.exports.updateBirdList = async function(req, res) {
@@ -86,7 +88,7 @@ module.exports.updateBirdShow = async function(req, res) {
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
-	return res.render('showRequest', {birdInfo: true, bird: request, action: 'update'});
+	return res.render('showRequest', {birdInfo: true, colors, bird: request, action: 'update'});
 }
 
 module.exports.acceptUpdate = async function(req, res) {
@@ -134,7 +136,7 @@ module.exports.acceptUpdate = async function(req, res) {
 	}
 	
 	req.flash('success', "Bird updated! These changes can now be seen by all users");
-	return res.redirect('/');
+	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
 module.exports.rejectUpdate = async function(req, res) {
@@ -145,7 +147,7 @@ module.exports.rejectUpdate = async function(req, res) {
 	}
 	
 	req.flash('success', "Update rejected!");
-	return res.redirect('/');
+	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
 module.exports.galleryUpdateList = async function(req, res) {
@@ -202,7 +204,7 @@ module.exports.acceptGalleryUpdate = async function(req, res) {
 		}	
 		req.flash('success', "Image deleted from bird gallery!");
 	}
-	return res.redirect('/');
+	return res.redirect(`/request/galleryUpdateList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
 module.exports.rejectGalleryUpdate = async function(req, res) {
@@ -212,5 +214,5 @@ module.exports.rejectGalleryUpdate = async function(req, res) {
 		return res.redirect('back');
 	}
 	req.flash('success', "Gallery Update rejected!");
-	return res.redirect('/');
+	return res.redirect(`/request/galleryUpdateList?pwd=${process.env.QUERY_PASSWORD}`);
 }

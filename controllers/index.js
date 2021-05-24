@@ -17,23 +17,23 @@ controller.index = function(req, res) {
 controller.search = async function(req, res) {
 	let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
 	let results = []; //Hold info about each matching bird
-	const textSplitter = new RegExp(/[\"\s\'\r\n]/, 'g');
-	const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g');
+	const textSplitter = new RegExp(/[\"-\s\'\r\n]/, 'g'); //Splitting delimters between phrases
+	const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g'); //Characters that can distort word nature
 	
 	let searchExpressions = [];
-	for (let word of filter(req.body.name).split(textSplitter)) {
-		if (!['', ' '].includes(word)) {
+	for (let word of filter(req.body.name).split(textSplitter)) { //Parse out words from full phrase
+		if (!['', ' '].includes(word)) { //Ignore spaces
 			searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
 		}
 	}
 
-	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check (non-ascii keywords can still pass filter)
+	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check with within-word regex (non-ascii keywords can still pass filter)
 		if (searchExpressions[i].split(delimeter).join('') == '') {
 			searchExpressions.splice(i, 1);
 		}
 	}
 	
-	if (searchExpressions.length == 0) {
+	if (searchExpressions.length == 0) { //If no results are matched
 		req.flash('error', "Please enter a more specific search");
 		return res.redirect('/');
 	}
@@ -48,31 +48,23 @@ controller.search = async function(req, res) {
 	let dataString = ""; //Tracks occurrences of partial words in birds' data
 	
 	for (let bird of birds) {
-		for (let item of data) {
-			data.delete(item[0]);
-		}
+		for (let item of data) {data.delete(item[0]);} //Refresh data after eeach iteration
 		dataString = "";
 		
 		for (let attr of attrs) {
 			if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
 			for (let word of filter(bird[attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 				dataString += `${word} `;
-				if (data.has(word)) {
-					data.set(word, data.get(word) + 1);
-				} else {
-					data.set(word, 1);
-				}
+				if (data.has(word)) {data.set(word, data.get(word) + 1);
+				} else {data.set(word, 1);}
 			}
 		
 			} else { //If the attribute is an array, add each value inside the array to the data String
 				for (let i of bird[attr]) {
 					for (let word of filter(i.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 						dataString += `${word} `;
-						if (data.has(word)) {
-							data.set(word, data.get(word) + 1);
-						} else {
-							data.set(word, 1);
-						}
+						if (data.has(word)) {data.set(word, data.get(word) + 1);
+						} else {data.set(word, 1);}
 					}
 				}
 			}
@@ -88,13 +80,10 @@ controller.search = async function(req, res) {
 	}
 	
 	//Sort matrix through iteration (by having the most occurring search)
-	let temp;
 	for (let i = 0; i < resultMatrix.length; i +=1) {
 		for (let j = 0; j < resultMatrix.length - 1; j += 1) {
 			if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
-				temp = resultMatrix[j+1];
-				resultMatrix[j+1] = resultMatrix[j];
-				resultMatrix[j] = temp;
+				[resultMatrix[j], resultMatrix[j+1]] = [resultMatrix[j+1], resultMatrix[j]]
 			}
 		}
 	}
@@ -135,9 +124,7 @@ controller.new = async function(req, res) {
 controller.create = async function(req, res) {
 	let finalHabitats = [];
 	for (let habitat of habitats) {
-		if (req.body[habitat] == 'on') {
-			finalHabitats.push(habitat);
-		}
+		if (req.body[habitat] == 'on') {finalHabitats.push(habitat);}
 	}
 	
 	let finalColors = [];
@@ -228,20 +215,26 @@ controller.identify = async function(req, res) {
 
 		//Sort entered colors so that they can be ranked for bird results
 		let colorOrders = [];
-		if (typeof req.body.color == "string") {
-			colorOrders.push([req.body.color, req.body[`${req.body.color[0]}Slider`]]);
+		if (typeof req.body.color == "string" && req.body[`${req.body.color}Slider`] > 0) {
+			colorOrders.push([req.body.color, req.body[`${req.body.color}Slider`]]);
 		} else {
-			colorOrders.push([req.body.color[0], req.body[`${req.body.color[0]}Slider`]]);
 			let temp;
-			for (let color of req.body.color.slice(1)) { //Sort colors
-				if (colorOrders[colorOrders.length-1][1] < req.body[`${color}Slider`]) {
-					temp = colorOrders[colorOrders.length-1];
-					colorOrders[colorOrders.length-1] = [color, req.body[`${color}Slider`]];
-					colorOrders.push(temp);
-				} else {
-					colorOrders.push([color, req.body[`${color}Slider`]]);
+			for (let color of req.body.color) { //Sort colors
+				if (req.body[`${color}Slider`] > 0) {
+					if (colorOrders.length > 0 && colorOrders[colorOrders.length-1][1] < req.body[`${color}Slider`]) {
+						temp = colorOrders[colorOrders.length-1];
+						colorOrders[colorOrders.length-1] = [color, req.body[`${color}Slider`]];
+						colorOrders.push(temp);
+					} else {
+						colorOrders.push([color, req.body[`${color}Slider`]]);
+					}
 				}
 			}
+		}
+
+		if (colorOrders.length < 1) {
+			req.flash("error", "Please enter at least one color with an intensity level of greater than 0");
+			return res.redirect("back");
 		}
 
 		let finalBirds = new Map();
@@ -262,7 +255,7 @@ controller.identify = async function(req, res) {
 						finalBirds.delete(bird._id.toString());
 						break;
 					} else { //The further away the listed color intensity is from the bird's color intensity, the more the bird's accuracy index reduces
-						finalBirds.set(bird._id.toString(), (finalBirds.get(bird._id.toString())/(1+Math.abs(color[1] - occurrencesByArray(bird.colors).get(color[0])))));
+						finalBirds.set(bird._id.toString(), (finalBirds.get(bird._id.toString())/(1+(0.1*Math.abs(color[1] - occurrencesByArray(bird.colors).get(color[0]))))));
 					}
 				}
 	  		}
@@ -281,7 +274,7 @@ controller.identify = async function(req, res) {
 		for (let i = 0; i < sorted.length; i ++) { //Bubblesort algorithm sorts based on which bird has the most matches
 			for (let j = 0; j < sorted.length-1; j++) {
 				if (sorted[j][1] < sorted[j+1][1]) {
-					[sorted[j], [sorted[j+1]]] = [sorted[j+1], sorted[j]];
+					[sorted[j], sorted[j+1]] = [sorted[j+1], sorted[j]];
 				}
 			}
 		}

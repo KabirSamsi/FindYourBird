@@ -38,6 +38,9 @@ const resetSlider = function(input) { //Uncheck/check button and reset slider
 	if (!input.checked) {
 		document.getElementById(`${input.id}-slider`).value = 0;
 		document.getElementById(`${input.id}-slider-label`).innerText = "0";
+	} else {
+		document.getElementById(`${input.id}-slider`).value = 1;
+		document.getElementById(`${input.id}-slider-label`).innerText = "1";
 	}
 }
 
