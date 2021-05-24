@@ -34,10 +34,10 @@
             <% } else { %>
               <h2>Results</h2>
               <% if (from == "search") { %>
-                <span><%=birds.length%> birds match "<%=search%>"</span>
+                <span><%=birds.length%> bird<%if(birds.length > 1) {%>s<%}%> match<%if(birds.length == 1) { %>es<% } %> "<%=search%>"</span>
 
               <% } else { %>
-                <span><%=birds.length%> birds match your data</span>
+                <span><%=birds.length%> bird<%if(birds.length > 1) {%>s<%}%> match<%if(birds.length == 1) { %>es<% } %> your data</span>
               <% }%>
 
               <% if (birds.length > 10) { %>
