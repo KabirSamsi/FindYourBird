@@ -10,11 +10,11 @@ const UpdateRequest = require('../models/updateRequest');
 
 const controller = {};
 
-controller.index = function(req, res) {
+controller.index = function(req, res) { //Display homepage
 	return res.render('index', {birdInfo: false, search: null});
 }
 
-controller.search = async function(req, res) {
+controller.search = async function(req, res) { //Search for bird with entered keyword
 	let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
 	let results = []; //Hold info about each matching bird
 	const textSplitter = new RegExp(/[\"-\s\'\r\n]/, 'g'); //Splitting delimters between phrases
@@ -79,7 +79,7 @@ controller.search = async function(req, res) {
 		}
 	}
 	
-	//Sort matrix through iteration (by having the most occurring search)
+	//Matrix bubblesort (by having the most search occurrences)
 	for (let i = 0; i < resultMatrix.length; i +=1) {
 		for (let j = 0; j < resultMatrix.length - 1; j += 1) {
 			if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
@@ -96,13 +96,14 @@ controller.search = async function(req, res) {
 	return res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
 }
 
-controller.new = async function(req, res) {
+controller.new = async function(req, res) { //Form to create new bird
 	const birds = await Bird.find({});
 	if (!birds) {
 		req.flash('error', "Unable to find birds");
 		return res.redirect('back');
 	}
-	
+
+	//Builds list of all bird names, as well as all add requests, for overlap warning
 	let birdNameArr = []
 	for (let bird of birds) {
 		birdNameArr.push(bird.name);
@@ -121,14 +122,14 @@ controller.new = async function(req, res) {
 	return res.render('new', {birdInfo: false, colors, sizes, habitats, birds: birdNameArr, requests: requestNameArr});
 }
 
-controller.create = async function(req, res) {
+controller.create = async function(req, res) { //Create add request for new bird
 	let finalHabitats = [];
-	for (let habitat of habitats) {
+	for (let habitat of habitats) { //Build habitat array based on form
 		if (req.body[habitat] == 'on') {finalHabitats.push(habitat);}
 	}
 	
 	let finalColors = [];
-	for (let color of colors) {
+	for (let color of colors) { //Build color array based on form
 		if (req.body[color] == 'on') {
 			for (let i = 0 ; i < parseInt(req.body[`${color}Slider`]); i++) {
 				finalColors.push(color);
@@ -136,6 +137,7 @@ controller.create = async function(req, res) {
 		}
 	}
 	
+	//Check if bird, or add request, already exists with this name
 	const requestOverlap = await AddRequest.find({name: req.body.name});
 	if (!requestOverlap) {
 		req.flash('error', "Unable to access database");
@@ -163,7 +165,7 @@ controller.create = async function(req, res) {
 		citation: req.body.citation
 	};
 	
-	const request = await AddRequest.create({
+	const request = await AddRequest.create({ //Create new bird add request
 		name: req.body.name,
 		scientificName: req.body.scientificName,
 		img: birdImage,
@@ -185,7 +187,7 @@ controller.create = async function(req, res) {
 	return res.redirect('/');
 }
 
-controller.edit = async function(req, res) {
+controller.edit = async function(req, res) { //Form to edit bird profile (not all features mutable)
 	const bird = await Bird.findById(req.params.id);
 	if (!bird) {
 		req.flash('error', "Unable to find bird");
@@ -194,19 +196,19 @@ controller.edit = async function(req, res) {
   	return res.render('edit', {birdInfo: false, bird, colors, sizes, habitats});
 }
 
-controller.identifyForm = function(req, res) {
+controller.identifyForm = function(req, res) { //Form to identify bird
 	return res.render('identify', {birdInfo: false, colors, habitats, sizes});
 }
 
-controller.identify = async function(req, res) {
+controller.identify = async function(req, res) { //Identify bird based on form data
 	let allowed_sizes = [];
-	for (let i = 0; i < sizes.length; i += 1) {
+	for (let i = 0; i < sizes.length; i += 1) { //Calculates sizes within range on either side of entered accuracy
 		if (req.body.size == sizes[i] || req.body.size == sizes[i+1] || req.body.size == sizes[i-1]) {
 			allowed_sizes.push(sizes[i]);
 		}
 	}
 	
-	if (req.body.color) { //A color is selected
+	if (req.body.color) { //Confirm that a color is selected
 		const birds = await Bird.find({size: {$in: allowed_sizes}});
 		if (!birds) {
 			req.flash("error", "An error occurred");
@@ -215,13 +217,14 @@ controller.identify = async function(req, res) {
 
 		//Sort entered colors so that they can be ranked for bird results
 		let colorOrders = [];
-		if (typeof req.body.color == "string" && req.body[`${req.body.color}Slider`] > 0) {
+		if (typeof req.body.color == "string" && req.body[`${req.body.color}Slider`] > 0) { //If one color is enteered
 			colorOrders.push([req.body.color, req.body[`${req.body.color}Slider`]]);
 		} else {
 			let temp;
-			for (let color of req.body.color) { //Sort colors
+			for (let color of req.body.color) { //If multiple colors are entered
 				if (req.body[`${color}Slider`] > 0) {
 					if (colorOrders.length > 0 && colorOrders[colorOrders.length-1][1] < req.body[`${color}Slider`]) {
+						//In-place bubblesort algorithm pushes colors to colorOrder array in order of intensity
 						temp = colorOrders[colorOrders.length-1];
 						colorOrders[colorOrders.length-1] = [color, req.body[`${color}Slider`]];
 						colorOrders.push(temp);
@@ -237,14 +240,14 @@ controller.identify = async function(req, res) {
 			return res.redirect("back");
 		}
 
-		let finalBirds = new Map();
-		let sorted = [];
-		let final = [];
+		let finalBirds = new Map(); //Stores sorted birds as map with accuracy
+		let sorted = []; //Stores birds sorted by accuracy
+		let final = []; //Stores birds in sorted order, without accuracy dimension
 
 		for (let bird of birds) { //Iterates through birds and searches for characteristics that match entered data
 	  		if (bird.habitat.includes(habitats[req.body.habitat])) {
-				finalBirds.set(bird._id.toString(), 2);
-				if (req.body.size == bird.size) {
+				finalBirds.set(bird._id.toString(), 2); //If habitat is a match add bird
+				if (req.body.size == bird.size) { //If size falls in accurate range, multiply by accuracy coefficient
 					finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*2);
 				} else {
 		  			finalBirds.set(bird._id.toString(), finalBirds.get(bird._id.toString())*1.5);
@@ -261,6 +264,7 @@ controller.identify = async function(req, res) {
 	  		}
 		}
 
+		//Convert all bird IDs to full objects
 		let populatedBird;
 		for (let bird of finalBirds) {
 	  		populatedBird = await Bird.findById(bird[0]);
@@ -271,7 +275,8 @@ controller.identify = async function(req, res) {
 	  		sorted.push([populatedBird, bird[1]]);
 		}
 
-		for (let i = 0; i < sorted.length; i ++) { //Bubblesort algorithm sorts based on which bird has the most matches
+		//Bubblesort algorithm sorts based on which bird has the highest similarity to entered data
+		for (let i = 0; i < sorted.length; i ++) {
 			for (let j = 0; j < sorted.length-1; j++) {
 				if (sorted[j][1] < sorted[j+1][1]) {
 					[sorted[j], sorted[j+1]] = [sorted[j+1], sorted[j]];
@@ -279,20 +284,18 @@ controller.identify = async function(req, res) {
 			}
 		}
 
-		for (let bird of sorted) {
-			final.push(bird[0]);
-		}
+		for (let bird of sorted) {final.push(bird[0]);} //Present birds as 1d array
 		return res.render('results', {birdInfo: false, birds: final, birdMap: finalBirds, from: 'data'});
 	}
 	req.flash("error", "You must enter at least one color");
 	return res.redirect('back');
 }
 
-controller.contact = function(req, res) {
+controller.contact = function(req, res) { //Display contact information (static)
 	return res.render('contact', {birdInfo: false});
 }
 
-controller.showBird = async function(req, res) {
+controller.showBird = async function(req, res) { //Display bird profile
 	const bird = await Bird.findById(req.params.id);
 	if (!bird) {
 		req.flash('error', "Bird not found");
@@ -301,15 +304,15 @@ controller.showBird = async function(req, res) {
 	return res.render('index', {birdInfo: true, bird});
 }
 
-controller.updateBird = async function(req, res) {
+controller.updateBird = async function(req, res) { //Create bird update request with form data
 	let finalHabitats = [];
-	for (let habitat of habitats) {
+	for (let habitat of habitats) { //Update habitats based on form
 		if (req.body[habitat] == 'on') {
 			finalHabitats.push(habitat);
 		}
 	}
 	
-	let finalColors = [];
+	let finalColors = []; //Update colors based on form
 	for (let color of colors) {
 		if (req.body[color] == 'on') {
 			for (let i = 0 ; i < parseInt(req.body[`${color}Slider`]); i++) {
@@ -324,7 +327,7 @@ controller.updateBird = async function(req, res) {
 		return res.redirect('back');
 	}
 	
-	const request = await UpdateRequest.create({
+	const request = await UpdateRequest.create({ //Create update request with new bird data
 		bird, description: req.body.description,
 		appearance: req.body.appearance,
 		diet: req.body.diet,

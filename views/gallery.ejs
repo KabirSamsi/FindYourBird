@@ -27,15 +27,13 @@
               <a class="btn btn-warning" href="/<%=bird._id%>" id="edit" value="Edit"><i class="fas fa-arrow-left"></i> Back</a>
               <br /><br />
 
-              <button type="button" id="add-new-button" class="btn btn-info"><i class="fas fa-plus-circle"></i> Add New Image To Gallery</button>
-              <button type="button" id="stop-add-button" class="btn btn-danger"><i class="far fa-window-close"></i> Cancel Image</button><br /><br />
+              <button type="button" id="add-new-button" class="btn btn-info" onclick="addImage()"><i class="fas fa-plus-circle"></i> Add New Image To Gallery</button>
+              <button type="button" id="stop-add-button" class="btn btn-danger" onclick="stopAdd()"><i class="far fa-window-close"></i> Cancel Image</button><br /><br />
 
               <form id="add-new-form" action="/gallery/<%=bird._id%>?_method=put" method="post">
 
-                <input required id="new-image-url" type="text" class="form-control" name="newImg" placeholder="Enter new image URL" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                <br />
-                <input required id="new-image-citation" maxlength="50" type="text" class="form-control" name="citation" placeholder="Enter image citation" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                <br />
+                <input required id="new-image-url" oninput="addImageInput()" type="text" class="form-control" name="newImg" placeholder="Enter new image URL" aria-label="Recipient's username" aria-describedby="basic-addon2"><br />
+                <input required id="new-image-citation" oninput="addCitationInput()" maxlength="50" type="text" class="form-control" name="citation" placeholder="Enter image citation" aria-label="Recipient's username" aria-describedby="basic-addon2"><br />
 
                 <figure class="figure">
                   <img id="new-display-image" style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw;" class="figure-img img-fluid rounded"><br />
@@ -93,108 +91,6 @@
           </div>
         </div>
       <% }%>
-
   </body>
-
-  <script>
-
-  const newImgButton = document.getElementById('add-new-button')
-  const stopAddButton = document.getElementById('stop-add-button')
-  const newDisplayImage = document.getElementById('new-display-image')
-  const newImgInput = document.getElementById('new-image-url')
-  const newImgCitation = document.getElementById('new-image-citation')
-  const citationHeader = document.getElementById('citation-header')
-  const citationValue = document.getElementById('citation-value')
-
-  $('#add-new-form').hide()
-  $('#stop-add-button').hide()
-
-  newImgButton.addEventListener('click', () => {
-    $('#add-new-form').show()
-    $('#stop-add-button').show()
-    $('#new-display-image').hide()
-    $('#add-new-button').hide()
-  })
-
-  stopAddButton.addEventListener('click', () => {
-    newImgInput.value = ""
-    newImgCitation.value = ""
-    citationHeader.innerText = ""
-    citationValue.innerText = ""
-    $('#add-new-form').hide()
-    $('#stop-add-button').hide()
-    $('#add-new-button').show()
-  })
-
-  newImgInput.addEventListener('keydown', () => {
-    setTimeout(() => {
-      if(newImgInput.value.slice(0, 8) == "https://" || newImgInput.value.slice(0, 7) == "http://") {
-        newDisplayImage.src = newImgInput.value
-        newDisplayImage.alt = "Image Does Not Exist"
-        $("#new-display-image").show()
-
-      } else if (newImgInput.value == "") {
-        $("#new-display-image").hide()
-
-      } else {
-        newDisplayImage.src = ""
-        newDisplayImage.alt = "Image Does Not Exist"
-        $("#new-display-image").show()
-      }
-
-    }, 3)
-  })
-
-  newImgInput.addEventListener('paste', () => {
-    setTimeout(() => {
-      if(newImgInput.value.slice(0, 8) == "https://" || newImgInput.value.slice(0, 7) == "http://") {
-        newDisplayImage.src = newImgInput.value
-        newDisplayImage.alt = "Image Does Not Exist"
-        $('#new-display-image').show()
-
-      } else if (newImgInput.value == "") {
-        $("#new-display-image").hide()
-
-      } else {
-        newDisplayImage.src = ""
-        newDisplayImage.alt = "Image Does Not Exist"
-        $('#new-display-image').show()
-      }
-
-    }, 3)
-  })
-
-
-  newImgCitation.addEventListener('keydown', () => {
-    setTimeout(() => {
-
-      if (newImgCitation.value != "") {
-        citationHeader.innerText = "Citation: "
-        citationValue.innerText = newImgCitation.value
-
-      } else {
-        citationHeader.innerText = ""
-        citationValue.innerText = newImgCitation.value
-      }
-
-    }, 3)
-  })
-
-  newImgCitation.addEventListener('paste', () => {
-    setTimeout(() => {
-
-      if (newImgCitation.value != "") {
-        citationHeader.innerText = "Citation: "
-        citationValue.innerText = newImgCitation.value
-
-      } else {
-        citationHeader.innerText = ""
-        citationValue.innerText = newImgCitation.value
-      }
-
-    }, 3)
-  })
-
-  </script>
-  <script src="/javascript/search.js"></script>
+  <script src="/javascript/gallery.js"></script>
 </html>

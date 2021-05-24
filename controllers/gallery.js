@@ -2,11 +2,13 @@
 const Bird = require('../models/bird');
 const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
-module.exports.index = function(req, res) {
+const controller = {};
+
+controller.index = function(req, res) { //Dead route; direct user back
 	return res.redirect('back');
 }
 
-module.exports.showGallery = async function(req, res) {
+controller.showGallery = async function(req, res) { //Display gallery of specific bird
 	const bird = await Bird.findById(req.params.id);
 	if (!bird) {
     	req.flash('error', "Unable to access bird");
@@ -15,13 +17,14 @@ module.exports.showGallery = async function(req, res) {
 	return res.render('gallery', {birdInfo: true, bird});
 }
 
-module.exports.updateGallery = async function(req, res) {
+controller.updateGallery = async function(req, res) { //Create request to update bird's gallery
 	const bird = await Bird.findById(req.params.id);
 	if (!bird) {
 		req.flash('error', "Error accessing bird");
 		return res.redirect('back');
 	}
 	
+	//Create gallery update request with image object
 	let imageObject = {
 		url: req.body.newImg,
 		citation: req.body.citation
@@ -37,7 +40,7 @@ module.exports.updateGallery = async function(req, res) {
 	return res.redirect(`/gallery/${bird._id}`);
 }
 
-module.exports.removeGallery = async function(req, res) {
+controller.removeGallery = async function(req, res) { //Create request to remove image from bird's gallery
 	const bird = await Bird.findById(req.params.id);
 	if (!bird) {
 		req.flash('error', "Error accessing bird");
@@ -54,6 +57,7 @@ module.exports.removeGallery = async function(req, res) {
 		return res.redirect('back');
 	}
 	
+	//Create the gallery remove request
 	const request = await GalleryUpdateRequest.create({
 		bird, img: null,
 		imgIndex: req.query.index,
@@ -67,3 +71,5 @@ module.exports.removeGallery = async function(req, res) {
 	req.flash('success', "Delete Request Sent! Please wait a few days for the admin to verify and delete image ");
 	return res.redirect(`/gallery/${bird._id}`);
 }
+
+module.exports = controller;

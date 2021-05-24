@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const {colors} = require("../utils/fields");
 
-module.exports.newBirdList = async function(req, res) {
+module.exports.newBirdList = async function(req, res) { //List of all new bird add requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await AddRequest.find({});
 		if (!requests) {
@@ -23,7 +23,7 @@ module.exports.newBirdList = async function(req, res) {
 	return res.redirect('back');
 }
 
-module.exports.showNew = async function(req, res) {
+module.exports.showNew = async function(req, res) { //Specific new bird add request
 	const request = await AddRequest.findById(req.params.id);
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -32,14 +32,14 @@ module.exports.showNew = async function(req, res) {
 	return res.render('showRequest', {birdInfo: true, bird: request, action: 'new', colors});
 }
 
-module.exports.acceptNew = async function(req, res) {
-	const request = await AddRequest.findByIdAndDelete(req.params.id);
+module.exports.acceptNew = async function(req, res) { //Accept new bird add request
+	const request = await AddRequest.findByIdAndDelete(req.params.id); //Remove add request but keep data
 	if (!request) {
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
 
-	const bird = await Bird.create({
+	const bird = await Bird.create({ //Create new bird with add request data
 		name: request.name, scientificName: request.scientificName, img: request.img,
 		description: request.description, appearance: request.appearance, diet: request.diet,
 		habitat: request.habitat, range: request.range, gallery: [request.img],
@@ -56,8 +56,8 @@ module.exports.acceptNew = async function(req, res) {
   	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectNew = async function(req, res) {
-	const request = await AddRequest.findByIdAndDelete(req.params.id);
+module.exports.rejectNew = async function(req, res) { //Reject new bird add request
+	const request = await AddRequest.findByIdAndDelete(req.params.id); //Remove add request
 	if (!request) {
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
@@ -67,7 +67,7 @@ module.exports.rejectNew = async function(req, res) {
 	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.updateBirdList = async function(req, res) {
+module.exports.updateBirdList = async function(req, res) { //List of all bird update requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await UpdateRequest.find({}).populate('bird');
 		if (!requests) {
@@ -82,7 +82,7 @@ module.exports.updateBirdList = async function(req, res) {
 	return res.redirect('back');
 }
 
-module.exports.updateBirdShow = async function(req, res) {
+module.exports.updateBirdShow = async function(req, res) { //Specific bird update request
 	const request = await UpdateRequest.findById(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -91,7 +91,7 @@ module.exports.updateBirdShow = async function(req, res) {
 	return res.render('showRequest', {birdInfo: true, colors, bird: request, action: 'update'});
 }
 
-module.exports.acceptUpdate = async function(req, res) {
+module.exports.acceptUpdate = async function(req, res) { //Acceept bird update request
 	let overlap = [];
 	const currentReq = await UpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 	let tempBirdData = { //Object stores the bird's info, before it was updated
@@ -104,7 +104,7 @@ module.exports.acceptUpdate = async function(req, res) {
     	colors: currentReq.bird.colors,
   	};
 	
-	const bird = await Bird.findByIdAndUpdate(currentReq.bird._id, {
+	const bird = await Bird.findByIdAndUpdate(currentReq.bird._id, { //Update bird information based on update request
 		description: currentReq.description, appearance: currentReq.appearance,
 		diet: currentReq.diet, habitat: currentReq.habitat, range: currentReq.range,
 		size: currentReq.size, colors: currentReq.colors
@@ -114,6 +114,7 @@ module.exports.acceptUpdate = async function(req, res) {
 		return res.redirect('back');
 	}
 	
+	//Modify all update requests to include bird's new data
 	const requests = await UpdateRequest.find({}).populate('bird');
 	if (!requests) {
 		req.flash('error', "Unable to find requests");
@@ -139,8 +140,8 @@ module.exports.acceptUpdate = async function(req, res) {
 	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectUpdate = async function(req, res) {
-	const request = await UpdateRequest.findByIdAndDelete(req.params.id);
+module.exports.rejectUpdate = async function(req, res) { //Reject bird update request
+	const request = await UpdateRequest.findByIdAndDelete(req.params.id); //Remove bird
 	if (!request) {
 		req.flash('error', "Unable to delete update");
 		return res.redirect('back');
@@ -150,7 +151,7 @@ module.exports.rejectUpdate = async function(req, res) {
 	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.galleryUpdateList = async function(req, res) {
+module.exports.galleryUpdateList = async function(req, res) { //List of all gallery update requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await GalleryUpdateRequest.find({}).populate('bird');
 		if (!requests) {
@@ -165,7 +166,7 @@ module.exports.galleryUpdateList = async function(req, res) {
 	return res.redirect('back');
 }
 
-module.exports.galleryUpdateShow = async function(req, res) {
+module.exports.galleryUpdateShow = async function(req, res) { //Specific gallery update request
 	const request = await GalleryUpdateRequest.findById(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -174,29 +175,29 @@ module.exports.galleryUpdateShow = async function(req, res) {
 	return res.render('showGalleryRequest', {birdInfo: false, bird: request});
 }
 
-module.exports.acceptGalleryUpdate = async function(req, res) {
+module.exports.acceptGalleryUpdate = async function(req, res) { //Accept gallery update request
 	const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Error accessing request");
 		return res.redirect('back');
 	}
 	
-	if (request.action == "add") {
+	if (request.action == "add") { //If request is to add, push image and update
 		request.bird.gallery.push(request.img);
 		await request.bird.save();
 		req.flash('success', "Image added to bird gallery!");
 	
-	} else if (request.action == "delete") {
+	} else if (request.action == "delete") { //If request is to delete, remove image and move other images up
 		request.bird.gallery.splice(request.imgIndex, 1);
 		await request.bird.save();
 		
-		const laterRequests = await GalleryUpdateRequest.find({action: "delete"});//Delete requests with a higher index than ours
+		const laterRequests = await GalleryUpdateRequest.find({action: "delete"});//Delete requests with a higher index than current
 		if (!laterRequests) {
 			req.flash('error', "Error accessing requests");
 			return res.redirect('back');
 		}
 		
-		for (let r of laterRequests) {
+		for (let r of laterRequests) { //Decrement higher indices in linked-list format (remove dead node and move others up)
 			if (r.imgIndex > request.imgIndex) {
 				r.imgIndex -= 1;
 				await r.save();
@@ -207,7 +208,7 @@ module.exports.acceptGalleryUpdate = async function(req, res) {
 	return res.redirect(`/request/galleryUpdateList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectGalleryUpdate = async function(req, res) {
+module.exports.rejectGalleryUpdate = async function(req, res) { //Reject gallery update request
 	const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id);
 	if (!request) {
 		req.flash('error', "Unable to delete gallery update");
