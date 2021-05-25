@@ -28,7 +28,7 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 	}
 
 	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check with within-word regex (non-ascii keywords can still pass filter)
-		if (searchExpressions[i].split(delimeter).join('') == '') {
+		if (searchExpressions[i].split(delimeter).join('') == '' || searchExpressions[i].length <= 2) {
 			searchExpressions.splice(i, 1);
 		}
 	}
@@ -55,8 +55,8 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 			if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
 			for (let word of filter(bird[attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 				dataString += `${word} `;
-				if (data.has(word)) {data.set(word, data.get(word) + 1);
-				} else {data.set(word, 1);}
+				if (data.has(word)) {data.set(word, data.get(word) + values.get(attr)); //Weights result based on where keywords appear
+				} else {data.set(word, values.get(attr));}
 			}
 		
 			} else { //If the attribute is an array, add each value inside the array to the data String

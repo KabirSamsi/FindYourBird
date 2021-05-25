@@ -6,10 +6,10 @@ module.exports = { //Stores all values for attributes for bird form data
     values: new Map([ //Ranking of importance for each attribute (when running keyword search)
         ['name', 5],
         ['scientificName', 5],
-        ['colors', 4],
         ['size', 4],
         ['appearance', 3],
         ['description', 3],
+        ['colors', 2],
         ['habitat', 2],
         ['range', 2],
         ['diet', 1]
