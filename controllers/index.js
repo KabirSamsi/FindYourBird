@@ -217,25 +217,25 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 
 		//Sort entered colors so that they can be ranked for bird results
 		let colorOrders = [];
-		if (typeof req.body.color == "string" && req.body[`${req.body.color}Slider`] > 0) { //If one color is enteered
-			colorOrders.push([req.body.color, req.body[`${req.body.color}Slider`]]);
+		let selectedCount = 0;
+		if (typeof req.body.color == "string" && parseInt(req.body[`${req.body.color}Slider`]) > 0) { //If one color is enteered
+			colorOrders.push([req.body.color, parseInt(req.body[`${req.body.color}Slider`])]);
 		} else {
 			let temp;
-			for (let color of req.body.color) { //If multiple colors are entered
-				if (req.body[`${color}Slider`] > 0) {
-					if (colorOrders.length > 0 && colorOrders[colorOrders.length-1][1] < req.body[`${color}Slider`]) {
-						//In-place bubblesort algorithm pushes colors to colorOrder array in order of intensity
-						temp = colorOrders[colorOrders.length-1];
-						colorOrders[colorOrders.length-1] = [color, req.body[`${color}Slider`]];
-						colorOrders.push(temp);
-					} else {
-						colorOrders.push([color, req.body[`${color}Slider`]]);
-					}
+			for (let color of colors) { //If multiple colors are entered
+				if (colorOrders.length > 0 && colorOrders[colorOrders.length-1][1] < parseInt(req.body[`${color}Slider`])) {
+					//In-place bubblesort algorithm pushes colors to colorOrder array in order of intensity
+					temp = colorOrders[colorOrders.length-1];
+					colorOrders[colorOrders.length-1] = [color, parseInt(req.body[`${color}Slider`])];
+					colorOrders.push(temp);
+				} else {
+					colorOrders.push([color, parseInt(req.body[`${color}Slider`])]);
 				}
+				if (parseInt(req.body[`${color}Slider`]) > 0) {selectedCount ++;} //Enables algorithm to store records of all colors, but tracks which ones the user has directly entered
 			}
 		}
 
-		if (colorOrders.length < 1) {
+		if (selectedCount < 1) {
 			req.flash("error", "Please enter at least one color with an intensity level of greater than 0");
 			return res.redirect("back");
 		}
@@ -243,6 +243,7 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 		let finalBirds = new Map(); //Stores sorted birds as map with accuracy
 		let sorted = []; //Stores birds sorted by accuracy
 		let final = []; //Stores birds in sorted order, without accuracy dimension
+		let colorOccurrences; //Stores the number of times a color occurs per bird
 
 		for (let bird of birds) { //Iterates through birds and searches for characteristics that match entered data
 	  		if (bird.habitat.includes(habitats[req.body.habitat])) {
@@ -254,11 +255,12 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 				}
 
 				for (let color of colorOrders) { //Iterates through colors and ranks birds based on their resemblance to color form
-					if (!bird.colors.includes(color[0])) { //If bird does not contain color, remove it
+					if (color[1] > 0 && !bird.colors.includes(color[0])) { //If bird does not contain color, remove it
 						finalBirds.delete(bird._id.toString());
 						break;
 					} else { //The further away the listed color intensity is from the bird's color intensity, the more the bird's accuracy index reduces
-						finalBirds.set(bird._id.toString(), (finalBirds.get(bird._id.toString())/(1+(0.1*Math.abs(color[1] - occurrencesByArray(bird.colors).get(color[0]))))));
+						colorOccurrences = occurrencesByArray(bird.colors).get(color[0]) || 0; //Either stores number of times color appears in bird, or 0 if it does not appear at all
+						finalBirds.set(bird._id.toString(), (finalBirds.get(bird._id.toString())/(1+(0.1*Math.abs(color[1] - colorOccurrences)))));
 					}
 				}
 	  		}
