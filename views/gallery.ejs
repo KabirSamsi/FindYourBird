@@ -48,11 +48,9 @@
               <br />
 
               <% for (let i = 0; i < bird.gallery.length; i += 1) { %>
-
                 <div class="gallery-image-container" style="display: inline-block;">
-
                   <figure class="figure">
-                    <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 30vw; height: 20vw; " src="<%=bird.gallery[i].url%>" class="figure-img img-fluid rounded" alt="<%=bird.name%> photo">
+                    <img style="margin-top: 5px; margin-right: 5px; margin-left: 5px; width: 45%; height: 30%; " src="<%=bird.gallery[i].url%>" class="figure-img img-fluid rounded bird-image" alt="<%=bird.name%> photo">
                     <figcaption class="figure-caption" style="color:black;"><strong>Citation</strong>: <em><%=bird.gallery[i].citation%></em></figcaption>
                   </figure>
 

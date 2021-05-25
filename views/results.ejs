@@ -63,7 +63,11 @@
                       (<%=(100*(birdMap.get(birds[i]._id.toString())/4)).toFixed(2)%>% match)
 
                     <% } else if (from == "search") { %>
-                      (<%=(100*resultMap.get(birds[i]._id.toString())/resultMap.get(birds[0]._id.toString())).toFixed(2)%>% match)
+                      <% let max = resultMap.get(birds[0]._id.toString());%>
+                      <% if (perfectMatch > max) { %>
+                        <% max = perfectMatch;%>
+                      <% } %>
+                      (<%=(100*resultMap.get(birds[i]._id.toString())/max).toFixed(2)%>% match)
                     <% } %>
                   </a>
                 </h5>
@@ -91,31 +95,5 @@
 
   </body>
   <script src="/javascript/search.js"></script>
-  <script>
-
-  const show = function(button) {
-    for (let bird of document.getElementsByClassName("bird")) {
-      bird.style.display = "block";
-    }
-
-    button.className = "btn btn-danger";
-    button.innerText = "Show Less";
-    button.setAttribute("onclick", "hide(this)");
-    document.getElementById("top-10").innerText = "(Showing All Results)";
-  }
-
-  const hide = function(button) {
-    for (let bird of document.getElementsByClassName("bird")) {
-      if (parseInt(bird.id) > 10) {
-        bird.style.display = "none";
-      }
-    }
-
-      button.className = "btn btn-primary";
-      button.innerText = "Show More";
-      button.setAttribute("onclick", "show(this)");
-      document.getElementById("top-10").innerText = "(Showing Top 10 Results)";
-  }
-
-  </script>
+  <script src="/javascript/bird-show.js"></script>
 </html>

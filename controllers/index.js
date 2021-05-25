@@ -93,7 +93,7 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 		results.push(r[0]);
 		resultMap.set(r[0]._id.toString(), r[1]);
 	}
-	return res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name});
+	return res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name, perfectMatch: values.get("name")});
 }
 
 controller.new = async function(req, res) { //Form to create new bird
