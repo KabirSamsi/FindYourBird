@@ -17,7 +17,7 @@ module.exports.newBirdList = async function(req, res) { //List of all new bird a
 			req.flash('error', "Unable to access requests");
 			return res.redirect('back');
 		}	
-		return res.render('requests', {requests, birdInfo: false, action: 'new'});
+		return res.render('requests', {requests, info: false, action: 'new'});
 	}
 	req.flash('error', 'Invalid password');
 	return res.redirect('back');
@@ -29,7 +29,7 @@ module.exports.showNew = async function(req, res) { //Specific new bird add requ
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
-	return res.render('showRequest', {birdInfo: true, bird: request, action: 'new', colors});
+	return res.render('showRequest', {info: true, bird: request, action: 'new', colors});
 }
 
 module.exports.acceptNew = async function(req, res) { //Accept new bird add request
@@ -75,7 +75,7 @@ module.exports.updateBirdList = async function(req, res) { //List of all bird up
 			return res.redirect('back');
 		}
 		
-		return res.render('requests', {requests, birdInfo: false, action: 'update'});
+		return res.render('requests', {requests, info: false, action: 'update'});
 	}
 	
 	req.flash('error', "Invalid password");
@@ -88,7 +88,7 @@ module.exports.updateBirdShow = async function(req, res) { //Specific bird updat
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
-	return res.render('showRequest', {birdInfo: true, colors, bird: request, action: 'update'});
+	return res.render('showRequest', {info: true, colors, bird: request, action: 'update'});
 }
 
 module.exports.acceptUpdate = async function(req, res) { //Acceept bird update request
@@ -159,7 +159,7 @@ module.exports.galleryUpdateList = async function(req, res) { //List of all gall
 			return res.redirect('back');
 		}
 		
-		return res.render('requests', {requests, birdInfo: false, action: 'galleryUpdate'});
+		return res.render('requests', {requests, info: false, action: 'galleryUpdate'});
 	}
 	
 	req.flash('error', "Invalid password");
@@ -172,7 +172,7 @@ module.exports.galleryUpdateShow = async function(req, res) { //Specific gallery
 		req.flash('error', "Unable to access request");
 		return res.redirect('back');
 	}
-	return res.render('showGalleryRequest', {birdInfo: false, bird: request});
+	return res.render('showGalleryRequest', {info: false, bird: request});
 }
 
 module.exports.acceptGalleryUpdate = async function(req, res) { //Accept gallery update request

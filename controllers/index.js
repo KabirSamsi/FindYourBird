@@ -1,7 +1,8 @@
 //LIBRARIES
-const filter = require("../utils/filter");
-const {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray} = require("../utils/searchOperations");
-const {attrs, colors, sizes, habitats, values} = require("../utils/fields");
+const {occurrencesByArray, parsePropertyArray} = require("../utils/searchOperations");
+const {colors, sizes, habitats, values} = require("../utils/fields");
+const {compareSimilarity} = require("../utils/similarity");
+const {search} = require("../utils/search");
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -11,89 +12,47 @@ const UpdateRequest = require('../models/updateRequest');
 const controller = {};
 
 controller.index = function(req, res) { //Display homepage
-	return res.render('index', {birdInfo: false, search: null});
+	return res.render('index', {info: false, search: null});
 }
 
 controller.search = async function(req, res) { //Search for bird with entered keyword
-	let resultMatrix = []; //Hold info about each bird that matches search, and the number of times the search shows up in its info
-	let results = []; //Hold info about each matching bird
-	const textSplitter = new RegExp(/[\"-\s\'\r\n]/, 'g'); //Splitting delimters between phrases
 	const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g'); //Characters that can distort word nature
-	
-	let searchExpressions = [];
-	for (let word of filter(req.body.name).split(textSplitter)) { //Parse out words from full phrase
-		if (!['', ' '].includes(word)) { //Ignore spaces
-			searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+	const results = await search(req.body.name.toLowerCase(), Bird);
+	if (results.error) {
+		await req.flash("error", results.error);
+		return res.redirect("back");
+	}
+
+	if (results.birds.length > 0) { //If there are results with the given keyword
+		return res.render('results', results);
+	}
+
+	//If no results, attempt to search for birds with similar keyword profiles
+	const birds = await Bird.find({});
+	if (!birds) {
+		req.flash("error", "An Error Occurred");
+		return res.redirect("back");
+	}
+
+	//Build map of birds with similar names to the entered keyword
+	let similarArray = [];
+	let similarMap = new Map();
+	for (let bird of birds) {
+		if (await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
+			await similarMap.set(bird._id, compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')));
+			await similarArray.push(bird);
 		}
 	}
 
-	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check with within-word regex (non-ascii keywords can still pass filter)
-		if (searchExpressions[i].split(delimeter).join('') == '' || searchExpressions[i].length <= 2) {
-			searchExpressions.splice(i, 1);
-		}
-	}
-	
-	if (searchExpressions.length == 0) { //If no results are matched
-		req.flash('error', "Please enter a more specific search");
-		return res.redirect('/');
-	}
-	
-	const birds = await Bird.find({});
-	if (!birds) {
-		req.flash('error', "Unable to access database");
-		return res.redirect('back');
-	}
-	
-	let data = new Map(); //Tracks occurrences of whole words in birds' data
-	let dataString = ""; //Tracks occurrences of partial words in birds' data
-	
-	for (let bird of birds) {
-		for (let item of data) {data.delete(item[0]);} //Refresh data after eeach iteration
-		dataString = "";
-		
-		for (let attr of attrs) {
-			if (typeof bird[attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
-			for (let word of filter(bird[attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
-				dataString += `${word} `;
-				if (data.has(word)) {data.set(word, data.get(word) + values.get(attr)); //Weights result based on where keywords appear
-				} else {data.set(word, values.get(attr));}
-			}
-		
-			} else { //If the attribute is an array, add each value inside the array to the data String
-				for (let i of bird[attr]) {
-					for (let word of filter(i.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
-						dataString += `${word} `;
-						if (data.has(word)) {data.set(word, data.get(word) + 1);
-						} else {data.set(word, 1);}
-					}
-				}
-			}
-		}
-	
-		//Evalautes both options and so captures both out-of-order strings (with the map) and partial strings (with the string)
-		if (isInMap(searchExpressions, data)) {
-			resultMatrix.push([bird, occurrencesByMap(searchExpressions, data)]);
-		
-		} else if (isInString(searchExpressions, dataString)) {
-			resultMatrix.push([bird, occurrencesByString(searchExpressions, dataString)]);
-		}
-	}
-	
 	//Matrix bubblesort (by having the most search occurrences)
-	for (let i = 0; i < resultMatrix.length; i +=1) {
-		for (let j = 0; j < resultMatrix.length - 1; j += 1) {
-			if (resultMatrix[j][1] > resultMatrix[j+1][1]) {
-				[resultMatrix[j], resultMatrix[j+1]] = [resultMatrix[j+1], resultMatrix[j]]
+	for (let i = 0; i < similarArray.length; i +=1) {
+		for (let j = 0; j < similarArray.length - 1; j += 1) {
+			if (similarMap.get(similarArray[j]) < similarMap.get(similarArray[j+1])) {
+				[similarArray[j], similarArray[j+1]] = [similarArray[j+1], similarArray[j]]
 			}
 		}
 	}
-	
-	let resultMap = new Map();
-	for (let r of resultMatrix) { //Push birds of sorted matrix to results list, without corresponding regex values
-		results.push(r[0]);
-		resultMap.set(r[0]._id.toString(), r[1]);
-	}
-	return res.render('results', {birdInfo: false, resultMap, birds: results.reverse(), from: 'search', search: req.body.name, perfectMatch: values.get("name")});
+	return res.render("results", {info: false, resultMap: similarMap, birds: similarArray, from: 'search', search: req.body.name, perfectMatch: values.get("name"), similarResults: true});
 }
 
 controller.new = async function(req, res) { //Form to create new bird
@@ -119,7 +78,7 @@ controller.new = async function(req, res) { //Form to create new bird
 	for (let request of addRequests) {
 		requestNameArr.push(request.name);
 	}
-	return res.render('new', {birdInfo: false, colors, sizes, habitats, birds: birdNameArr, requests: requestNameArr});
+	return res.render('new', {info: false, colors, sizes, habitats, birds: birdNameArr, requests: requestNameArr});
 }
 
 controller.create = async function(req, res) { //Create add request for new bird
@@ -193,11 +152,11 @@ controller.edit = async function(req, res) { //Form to edit bird profile (not al
 		req.flash('error', "Unable to find bird");
 		return res.redirect("back");
   	}
-  	return res.render('edit', {birdInfo: false, bird, colors, sizes, habitats});
+  	return res.render('edit', {info: false, bird, colors, sizes, habitats});
 }
 
 controller.identifyForm = function(req, res) { //Form to identify bird
-	return res.render('identify', {birdInfo: false, colors, habitats, sizes});
+	return res.render('identify', {info: false, colors, habitats, sizes});
 }
 
 controller.identify = async function(req, res) { //Identify bird based on form data
@@ -287,14 +246,14 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 		}
 
 		for (let bird of sorted) {final.push(bird[0]);} //Present birds as 1d array
-		return res.render('results', {birdInfo: false, birds: final, birdMap: finalBirds, from: 'data'});
+		return res.render('results', {info: false, birds: final, birdMap: finalBirds, from: 'data'});
 	}
 	req.flash("error", "You must enter at least one color");
 	return res.redirect('back');
 }
 
 controller.contact = function(req, res) { //Display contact information (static)
-	return res.render('contact', {birdInfo: false});
+	return res.render('contact', {info: false});
 }
 
 controller.showBird = async function(req, res) { //Display bird profile
@@ -303,7 +262,7 @@ controller.showBird = async function(req, res) { //Display bird profile
 		req.flash('error', "Bird not found");
 		return res.redirect("back");
 	}
-	return res.render('index', {birdInfo: true, bird});
+	return res.render('index', {info: true, bird});
 }
 
 controller.updateBird = async function(req, res) { //Create bird update request with form data

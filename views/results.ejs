@@ -33,8 +33,11 @@
                   <% }%>
             <% } else { %>
               <h2>Results</h2>
-              <% if (from == "search") { %>
+              <% if (from == "search" && !similarResults) { %>
                 <span><%=birds.length%> bird<%if(birds.length > 1) {%>s<%}%> match<%if(birds.length == 1) { %>es<% } %> "<%=search%>"</span>
+              
+              <% } else if (from == "search" && similarResults) { %>
+                <span>No results were found for "<%=search%>". Did you mean any of the following birds?</span>
 
               <% } else { %>
                 <span><%=birds.length%> bird<%if(birds.length > 1) {%>s<%}%> match<%if(birds.length == 1) { %>es<% } %> your data</span>
@@ -62,12 +65,14 @@
                     <% if (from == "data") { %>
                       (<%=(100*(birdMap.get(birds[i]._id.toString())/4)).toFixed(2)%>% match)
 
-                    <% } else if (from == "search") { %>
+                    <% } else if (from == "search" && !similarResults) { %>
                       <% let max = resultMap.get(birds[0]._id.toString());%>
                       <% if (perfectMatch > max) { %>
                         <% max = perfectMatch;%>
                       <% } %>
                       (<%=(100*resultMap.get(birds[i]._id.toString())/max).toFixed(2)%>% match)
+                    <% } else if (from == "search" && similarResults) {%>
+                      (<%=resultMap.get(birds[i]._id).toFixed(2)%>% match)
                     <% } %>
                   </a>
                 </h5>

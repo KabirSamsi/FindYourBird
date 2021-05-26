@@ -14,7 +14,7 @@ controller.showGallery = async function(req, res) { //Display gallery of specifi
     	req.flash('error', "Unable to access bird");
 		return res.redirect("back")
 	}
-	return res.render('gallery', {birdInfo: true, bird});
+	return res.render('gallery', {info: true, bird});
 }
 
 controller.updateGallery = async function(req, res) { //Create request to update bird's gallery
