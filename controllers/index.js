@@ -1,5 +1,5 @@
 //LIBRARIES
-const {occurrencesByArray, parsePropertyArray} = require("../utils/searchOperations");
+const {occurrencesByArray} = require("../utils/searchOperations");
 const {colors, sizes, habitats, values} = require("../utils/fields");
 const {compareSimilarity} = require("../utils/similarity");
 const {search} = require("../utils/search");
@@ -47,7 +47,7 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 	//Matrix bubblesort (by having the most search occurrences)
 	for (let i = 0; i < similarArray.length; i +=1) {
 		for (let j = 0; j < similarArray.length - 1; j += 1) {
-			if (similarMap.get(similarArray[j]) < similarMap.get(similarArray[j+1])) {
+			if (similarMap.get(similarArray[j]._id) < similarMap.get(similarArray[j+1]._id)) {
 				[similarArray[j], similarArray[j+1]] = [similarArray[j+1], similarArray[j]]
 			}
 		}

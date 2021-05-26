@@ -37,14 +37,6 @@ const occurrencesByString = function(subArr, data) { //Check for occurrences per
 	return occurrences;
 }
 
-const parsePropertyArray = function(arr, property) { //Takes an array of objects and returns an array of those specific properties
-	let results = [];
-	for (let item of arr) {
-		results.push(item[property]);
-	}
-	return results;
-}
-
 const occurrencesByArray = function(arr) { //Take an array and return how many times each element occurs in it
 	let results = new Map(); //Stores each element and its occurrences
 	for (let element of arr) {
@@ -57,4 +49,4 @@ const occurrencesByArray = function(arr) { //Take an array and return how many t
 	return results;
 }
 
-module.exports = {isInMap, occurrencesByMap, parsePropertyArray, isInString, occurrencesByString, occurrencesByArray};
+module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray};

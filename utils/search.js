@@ -23,7 +23,9 @@ const search = async function(query, Schema) {
 	}
 	
     //If no results are matched
-	if (searchExpressions.length == 0) {return {error: "Please enter a more specific search"};}
+	if (searchExpressions.length == 0) {
+		return {error: "Please enter a more specific search"};
+	}
 	
 	const objects = await Schema.find({});
 	if (!objects) {return {error: "Unable to access database"};}
