@@ -33,7 +33,7 @@ const compareSimilarity = function(a, b) { //Compares two phrases to analyze cha
 
             for(let charset of charsets) { //Check if there is any specified similarity between the two characters
                 if (charset.includes(a[counter]) && charset.includes(b[counter])) {
-                    difference = 1; //Reduces difference factor
+                    difference = 1; //Reduces difference factor in this case
                     break;
                 }
             }
