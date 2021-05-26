@@ -49,8 +49,8 @@ const search = async function(query, Schema) {
 				for (let i of object[attr]) {
 					for (let word of filter(i.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
 						dataString += `${word} `;
-						if (data.has(word)) {data.set(word, data.get(word) + 1);
-						} else {data.set(word, 1);}
+						if (data.has(word)) {data.set(word, data.get(word) + values.get(attr));
+						} else {data.set(word, values.get(attr));}
 					}
 				}
 			}
