@@ -2,5 +2,5 @@
 .DS_Store
 .vscode
 todos.txt
-node_modules
+# node_modules
 Procfile
