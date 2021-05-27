@@ -27,7 +27,11 @@ const compareSimilarity = function(a, b) { //Compares two phrases to analyze cha
     while (counter < shorter.length) { //Iterate through smaller array and compare to larger
         charsetOverlap = false;
         if (a[counter] != b[counter]) { //If the two characters at the given point are not identical
-            similarity -= (2*(a.length-counter));
+            if (counter == 0) {
+                similarity -= (10*(a.length-counter));
+            } else {
+                similarity -= (2*(a.length-counter));
+            }
             innerCount = 0;
             difference = a.length;
 

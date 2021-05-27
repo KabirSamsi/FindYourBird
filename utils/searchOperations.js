@@ -49,4 +49,8 @@ const occurrencesByArray = function(arr) { //Take an array and return how many t
 	return results;
 }
 
-module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray};
+const lastElement = function(arr, index) {
+	return arr[arr.length+index];
+}
+
+module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray, lastElement};

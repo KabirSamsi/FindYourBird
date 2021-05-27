@@ -1,5 +1,5 @@
 //LIBRARIES
-const {occurrencesByArray} = require("../utils/searchOperations");
+const {occurrencesByArray, lastElement} = require("../utils/searchOperations");
 const {colors, sizes, habitats, values} = require("../utils/fields");
 const {compareSimilarity} = require("../utils/similarity");
 const {search} = require("../utils/search");
@@ -38,9 +38,30 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 	let similarArray = [];
 	let similarMap = new Map();
 	for (let bird of birds) {
+
 		if (await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
 			await similarMap.set(bird._id, compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')));
 			await similarArray.push(bird);
+		} else if ((await compareSimilarity(lastElement(bird.name.toLowerCase().split(' '), -1), lastElement(req.body.name.toLowerCase().split(' '), -1)) > 30) && !(similarMap.has(bird._id))) {
+			await similarMap.set(bird._id, compareSimilarity(lastElement(bird.name.toLowerCase().split(' '), -1), lastElement(req.body.name.toLowerCase().split(' '), -1))/3);
+			await similarArray.push(bird);
+		}
+	}
+
+	let average = 0;
+	let stdDev = 0;
+	for (let bird of similarArray) {
+		average += (similarMap.get(bird._id)/similarArray.length);
+	}
+
+	for (let bird of similarArray) {
+		stdDev += (Math.pow(similarMap.get(bird._id)-average), 2)/similarArray.length;
+	}
+	stdDev = Math.sqrt(stdDev);
+
+	for (let i = 0; i < similarArray.length; i++) {
+		if (average - similarMap.get(similarArray[i]._id) > stdDev) {
+			similarArray.splice(i, 1);
 		}
 	}
 
