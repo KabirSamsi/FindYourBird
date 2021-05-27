@@ -30,167 +30,96 @@
             <a class="btn btn-info" href="/tutorial/identify"><i class="fas fa-binoculars"></i> Identify</a>
             <a class="btn btn-success" href="/tutorial/add"><i class="fas fa-plus-circle"></i> Add Birds</a>
             <a class="btn btn-warning" href="/tutorial/edit"><i class="fas fa-edit"></i> Edit Birds</a>
-            <a class="btn btn-primary" href="/tutorial/gallery"><i class="fas fa-images"></i>Gallery</a>
+            <a class="btn btn-primary" href="/tutorial/gallery"><i class="fas fa-images"></i> Gallery</a>
             <br /><br />
 
             <% if (field == "search") { %>
-
-              <h4>
-                Searching for Birds
-              </h4>
-              <p>
-                Use the search function if you want to read the profile of a particular bird (e.g. "Red-Tailed Hawk". If you are not sure of the bird's full name, (e.g. "gull" or "eagle"), you can type that in and can look at all bird profiles containing your search.
-              </p>
-
-
-                <li>
-                  Type the bird's name into the searchbar.<br /><br />
-                  <img style="width: 50%; height: 50%;" src="/media/search.png" />
+              <h4>Searching for Birds</h4>
+              <p>FindYourBird's searchbar can be used to access and read the profile of a particular bird (e.g. "Red-Tailed Hawk"). If you are not sure of the bird's full name, (e.g. "gull" or "eagle"), or you are looking for specific keywords (e.g. "blackbird in parking lot") you can enter that fragment of the bird's name. The algorithm will return a list of the birds that most closely match your query, and you can search for the specific bird you wish to learn more about.</p>
+                <li>Type the bird's name into the searchbar.<br /><br />
+                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/ahhn8DP.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  Click 'Search' or hit enter.
-                </li>
+                <li>Click 'Search' or hit enter.</li>
 
                 <li>
-                  A list of birds matching the name you entered will show up, with their images. Click on the bird you want to read about to view its full profile<br /><br />
+                  A list of birds matching the name you entered will show up. Click on the bird that matches your search to view its full profile.<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/search-results.png" />
                   <br /><br />
                 </li>
 
 
             <% } else if (field == "identify") { %>
-
-              <h4>
-                Identification
-              </h4>
-              <p>
-                Use the identifier for birds that you see or can recognize from color, size, etc., but whose names you don't know. If you see a bird that is blue, red and black, the size of a songbird, and you see it on a hike, use the identifier to figure out which bird that is.
-              </p>
-
-
-                <li>
-                  Click "Identify".<br /><br />
+              <h4>Identification</h4>
+              <p>FindYourBird's Identifier can be used when you spot a bird whose species you are unsure about. You can enter certain features you observe of the bird - specifically color, area spotted and size - and get a list of possible matching species.</p>
+                <li>Click "Identify".<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/identify-button.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  Select any colors that you recognized on the bird, the bird's size, and where you saw it.<br /><br />
-                  <img style="width: 50%; height: 50%;" src="/media/identify-form.png" />
+                <li>Select any colors that you recognized on the bird, the bird's size, and where you saw it. Click "Identify Bird".<br /><br />
+                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/VpEtNKS.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  Click "Identify Bird".
-                </li>
-
-                <li>
-                  A list of birds matching the data you entered will show up. Click the one you want to learn more about, the same way you would do with the search feature.<br /><br />
+                <li>A list of birds matching the data you entered will show up. Click the one you want to learn more about, the same way you would do with the search feature.<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/identify-results.png" />
                   <br /><br />
                 </li>
 
-
             <% } else if (field == "add") { %>
-
-              <h4>
-                Adding Birds
-              </h4>
-              <p>
-                Help contribute to the FindYourBird community by adding bird profiles to our database! To do so, simply do the following:
-              </p>
-
-
-                <li>
-                  Click 'Add New'.<br /><br />
-                  <img style="width: 50%; height: 50%;" src="/media/add-new-button.png" />
+              <h4>Adding Birds</h4>
+              <p>Help contribute to the FindYourBird community by adding bird profiles to our database! To do so, simply do the following:</p>
+                <li>Click 'Add New'.<br /><br />
+                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/VmqAysh.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  Fill in the bird's information for the required questions, using info from reliable sources like Audubon and Cornell AllAboutBirds.<br /><br />
-                  <img style="width: 50%; height: 50%;" src="/media/new-bird-data.png" />
+                <li>Fill in the bird's information in the given fields, using info from reliable sources like Audubon and Cornell AllAboutBirds.<br /><br />
+                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/yFUXCl7.png" />
+                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/s4DTtNU.png" />
                   <br /><br />
                 </li>
-
-                <li>
-                  When adding the bird's photo, if you are using your own, upload it to a third-party site like Imgur or Flickr and then paste the new URL here. It is not accessible otherwise.
-                </li>
-
-                <li>
-                    Click 'Submit Bird'.
-                </li>
-
-                <li>
-                  The bird profile you made will be sent to me, the admin. I will verify that the information looks good and that the bird is valid. If so, I will make the new bird viewable to everyone.
-                </li>
-
+                <li>When adding the bird's photo, if you are using your own, upload it to a third-party site like Imgur or Flickr and then paste the new URL here. It is not accessible otherwise.</li><br>
+                <li>Click 'Submit Bird'. The bird profile you made will be sent to me, the admin. I will verify that the information looks good and that the bird is valid. If so, I will make the new bird viewable to everyone.</li>
               <br />
 
-
             <% } else if (field == "edit") { %>
-              <h4>
-                Editing Birds
-              </h4>
-              <p>
-                If there are any birds whose profiles you want to update, do so using the edit feature. While the bird's name and primary photo will remain the same, you can update info about its habitat, diet, colors, etc.
-              </p>
-
-
-                <li>
-                  Click "Edit Bird" (This option will only show up in the searchbar if you are currently viewing a bird's profile).<br /><br />
+              <h4>Editing Birds</h4>
+              <p>Help verify and fix FindYourBird data by using the edit feature! While the bird's name and primary photo will remain the same, you can update info about its habitat, diet, colors, etc.</p>
+                <li>Click "Edit Bird" (This option will only show up in the searchbar if you are currently viewing a bird's profile).<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/edit-button.png" />
                   <br /><br />
                 </li>
-
-                <li>
-                  You will see a form where data is already entered. Edit any info you think needs to be changed<br /><br />
+                <li>You will see a form where data is already entered. Edit any info you think needs to be changed.<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/edit-profile.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  Click 'Update Bird'. Like with the 'Add Bird' function, any changes you make will be sent directly to me, the admin. I will verify that the new information is valid, and if so, will make the changes visible to everyone.
-                </li>
-
+                <li>Click 'Update Bird'. Like with the 'Add Bird' function, any changes you make will be sent directly to me, the admin. I will verify that the new information is valid, and if so, will make the changes visible to everyone.</li>
                 <br /><br />
 
             <% } else if (field == "gallery") { %>
-              <h4>
-                Adding/Removing Photos From A Bird's Gallery
-              </h4>
-              <p>
-                Each bird's gallery is a place where you can post photos of the bird, beyond just the one included in its profile. Typically, they are your own photos.
-              </p>
-
-
-                <li>
-                  When viewing a bird's profile, click "Gallery".<br /><br />
+              <h4>Adding/Removing Photos From A Bird's Gallery</h4>
+              <p>Each bird's gallery is a place where you can post photos of the bird, beyond just the one included in its profile. Typically, they are your own photos.</p>
+                <li>When viewing a bird's profile, click "Gallery".<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/gallery-button.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  At the top of the page, you will see input fields for "New Image URL" and "Image Citation". Fill those in, and click "Add Image to Gallery" or hit enter.<br /><br />
+                <li>At the top of the page, you will see input fields for "New Image URL" and "Image Citation". Fill those in, and click "Add Image to Gallery" or hit enter.<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/add-gallery.png" />
                   <br /><br />
                 </li>
 
-                <li>
-                  When adding the bird's photo, if you are using your own, upload it to a third-party site like Imgur or Flickr and then paste the new URL here. It is not accessible otherwise.
-                </li>
-
-                <li>
-                  To delete an image, click "Remove From Gallery", underneath the bird's photo. You cannot remove the image that is part of the bird's profile.<br /><br />
+                <li>When adding the bird's photo, if you are using your own, upload it to a third-party site like Imgur or Flickr and then paste the new URL here. It is not accessible otherwise.</li><br>
+                <li>To delete an image, click "Remove From Gallery", underneath the bird's photo. You cannot remove the image that is part of the bird's profile.<br /><br />
                   <img style="width: 50%; height: 50%;" src="/media/delete-gallery.png" />
+                  <img style="width: 50%; height: 50%;" src="/media/delete-gallery2.png" />
                   <br /><br />
                 </li>
-
-                <li>
-                  Any changes you make will be sent to me, the admin. I will review it and verify that the photos are proper photos of the bird, and make your gallery changes visible to anyone.
-                </li>
+                <li>Any changes you make will be sent to me, the admin. I will review it and verify that the photos are proper photos of the bird, and make your gallery changes visible to anyone.</li>
             <% } %>
 
           </div>
