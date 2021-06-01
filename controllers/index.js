@@ -39,10 +39,10 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 	let similarMap = new Map();
 	for (let bird of birds) {
 
-		if (await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
+		if (req.body.name.toLowerCase().split(delimeter).join('').length > 3 && await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
 			await similarMap.set(bird._id, compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')));
 			await similarArray.push(bird);
-		} else if ((await compareSimilarity(lastElement(bird.name.toLowerCase().split(' '), -1), lastElement(req.body.name.toLowerCase().split(' '), -1)) > 30) && !(similarMap.has(bird._id))) {
+		} else if (lastElement(req.body.name.toLowerCase().split(' '), -1).length > 3 && (await compareSimilarity(lastElement(bird.name.toLowerCase().split(' '), -1), lastElement(req.body.name.toLowerCase().split(' '), -1)) > 30) && !(similarMap.has(bird._id))) {
 			await similarMap.set(bird._id, compareSimilarity(lastElement(bird.name.toLowerCase().split(' '), -1), lastElement(req.body.name.toLowerCase().split(' '), -1))/3);
 			await similarArray.push(bird);
 		}

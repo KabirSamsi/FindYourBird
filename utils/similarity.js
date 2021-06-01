@@ -51,7 +51,7 @@ const compareSimilarity = function(a, b) { //Compares two phrases to analyze cha
                 }
             }
             //Subtract the difference in position, as well as the difference in character occurrence, from the similarity score
-            similarity -= (3 * difference + 2 * Math.abs(count(a, b[counter]) - count(b, b[counter])));
+            similarity -= (((12/a.length) * difference) + ((9/a.length) * Math.abs(count(a, b[counter]) - count(b, b[counter]))));
         }
         counter ++; //Increment
     }
