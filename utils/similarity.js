@@ -1,3 +1,12 @@
+const isContained = function(reference, compareTo, matrix) { //Checks if matrix contains the same two chars in any row
+    for (let row of matrix) {
+        if (row.includes(reference) && row.includes(compareTo)) { //If row includes both
+            return true;
+        }
+    }
+    return false;
+}
+
 const count = function(phrase, char) { //Count the occurrences of a character in a phrase
     let count = 0;
     for (let i = 0; i < phrase.length; i++) { //Iterate through phrase and look for instances of character
@@ -7,6 +16,16 @@ const count = function(phrase, char) { //Count the occurrences of a character in
 }
 
 const compareSimilarity = function(a, b) { //Compares two phrases to analyze character similarity
+    const startSimilar = [ //Stores similar character starts to reduce distinction between starting characters
+        ['s', 'c', 'x', 'z'],
+        ['k', 'c', 'q'],
+        ['f', 'p', 'v'],
+        ['i', 'y'],
+        ['a', 'e'],
+        ['o', 'u'],
+        ['g', 'j']
+    ];
+
     const charsets = [ //Stores similar character sets to reduce distinction between sets
         ['a', 'e', 'i', 'o', 'u', 'y'],
         ['q', 'w', 'e', 'r', 't', 'y'],
@@ -15,8 +34,7 @@ const compareSimilarity = function(a, b) { //Compares two phrases to analyze cha
     ];
 
     let similarity = (100 - 5*Math.abs(a.length - b.length)); //Current similarity (100 minus 5 * the difference in lengths)
-    //Decide shorter array for comparison iteration
-    let shorter;
+    let shorter; //Decide shorter array for comparison iteration
     if (a.length < b.length) {shorter = a} else { shorter = b;}
 
     let counter = 0;
@@ -26,17 +44,16 @@ const compareSimilarity = function(a, b) { //Compares two phrases to analyze cha
 
     while (counter < shorter.length) { //Iterate through smaller array and compare to larger
         charsetOverlap = false;
-        if (a[counter] != b[counter]) { //If the two characters at the given point are not identical
-            if (counter == 0) {
-                similarity -= (10*(a.length-counter));
+        if (a[counter] != b[counter]) { //If the two characters at the given point are not similar
+            if (counter == 0 && !isContained(a[counter], b[counter], startSimilar)) {
+                similarity -= 10*(a.length-counter);
             } else {
-                similarity -= (2*(a.length-counter));
+                similarity -= 2*(a.length-counter);
             }
-            innerCount = 0;
-            difference = a.length;
-
+            
+            [difference, innerCount] = [a.length, 0];
             for(let charset of charsets) { //Check if there is any specified similarity between the two characters
-                if (charset.includes(a[counter]) && charset.includes(b[counter])) {
+                if (isContained(a[counter], b[counter], charset)) {
                     difference = 1; //Reduces difference factor in this case
                     break;
                 }
