@@ -1,8 +1,9 @@
 //LIBRARIES
-const {occurrencesByArray, lastElement} = require("../utils/searchOperations");
+const {occurrencesByArray, lastElement, parsePropertyArray, mapToMatrix, removeIfIncluded} = require("../utils/searchOperations");
 const {colors, sizes, habitats, values} = require("../utils/fields");
 const {compareSimilarity} = require("../utils/similarity");
 const {search} = require("../utils/search");
+const math = require("mathjs");
 
 //SCHEMA
 const Bird = require('../models/bird');
@@ -17,14 +18,26 @@ controller.index = function(req, res) { //Display homepage
 
 controller.search = async function(req, res) { //Search for bird with entered keyword
 	const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g'); //Characters that can distort word nature
-	const results = await search(req.body.name.toLowerCase(), Bird);
+	let results = await search(req.body.name.toLowerCase(), Bird);
 	if (results.error) {
 		await req.flash("error", results.error);
 		return res.redirect("back");
 	}
 
-	if (results.birds.length > 0) { //If there are results with the given keyword
+	//Eliminate birds that fall below a standard deviation of similarity
+	let birdMatrix = await parsePropertyArray(mapToMatrix(results.resultMap), 1);
+	for (let bird of results.resultMap) {
+		if (math.mean(birdMatrix) - bird[1] > math.std(birdMatrix)) {
+			removeIfIncluded(results.birds, bird[0], "_id");
+			results.resultMap.delete(bird[0]);
+		}
+	}
+
+	if (results.birds.length > 0 && results.birds.length < 30) { //If there are results with the given keyword
 		return res.render('results', results);
+	} else if (results.birds.length > 0) {
+		await req.flash("error", "Please enter a more specific search");
+		return res.redirect("back");
 	}
 
 	//If no results, attempt to search for birds with similar keyword profiles
@@ -38,7 +51,6 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 	let similarArray = [];
 	let similarMap = new Map();
 	for (let bird of birds) {
-
 		if (req.body.name.toLowerCase().split(delimeter).join('').length > 3 && await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
 			await similarMap.set(bird._id, compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')));
 			await similarArray.push(bird);
@@ -48,20 +60,12 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 		}
 	}
 
-	let average = 0;
-	let stdDev = 0;
-	for (let bird of similarArray) {
-		average += (similarMap.get(bird._id)/similarArray.length);
-	}
-
-	for (let bird of similarArray) {
-		stdDev += (Math.pow(similarMap.get(bird._id)-average), 2)/similarArray.length;
-	}
-	stdDev = Math.sqrt(stdDev);
-
-	for (let i = 0; i < similarArray.length; i++) {
-		if (average - similarMap.get(similarArray[i]._id) > stdDev) {
-			similarArray.splice(i, 1);
+	//Eliminate birds that fall below a standard deviation of similarity
+	birdMatrix = await parsePropertyArray(mapToMatrix(similarMap), 1);
+	for (let bird of similarMap) {
+		if (math.mean(birdMatrix) - bird[1] > math.std(birdMatrix)) {
+			removeIfIncluded(similarArray, bird[0], "_id");
+			similarMap.delete(bird[0]);
 		}
 	}
 
@@ -244,6 +248,14 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 					}
 				}
 	  		}
+		}
+		
+		//Eliminate birds that fall below a standard deviation of similarity
+		let birdMatrix = await parsePropertyArray(mapToMatrix(finalBirds), 1);
+		for (let bird of finalBirds) {
+			if (math.mean(birdMatrix) - bird[1] > math.std(birdMatrix)) {
+				finalBirds.delete(bird[0]);
+			}
 		}
 
 		//Convert all bird IDs to full objects

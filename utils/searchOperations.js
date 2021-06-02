@@ -1,14 +1,15 @@
 //Search operations are utilized in bird keyword search
 const filter = require("../utils/filter");
+const package = {};
 
-const isInMap = function(subArr, data) { //Check that all elements of array are inside map
+package.isInMap = function(subArr, data) { //Check that all elements of array are inside map
 	for (let item of subArr) {
 		if (!data.has(item)) {return false;}
 	}
 	return true;
 }
 
-const occurrencesByMap = function(subArr, data) { //Check for occurrences per map of each array element
+package.occurrencesByMap = function(subArr, data) { //Check for occurrences per map of each array element
 	let occurrences = 0;
 	for (let i = 0; i < subArr.length; i ++) {
 		if (subArr.indexOf(subArr[i]) == i) { //Ensures that the same search query is not repeated
@@ -18,14 +19,14 @@ const occurrencesByMap = function(subArr, data) { //Check for occurrences per ma
 	return occurrences;
 }
 
-const isInString = function(subArr, data) { //Check that all elements of array are inside string
+package.isInString = function(subArr, data) { //Check that all elements of array are inside string
 	for (let item of subArr) {
 		if (!data.includes(item)) {return false;}
 	}
 	return true;
 }
 
-const occurrencesByString = function(subArr, data) { //Check for occurrences per string of each array element
+package.occurrencesByString = function(subArr, data) { //Check for occurrences per string of each array element
 	let occurrences = 0;
 	for (let i = 0; i < subArr.length; i ++) {
 		for (let word of filter(data).split(' ')) {
@@ -37,7 +38,39 @@ const occurrencesByString = function(subArr, data) { //Check for occurrences per
 	return occurrences;
 }
 
-const occurrencesByArray = function(arr) { //Take an array and return how many times each element occurs in it
+package.parsePropertyArray = function(arr, property) { //Takes an array of objects and returns an array of those specific properties
+	let results = [];
+	for (let item of arr) {
+		results.push(item[property]);
+	}
+	return results;
+}
+
+package.objectArrIndex = function(arr, property, key, subproperty, caseInsensitive) { //Check if an object which includes a certain property contains a key in that property
+    for (let i = 0; i < arr.length; i ++) {
+        if (subproperty) { //If a subproperty needs to be evaluated
+            if (caseInsensitive) { //If case insensitive
+                if (arr[i][property][subproperty].toString().toLowerCase() == key.toString().toLowerCase()) {return i;} //Check equality with property and subproperty    
+            }
+            if (arr[i][property][subproperty].toString() == key.toString()) {return i;} //Check equality with property and subproperty
+        }
+        if (caseInsensitive) {
+            if (arr[i][property].toString().toLowerCase() == key.toString().toLowerCase()) {return i;}
+        }
+        if (arr[i][property].toString() == key.toString()) {return i;} //Otherwise, check equality with just property
+    }
+    return -1; //If no result is found, return -1 (like a regular array)
+}
+
+package.mapToMatrix = function(map) {
+	matrix = [];
+	for (let element of map) {
+		matrix.push(element);
+	}
+	return matrix;
+}
+
+package.occurrencesByArray = function(arr) { //Take an array and return how many times each element occurs in it
 	let results = new Map(); //Stores each element and its occurrences
 	for (let element of arr) {
 		if (results.has(element)) {
@@ -49,8 +82,24 @@ const occurrencesByArray = function(arr) { //Take an array and return how many t
 	return results;
 }
 
-const lastElement = function(arr, index) {
+package.lastElement = function(arr, index) {
 	return arr[arr.length+index];
 }
 
-module.exports = {isInMap, occurrencesByMap, isInString, occurrencesByString, occurrencesByArray, lastElement};
+package. removeIfIncluded = function(arr, element, property) {
+    if (property) { //If a specific property in the element needs to be evaluated, evaluate element's property
+        if (package.objectArrIndex(arr, property, element) > -1) {
+            arr.splice(package.objectArrIndex(arr, property, element), 1);
+            return true;
+        }
+        return false;
+    } else { //If no specific property is listed, evaluate element's exact value
+        if (arr.includes(element)) {
+            arr.splice(arr.indexOf(element), 1);
+            return true;
+       }
+       return false;
+    }
+}
+
+module.exports = package;
