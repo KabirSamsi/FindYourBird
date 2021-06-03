@@ -2,7 +2,7 @@
 const {occurrencesByArray, lastElement, parsePropertyArray, mapToMatrix, removeIfIncluded} = require("../utils/searchOperations");
 const {colors, sizes, habitats, values} = require("../utils/fields");
 const {compareSimilarity} = require("../utils/similarity");
-const {search} = require("../utils/search");
+const {keywordSearch} = require("../utils/search");
 const math = require("mathjs");
 
 //SCHEMA
@@ -18,10 +18,10 @@ controller.index = function(req, res) { //Display homepage
 
 controller.search = async function(req, res) { //Search for bird with entered keyword
 	const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g'); //Characters that can distort word nature
-	let results = await search(req.body.name.toLowerCase(), Bird);
+	let results = await keywordSearch(req.body.name.toLowerCase(), Bird);
 	if (results.error) {
 		await req.flash("error", results.error);
-		return res.redirect("back");
+		return res.redirect("/");
 	}
 
 	//Eliminate birds that fall below a standard deviation of similarity
@@ -37,14 +37,14 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 		return res.render('results', results);
 	} else if (results.birds.length > 0) {
 		await req.flash("error", "Please enter a more specific search");
-		return res.redirect("back");
+		return res.redirect("/");
 	}
 
 	//If no results, attempt to search for birds with similar keyword profiles
 	const birds = await Bird.find({});
 	if (!birds) {
 		req.flash("error", "An Error Occurred");
-		return res.redirect("back");
+		return res.redirect("/");
 	}
 
 	//Build map of birds with similar names to the entered keyword
@@ -204,6 +204,7 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 		let selectedCount = 0;
 		if (typeof req.body.color == "string" && parseInt(req.body[`${req.body.color}Slider`]) > 0) { //If one color is enteered
 			colorOrders.push([req.body.color, parseInt(req.body[`${req.body.color}Slider`])]);
+			selectedCount ++;
 		} else {
 			let temp;
 			for (let color of colors) { //If multiple colors are entered

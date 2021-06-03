@@ -3,7 +3,7 @@ const filter = require("../utils/filter");
 const {isInMap, occurrencesByMap, isInString, occurrencesByString} = require("../utils/searchOperations");
 const {attrs, values} = require("../utils/fields");
 
-const search = async function(query, Schema) {
+const keywordSearch = async function(query, Schema) {
     let resultMatrix = []; //Hold info about each object that matches search, and the number of times the search shows up in its info
 	let results = []; //Hold info about each matching object
 	const textSplitter = new RegExp(/[\"-\s\'\r\n]/, 'g'); //Splitting delimters between phrases
@@ -82,4 +82,4 @@ const search = async function(query, Schema) {
 	return {info: false, resultMap, birds: results.reverse(), from: 'search', search: query, perfectMatch: values.get("name"), similarResults: false};
 }
 
-module.exports = {search};
+module.exports = {keywordSearch};
