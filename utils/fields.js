@@ -13,5 +13,13 @@ module.exports = { //Stores all values for attributes for bird form data
         ['habitat', 2],
         ['range', 2],
         ['diet', 1]
+    ]),
+    identifyValues: new Map([ //Ranking of importance for each attribute in identification (when running keyword search)
+        ['name', 1.06],
+        ['appearance', 1.05],
+        ['description', 1.04],
+        ['diet', 1.03],
+        ['range', 1.02],
+        ['scientificName', 1.01]
     ])
 };

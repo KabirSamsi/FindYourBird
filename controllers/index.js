@@ -1,8 +1,10 @@
 //LIBRARIES
 const {occurrencesByArray, lastElement, parsePropertyArray, mapToMatrix, removeIfIncluded} = require("../utils/searchOperations");
 const {colors, sizes, habitats, values} = require("../utils/fields");
+const {attrs, identifyValues} = require("../utils/fields");
 const {compareSimilarity} = require("../utils/similarity");
 const {keywordSearch} = require("../utils/search");
+const filter = require("../utils/filter");
 const math = require("mathjs");
 
 //SCHEMA
@@ -267,20 +269,51 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 				req.flash("error", "An error occurred");
 				return res.redirect("back");
 	  		}
-	  		sorted.push([populatedBird, bird[1]]);
+	  		sorted.push(populatedBird);
 		}
 
+		//Find any keywords to further help narrow down identification
+		const textSplitter = new RegExp(/[\"-\s\'\r\n]/, 'g'); //Splitting delimters between phrases
+		const delimeter = new RegExp(/[^a-zA-z0-9]/, 'g'); //Characters that can distort word nature
+		let searchExpressions = [];
+		for (let word of filter(req.body.keywords).split(textSplitter)) { //Parse out words from full phrase
+			if (!['', ' '].includes(word) && word.length > 3) { //Ignore spaces
+				searchExpressions.push(word.toLowerCase().split(delimeter).join(''));
+			}
+		}
+
+		//Iterate through sorted birds and update their match rankings based on keyword similarity match
+		for (let i = 0; i < sorted.length; i++) {
+			for (let attr of attrs) {
+				if (typeof sorted[i][attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
+				for (let word of filter(sorted[i][attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
+					if (searchExpressions.includes(word) && identifyValues.has(attr)) {
+						finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+					}
+				}
+			
+				} else { //If the attribute is an array, add each value inside the array to the data String
+					for (let wordset of sorted[i][attr]) {
+						for (let word of filter(wordset.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
+							if (searchExpressions.includes(word) && identifyValues.has(attr)) {
+								finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		//Bubblesort algorithm sorts based on which bird has the highest similarity to entered data
 		for (let i = 0; i < sorted.length; i ++) {
 			for (let j = 0; j < sorted.length-1; j++) {
-				if (sorted[j][1] < sorted[j+1][1]) {
+				if (finalBirds.get(sorted[j]._id.toString()) < finalBirds.get(sorted[j+1]._id.toString())) {
 					[sorted[j], sorted[j+1]] = [sorted[j+1], sorted[j]];
 				}
 			}
 		}
 
-		for (let bird of sorted) {final.push(bird[0]);} //Present birds as 1d array
-		return res.render('results', {info: false, birds: final, birdMap: finalBirds, from: 'data'});
+		return res.render('results', {info: false, birds: sorted, birdMap: finalBirds, from: 'data'});
 	}
 	req.flash("error", "You must enter at least one color");
 	return res.redirect('back');

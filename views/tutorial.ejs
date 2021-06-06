@@ -26,6 +26,7 @@
             <em>A Quick Overview Of How To Use FindYourBird</em>
             <br /><br />
 
+            <a class="btn btn-danger" href="/tutorial/home"><i class="fas fa-home"></i> Overview</a>
             <a class="btn btn-primary" href="/tutorial/search"><i class="fas fa-search"></i> Search</a>
             <a class="btn btn-info" href="/tutorial/identify"><i class="fas fa-binoculars"></i> Identify</a>
             <a class="btn btn-success" href="/tutorial/add"><i class="fas fa-plus-circle"></i> Add Birds</a>
@@ -33,7 +34,10 @@
             <a class="btn btn-primary" href="/tutorial/gallery"><i class="fas fa-images"></i> Gallery</a>
             <br /><br />
 
-            <% if (field == "search") { %>
+            <% if (field == "home") { %>
+              <h4>Navigate To The Other Tabs To Learn How To Use FindYourBird</h4>
+
+            <% } else if (field == "search") { %>
               <h4>Searching for Birds</h4>
               <p>FindYourBird's searchbar can be used to access and read the profile of a particular bird (e.g. "Red-Tailed Hawk"). If you are not sure of the bird's full name, (e.g. "gull" or "eagle"), or you are looking for specific keywords (e.g. "blackbird in parking lot") you can enter that fragment of the bird's name. The algorithm will return a list of the birds that most closely match your query, and you can search for the specific bird you wish to learn more about.</p>
                 <li>Type the bird's name into the searchbar.<br /><br />
@@ -58,8 +62,8 @@
                   <br /><br />
                 </li>
 
-                <li>Select any colors that you recognized on the bird, the bird's size, and where you saw it. Click "Identify Bird".<br /><br />
-                  <img style="width: 50%; height: 50%;" src="https://i.imgur.com/VpEtNKS.png" />
+                <li>Select any colors that you recognized on the bird, the bird's size, and where you saw it. If there is any other information you wish to provide, enter it in the box below. Click "Identify Bird".</li><br /><br />
+                <img style="width: 50%; height: 50%;" src="https://i.imgur.com/23nh0n1.png" />
                   <br /><br />
                 </li>
 

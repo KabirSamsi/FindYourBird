@@ -4,13 +4,12 @@ const AddRequest = require('../models/addRequest');
 const UpdateRequest = require('../models/updateRequest');
 const GalleryUpdateRequest = require('../models/galleryUpdateRequest');
 
-if (process.env.NODE_ENV !== "production") {
-	require('dotenv').config();
-}
-
+if (process.env.NODE_ENV !== "production") {require('dotenv').config();}
 const {colors} = require("../utils/fields");
 
-module.exports.newBirdList = async function(req, res) { //List of all new bird add requests
+const controller = {};
+
+controller.newBirdList = async function(req, res) { //List of all new bird add requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await AddRequest.find({});
 		if (!requests) {
@@ -23,7 +22,7 @@ module.exports.newBirdList = async function(req, res) { //List of all new bird a
 	return res.redirect('back');
 }
 
-module.exports.showNew = async function(req, res) { //Specific new bird add request
+controller.showNew = async function(req, res) { //Specific new bird add request
 	const request = await AddRequest.findById(req.params.id);
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -32,7 +31,7 @@ module.exports.showNew = async function(req, res) { //Specific new bird add requ
 	return res.render('showRequest', {info: true, bird: request, action: 'new', colors});
 }
 
-module.exports.acceptNew = async function(req, res) { //Accept new bird add request
+controller.acceptNew = async function(req, res) { //Accept new bird add request
 	const request = await AddRequest.findByIdAndDelete(req.params.id); //Remove add request but keep data
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -56,7 +55,7 @@ module.exports.acceptNew = async function(req, res) { //Accept new bird add requ
   	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectNew = async function(req, res) { //Reject new bird add request
+controller.rejectNew = async function(req, res) { //Reject new bird add request
 	const request = await AddRequest.findByIdAndDelete(req.params.id); //Remove add request
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -67,7 +66,7 @@ module.exports.rejectNew = async function(req, res) { //Reject new bird add requ
 	return res.redirect(`/request/newBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.updateBirdList = async function(req, res) { //List of all bird update requests
+controller.updateBirdList = async function(req, res) { //List of all bird update requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await UpdateRequest.find({}).populate('bird');
 		if (!requests) {
@@ -82,7 +81,7 @@ module.exports.updateBirdList = async function(req, res) { //List of all bird up
 	return res.redirect('back');
 }
 
-module.exports.updateBirdShow = async function(req, res) { //Specific bird update request
+controller.updateBirdShow = async function(req, res) { //Specific bird update request
 	const request = await UpdateRequest.findById(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -91,7 +90,7 @@ module.exports.updateBirdShow = async function(req, res) { //Specific bird updat
 	return res.render('showRequest', {info: true, colors, bird: request, action: 'update'});
 }
 
-module.exports.acceptUpdate = async function(req, res) { //Acceept bird update request
+controller.acceptUpdate = async function(req, res) { //Acceept bird update request
 	let overlap = [];
 	const currentReq = await UpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 	let tempBirdData = { //Object stores the bird's info, before it was updated
@@ -140,7 +139,7 @@ module.exports.acceptUpdate = async function(req, res) { //Acceept bird update r
 	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectUpdate = async function(req, res) { //Reject bird update request
+controller.rejectUpdate = async function(req, res) { //Reject bird update request
 	const request = await UpdateRequest.findByIdAndDelete(req.params.id); //Remove bird
 	if (!request) {
 		req.flash('error', "Unable to delete update");
@@ -151,7 +150,7 @@ module.exports.rejectUpdate = async function(req, res) { //Reject bird update re
 	return res.redirect(`/request/updateBirdList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.galleryUpdateList = async function(req, res) { //List of all gallery update requests
+controller.galleryUpdateList = async function(req, res) { //List of all gallery update requests
 	if (req.query.pwd == process.env.QUERY_PASSWORD) {
 		const requests = await GalleryUpdateRequest.find({}).populate('bird');
 		if (!requests) {
@@ -166,7 +165,7 @@ module.exports.galleryUpdateList = async function(req, res) { //List of all gall
 	return res.redirect('back');
 }
 
-module.exports.galleryUpdateShow = async function(req, res) { //Specific gallery update request
+controller.galleryUpdateShow = async function(req, res) { //Specific gallery update request
 	const request = await GalleryUpdateRequest.findById(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Unable to access request");
@@ -175,7 +174,7 @@ module.exports.galleryUpdateShow = async function(req, res) { //Specific gallery
 	return res.render('showGalleryRequest', {info: false, bird: request});
 }
 
-module.exports.acceptGalleryUpdate = async function(req, res) { //Accept gallery update request
+controller.acceptGalleryUpdate = async function(req, res) { //Accept gallery update request
 	const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id).populate('bird');
 	if (!request) {
 		req.flash('error', "Error accessing request");
@@ -208,7 +207,7 @@ module.exports.acceptGalleryUpdate = async function(req, res) { //Accept gallery
 	return res.redirect(`/request/galleryUpdateList?pwd=${process.env.QUERY_PASSWORD}`);
 }
 
-module.exports.rejectGalleryUpdate = async function(req, res) { //Reject gallery update request
+controller.rejectGalleryUpdate = async function(req, res) { //Reject gallery update request
 	const request = await GalleryUpdateRequest.findByIdAndDelete(req.params.id);
 	if (!request) {
 		req.flash('error', "Unable to delete gallery update");
@@ -217,3 +216,5 @@ module.exports.rejectGalleryUpdate = async function(req, res) { //Reject gallery
 	req.flash('success', "Gallery Update rejected!");
 	return res.redirect(`/request/galleryUpdateList?pwd=${process.env.QUERY_PASSWORD}`);
 }
+
+module.exports = controller;

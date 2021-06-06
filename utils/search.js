@@ -17,7 +17,7 @@ const keywordSearch = async function(query, Schema) {
 	}
 
 	for (let i = searchExpressions.length-1; i >= 0; i--) { //Double check with within-word regex (non-ascii keywords can still pass filter)
-		if (searchExpressions[i].split(delimeter).join('') == '' || searchExpressions[i].length <= 2) {
+		if (searchExpressions[i].split(delimeter).join('') == '' || searchExpressions[i].length < 4) {
 			searchExpressions.splice(i, 1);
 		}
 	}

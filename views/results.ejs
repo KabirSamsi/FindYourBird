@@ -63,7 +63,12 @@
                 <h5>
                   <a class="bird-info" href="/<%=birds[i]._id %>"><%= birds[i].name %>
                     <% if (from == "data") { %>
-                      (<%=(100*(birdMap.get(birds[i]._id.toString())/4)).toFixed(2)%>% match)
+                      <% let accuracy = (100*(birdMap.get(birds[i]._id.toString())/4))%>
+                      <% if (accuracy > 100) { %>
+                        (100.00% match)
+                      <% } else {%>
+                        (<%=accuracy.toFixed(2)%>% match)
+                      <% } %>
 
                     <% } else if (from == "search" && !similarResults) { %>
                       <% let max = resultMap.get(birds[0]._id.toString());%>
