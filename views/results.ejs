@@ -55,51 +55,47 @@
 
   <div class="results">
     <%for (let i = 0; i < birds.length; i ++) { %>
-      <% if (birds[i]) { %>
-        <div class="row bird" id="<%=i%>" <% if (i > 9) {%> style="display: none;" <%} %>>
-          <div class="col-lg-12">
-            <article class="text-block mode">
-              <div class="block-header grey">
-                <h5>
-                  <a class="bird-info" href="/<%=birds[i]._id %>"><%= birds[i].name %>
-                    <% if (from == "data") { %>
-                      <% let accuracy = (100*(birdMap.get(birds[i]._id.toString())/4))%>
-                      <% if (accuracy > 100) { %>
-                        (100.00% match)
-                      <% } else {%>
-                        (<%=accuracy.toFixed(2)%>% match)
-                      <% } %>
-
-                    <% } else if (from == "search" && !similarResults) { %>
-                      <% let max = resultMap.get(birds[0]._id.toString());%>
-                      <% if (perfectMatch > max) { %>
-                        <% max = perfectMatch;%>
-                      <% } %>
-                      (<%=(100*resultMap.get(birds[i]._id.toString())/max).toFixed(2)%>% match)
-                    <% } else if (from == "search" && similarResults) {%>
-                      (<%=resultMap.get(birds[i]._id).toFixed(2)%>% match)
+      <div class="row bird" id="<%=i%>" <% if (i > 9) {%> style="display: none;" <%} %>>
+        <div class="col-lg-12">
+          <article class="text-block mode">
+            <div class="block-header grey">
+              <h5>
+                <a class="bird-info" href="/<%=birds[i]._id %>"><%= birds[i].name %>
+                  <% if (from == "data") { %>
+                    <% let accuracy = (100*(birdMap.get(birds[i]._id.toString())/4))%>
+                    <% if (accuracy > 100) { %>
+                      (100.00% match)
+                    <% } else {%>
+                      (<%=accuracy.toFixed(2)%>% match)
                     <% } %>
+
+                  <% } else if (from == "search" && !similarResults) { %>
+                    <% let max = resultMap.get(birds[0]._id.toString());%>
+                    <% if (perfectMatch > max) { %>
+                      <% max = perfectMatch;%>
+                    <% } %>
+                    (<%=(100*resultMap.get(birds[i]._id.toString())/max).toFixed(2)%>% match)
+                  <% } %>
+                </a>
+              </h5>
+              <em><%=birds[i].scientificName%></em>
+            </div>
+            <div class="block-content">
+              <img class="bird-image" src="<%=birds[i].img.url%>"/>
+              <figcaption class="figure-caption"><strong class="caption-header">Image Citation</strong>: <em class="citation-text"><%=birds[i].img.citation%></em></figcaption>
+              <% if (birds[i].description.split(" ").length > 70) { %>
+                <p class="bird-description"><%= birds[i].description.split(" ").slice(0, 71).join(" ") %>
+                  <a href="/<%=birds[i]._id %>">(Read More)
                   </a>
-                </h5>
-                <em><%=birds[i].scientificName%></em>
-              </div>
-              <div class="block-content">
-                <img class="bird-image" src="<%=birds[i].img.url%>"/>
-                <figcaption class="figure-caption"><strong class="caption-header">Image Citation</strong>: <em class="citation-text"><%=birds[i].img.citation%></em></figcaption>
-                <% if (birds[i].description.split(" ").length > 70) { %>
-                  <p class="bird-description"><%= birds[i].description.split(" ").slice(0, 71).join(" ") %>
-                    <a href="/<%=birds[i]._id %>">(Read More)
-                    </a>
-                  </p>
-                <% } else { %>
-                  <p class="bird-description"><%= birds[i].description %></p>
-                <% } %>
-              </div>
-            </article>
-          </div>
+                </p>
+              <% } else { %>
+                <p class="bird-description"><%= birds[i].description %></p>
+              <% } %>
+            </div>
+          </article>
         </div>
-        <br /><br />
-      <% } %>
+      </div>
+      <br /><br />
     <% } %>
   </div>
 
