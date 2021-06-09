@@ -229,7 +229,6 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 
 		let finalBirds = new Map(); //Stores sorted birds as map with accuracy
 		let sorted = []; //Stores birds sorted by accuracy
-		let final = []; //Stores birds in sorted order, without accuracy dimension
 		let colorOccurrences; //Stores the number of times a color occurs per bird
 
 		for (let bird of birds) { //Iterates through birds and searches for characteristics that match entered data
@@ -287,16 +286,24 @@ controller.identify = async function(req, res) { //Identify bird based on form d
 			for (let attr of attrs) {
 				if (typeof sorted[i][attr] == 'string') { //If the attribute is a string, add the value directly to the 'data String'
 				for (let word of filter(sorted[i][attr].toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
-					if (searchExpressions.includes(word) && identifyValues.has(attr)) {
-						finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+					innerLoop:
+					for (let keyword of searchExpressions) {
+						if (word.includes(keyword) && identifyValues.has(attr)) {
+							finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+							break innerLoop;
+						}
 					}
 				}
 			
 				} else { //If the attribute is an array, add each value inside the array to the data String
 					for (let wordset of sorted[i][attr]) {
 						for (let word of filter(wordset.toLowerCase()).split(delimeter)) { //Remove filler words to decrease search complexity
-							if (searchExpressions.includes(word) && identifyValues.has(attr)) {
-								finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+							innerLoop:
+							for (let keyword of searchExpressions) {
+								if (word.includes(keyword) && identifyValues.has(attr)) {
+									finalBirds.set(sorted[i]._id.toString(), finalBirds.get(sorted[i]._id.toString()) * identifyValues.get(attr));
+									break innerLoop;
+								}
 							}
 						}
 					}
