@@ -42,16 +42,37 @@ controller.search = async function(req, res) { //Search for bird with entered ke
 		return res.redirect("/");
 	}
 
-	//If no results, attempt to search for birds with similar keyword profiles
-	const birds = await Bird.find({});
-	if (!birds) {
-		req.flash("error", "An Error Occurred");
+	//If there are no results, search with just general species name
+	results = await keywordSearch(req.body.name.toLowerCase(), Bird, true);
+	if (results.error) {
+		await req.flash("error", results.error);
+		return res.redirect("/");
+	}
+	//Eliminate birds that fall below a standard deviation of similarity
+	birdMatrix = await parsePropertyArray(mapToMatrix(results.resultMap), 1);
+	for (let bird of results.resultMap) {
+		if (math.mean(birdMatrix) - bird[1] > math.std(birdMatrix)) {
+			removeIfIncluded(results.birds, bird[0], "_id");
+			results.resultMap.delete(bird[0]);
+		}
+	}
+
+	if (results.birds.length > 0 && results.birds.length < 30) { //If there are results with the given keyword
+		return res.render('results', results);
+	} else if (results.birds.length > 0) {
+		await req.flash("error", "Please enter a more specific search");
 		return res.redirect("/");
 	}
 
-	//Build map of birds with similar names to the entered keyword
+	//If still no results, attempt to search for birds with similar keyword profiles
+	const birds = await Bird.find({});
+	if (!birds) {
+		req.flash("error", "An error occurred");
+		return res.redirect('/');
+	}
+
 	let similarArray = [];
-	let similarMap = new Map();
+	let similarMap = new Map(); //Build map of birds with similar names to the entered keyword
 	for (let bird of birds) {
 		if (req.body.name.toLowerCase().split(delimeter).join('').length > 3 && await compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')) > 0) {
 			await similarMap.set(bird._id, compareSimilarity(bird.name.toLowerCase().split(delimeter).join(''), req.body.name.toLowerCase().split(delimeter).join('')));
@@ -336,7 +357,7 @@ controller.showBird = async function(req, res) { //Display bird profile
 		req.flash('error', "Bird not found");
 		return res.redirect("back");
 	}
-	return res.render('index', {info: true, bird});
+	return res.render('index', {info: true, bird, similar: []});
 }
 
 controller.updateBird = async function(req, res) { //Create bird update request with form data

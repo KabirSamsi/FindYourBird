@@ -44,6 +44,14 @@
               <p><strong>Diet: </strong><%=bird.diet%></p>
               <p><strong>Habitat: </strong><%=bird.habitat.join(', ')%></p>
               <p><strong>Range: </strong><%=bird.range%></p>
+              <div class="text-center">
+                <h5 style="text-decoration: underline"></h5>
+                <ol>
+                  <% for (let species of similar) { %>
+                    <%=species%>
+                  <% } %> 
+                </ol>
+              </div>
             </div>
           </div>
         </div>
